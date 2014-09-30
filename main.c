@@ -5,7 +5,7 @@
 #define MAX_Y 30 //tamanho de linhas do mapa principal
 
 struct mr_do {
-	int start_x, start_y, state;//como a localizacao do mr.do vai ser sempre a mesma do cursor so precisamos do valor inicial
+	int start_x, start_y, last_x, last_y, state;//como a localizacao do mr.do vai ser sempre a mesma do cursor so precisamos do valor inicial
   char representation;
 };
 
@@ -19,8 +19,8 @@ int main(int argc, const char *argv[]){
   WINDOW *game_window;
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
   md.representation = 64;
-  md.start_x = x = MAX_X / 2;
-  md.start_y = y = MAX_Y / 2;
+  md.start_x = x = md.last_x = MAX_X / 2;
+  md.start_y = y = md.last_y = MAX_Y / 2;
   mvwaddch(game_window, md.start_y, md.start_x, md.representation);
   wrefresh(game_window);
   while((ch = getch()) != 27){//esc
@@ -46,9 +46,11 @@ int main(int argc, const char *argv[]){
         }
         break;
     }
-    werase(game_window);
+    mvwaddch(game_window, md.last_y, md.last_x, ' ');
     mvwaddch(game_window, y, x, md.representation);
     wrefresh(game_window);
+    md.last_x = x;
+    md.last_y = y;
   }
   endwin();
   return 0;
