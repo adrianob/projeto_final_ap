@@ -4,71 +4,63 @@
 #include <sys/time.h>
 #include <ncurses.h>
 #include <unistd.h>
-#define MAX_X 80 //tamanho de colunas do mapa principal
-#define MAX_Y 30 //tamanho de linhas do mapa principal
-#define MAX_GHOSTS 1
+#include "main.h"
+#include "movement.h"
 
-//precisa ser global pois nao podemos passar argumentos pro handler de signal
-//@TODO transformar num array de struct
-int ghosts[MAX_GHOSTS][3];//vivo ou morto, y, x
-void init(void);
-void draw_borders(void);
-void ghost_timer_handler();
-
-struct mr_do {
-	int start_x, start_y, last_x, last_y, state;
-  char representation;
-};
+int ready_to_draw = 0;
 
 int main(int argc, const char *argv[]){
   init();
-  char MAP[MAX_X][MAX_Y];
-  int ch, x, y;
-
-  struct itimerval ghost_timer;
-  ghost_timer.it_interval.tv_usec = 0;
-  ghost_timer.it_interval.tv_sec = 0;
-  ghost_timer.it_value.tv_sec = 1;
-  ghost_timer.it_value.tv_usec = 0;
-  setitimer(ITIMER_REAL, &ghost_timer, 0);
-  signal(SIGALRM, ghost_timer_handler);
-
-  struct mr_do md;
   WINDOW *game_window;
+  char MAP[MAX_X][MAX_Y];
+  int ch, i;
+  struct mr_do md;
+  struct ghost gh;
+  struct itimerval timer;
+
+  //configuracao do timer
+  timer.it_interval.tv_sec = 0;
+  timer.it_interval.tv_usec = INTERVAL;//intervalo
+  timer.it_value.tv_sec = 0;
+  timer.it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
+  setitimer(ITIMER_REAL, &timer, 0);
+  signal(SIGALRM, timer_handler);
+
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
+  gh.position.x = gh.position.y = 0;
+  gh.representation = 'g';
   md.representation = 64;
-  md.start_x = x = md.last_x = MAX_X / 2;
-  md.start_y = y = md.last_y = MAX_Y / 2;
+  md.position.x = md.last_x = MAX_X / 2;
+  md.position.y = md.last_y = MAX_Y / 2;
   while((ch = getch()) != KEY_F(1)){
     switch(ch){
       case KEY_RIGHT:
-        if (x < MAX_X - 1) {
-          x++;
-        }
+        move_right(&md.position);
         break;
       case KEY_LEFT:
-        if (x > 0) {
-          x--;
-        }
+        move_left(&md.position);
         break;
       case KEY_UP:
-        if (y > 0) {
-          y--;
-        }
+        move_up(&md.position);
         break;
       case KEY_DOWN:
-        if (y < MAX_Y - 1) {
-          y++;
-        }
+        move_down(&md.position);
         break;
+    }
+    if (ready_to_draw) {
+      for (i = 0; i < MAX_GHOSTS; i++) {
+        mvwaddch(game_window, gh.position.y, gh.position.x, gh.representation);
+        move_right(&gh.position);
+      }
+      ready_to_draw = 0;
     }
     //move mr do
     //@TODO retirar isso quando tivermos o mapa em forma de matriz
     mvwaddch(game_window, md.last_y, md.last_x, ' ');//apaga a ultima posicao
-    mvwaddch(game_window, y, x, md.representation);
+    mvwaddch(game_window, md.position.y, md.position.x, md.representation);
     wrefresh(game_window);
-    md.last_x = x;
-    md.last_y = y;
+    md.last_x = md.position.x;
+    md.last_y = md.position.y;
   }
   endwin();
   return 0;
@@ -98,22 +90,8 @@ void draw_borders(void){
     mvaddch(i, 0, '|');
     mvaddch(i, MAX_X + 1, '|');
   }
-
 }
 
-void ghost_timer_handler(){
-  struct itimerval ghost_timer;
-  int i;
-
-  for (i = 0; i < MAX_GHOSTS; i++) {
-    mvaddch(ghosts[i][1], ghosts[i][2], 'g');
-    ghosts[i][1]++;
-    ghosts[i][2]++;
-  }
-
-  ghost_timer.it_interval.tv_sec = 0;
-  ghost_timer.it_interval.tv_usec = 0;
-  ghost_timer.it_value.tv_sec = 0;
-  ghost_timer.it_value.tv_usec = 500000;
-  setitimer(ITIMER_REAL, &ghost_timer,0);
+void timer_handler(){
+  ready_to_draw = 1;
 }
