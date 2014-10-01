@@ -4,53 +4,27 @@
 #include <sys/time.h>
 #include <ncurses.h>
 #include <unistd.h>
-#define MAX_X 80 //tamanho de colunas do mapa principal
-#define MAX_Y 30 //tamanho de linhas do mapa principal
-#define MAX_GHOSTS 1
-#define INTERVAL 500000
+#include "main.h"
+#include "movement.h"
 
 int ready_to_draw = 0;
-void init(void);
-void draw_borders(void);
-void ghost_timer_handler();
-
-struct moving_element {
-  int x, y;
-};
-
-struct mr_do {
-  struct moving_element position;
-	int last_x, last_y, state;
-  char representation;
-};
-
-struct ghost {
-  struct moving_element position;
-  int state;
-  char representation;
-};
-
-void move_right(struct moving_element* position);
-void move_left(struct moving_element* position);
-void move_up(struct moving_element* position);
-void move_down(struct moving_element* position);
 
 int main(int argc, const char *argv[]){
   init();
+  WINDOW *game_window;
   char MAP[MAX_X][MAX_Y];
   int ch, i;
-  WINDOW *game_window;
   struct mr_do md;
   struct ghost gh;
-  struct itimerval ghost_timer;
+  struct itimerval timer;
 
   //configuracao do timer
-  ghost_timer.it_interval.tv_sec = 0;
-  ghost_timer.it_interval.tv_usec = INTERVAL;//intervalo
-  ghost_timer.it_value.tv_sec = 0;
-  ghost_timer.it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
-  setitimer(ITIMER_REAL, &ghost_timer, 0);
-  signal(SIGALRM, ghost_timer_handler);
+  timer.it_interval.tv_sec = 0;
+  timer.it_interval.tv_usec = INTERVAL;//intervalo
+  timer.it_value.tv_sec = 0;
+  timer.it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
+  setitimer(ITIMER_REAL, &timer, 0);
+  signal(SIGALRM, timer_handler);
 
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
   gh.position.x = gh.position.y = 0;
@@ -118,30 +92,6 @@ void draw_borders(void){
   }
 }
 
-void ghost_timer_handler(){
+void timer_handler(){
   ready_to_draw = 1;
-}
-
-void move_right(struct moving_element* position){
-  if (position->x < MAX_X - 1) {
-    position->x++;
-  }
-}
-
-void move_left(struct moving_element* position){
-  if (position->x > 0) {
-    position->x--;
-  }
-}
-
-void move_up(struct moving_element* position){
-  if (position->y > 0) {
-    position->y--;
-  }
-}
-
-void move_down(struct moving_element* position){
-  if (position->y < MAX_Y - 1) {
-    position->y++;
-  }
 }
