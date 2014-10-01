@@ -77,6 +77,59 @@ void init(void){
   draw_borders();
 }
 
+//Carrega o arquivo de cenário inicial
+//@TODO tratar erros?
+FILE* load_level(int level){
+  FILE *level_file;
+
+  if(level == 1){
+    level_file = fopen("level1.txt", "r");
+  }else if(level == 2){
+    level_file = fopen("level2.txt", "r");
+  }else{
+    level_file = fopen("continua.txt","r");
+  }
+
+  return level_file;
+}
+
+//Gera o mapa de acordo com o arquivo de texto
+//@TODO substituir os caracteres pelos corretos e tratamento de erros
+void make_map(FILE *level, char *p){
+
+  long lSize;
+  char *buffer;
+  int i, j, cont;
+
+  //Aloca espaço na memória e lê o arquivo carregado
+  fseek(level,0L,SEEK_END);
+  lSize = ftell(level);
+  rewind(level);
+  buffer = calloc( 1, lSize+1 );
+  fread(buffer,lSize,1,level);
+
+  //Atualiza a matriz, ignorando caracteres fora do padrão
+  for(i = 0; i < MAX_Y; i++){
+    for(j = 0; j < MAX_X; j++){
+      while(buffer[cont] != '@' && buffer[cont] != '.'){
+        cont ++;
+      }
+      switch(buffer[cont]){
+
+      case '@': *p = 'E';
+                p++;
+                break;
+      case '.': *p = ' ';
+                p++;
+                break;
+      default: break;
+      }
+      cont++;
+    }
+  }
+
+}
+
 void draw_borders(void){
   int i;
   //bordas horizontais
