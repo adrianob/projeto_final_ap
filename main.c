@@ -30,10 +30,10 @@ struct ghost {
   char representation;
 };
 
-struct moving_element move_right(struct moving_element position);
-struct moving_element move_left(struct moving_element position);
-struct moving_element move_up(struct moving_element position);
-struct moving_element move_down(struct moving_element position);
+void move_right(struct moving_element* position);
+void move_left(struct moving_element* position);
+void move_up(struct moving_element* position);
+void move_down(struct moving_element* position);
 
 int main(int argc, const char *argv[]){
   init();
@@ -61,22 +61,22 @@ int main(int argc, const char *argv[]){
   while((ch = getch()) != KEY_F(1)){
     switch(ch){
       case KEY_RIGHT:
-        md.position = move_right(md.position);
+        move_right(&md.position);
         break;
       case KEY_LEFT:
-        md.position = move_left(md.position);
+        move_left(&md.position);
         break;
       case KEY_UP:
-        md.position = move_up(md.position);
+        move_up(&md.position);
         break;
       case KEY_DOWN:
-        md.position = move_down(md.position);
+        move_down(&md.position);
         break;
     }
     if (ready_to_draw) {
       for (i = 0; i < MAX_GHOSTS; i++) {
         mvwaddch(game_window, gh.position.y, gh.position.x, gh.representation);
-        gh.position = move_right(gh.position);
+        move_right(&gh.position);
       }
       ready_to_draw = 0;
     }
@@ -116,38 +116,32 @@ void draw_borders(void){
     mvaddch(i, 0, '|');
     mvaddch(i, MAX_X + 1, '|');
   }
-
 }
 
 void ghost_timer_handler(){
   ready_to_draw = 1;
 }
 
-//@TODO talvez seja melhor passar por referencia
-struct moving_element move_right(struct moving_element position){
-  if (position.x < MAX_X - 1) {
-    position.x++;
+void move_right(struct moving_element* position){
+  if (position->x < MAX_X - 1) {
+    position->x++;
   }
-  return position;
 }
 
-struct moving_element move_left(struct moving_element position){
-  if (position.x > 0) {
-    position.x--;
+void move_left(struct moving_element* position){
+  if (position->x > 0) {
+    position->x--;
   }
-  return position;
 }
 
-struct moving_element move_up(struct moving_element position){
-  if (position.y > 0) {
-    position.y--;
+void move_up(struct moving_element* position){
+  if (position->y > 0) {
+    position->y--;
   }
-  return position;
 }
 
-struct moving_element move_down(struct moving_element position){
-  if (position.y < MAX_Y - 1) {
-    position.y++;
+void move_down(struct moving_element* position){
+  if (position->y < MAX_Y - 1) {
+    position->y++;
   }
-  return position;
 }
