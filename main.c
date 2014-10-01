@@ -7,6 +7,7 @@
 #define MAX_X 80 //tamanho de colunas do mapa principal
 #define MAX_Y 30 //tamanho de linhas do mapa principal
 #define MAX_GHOSTS 1
+#define INTERVAL 500000
 
 int ready_to_draw = 0;
 void init(void);
@@ -33,9 +34,9 @@ int main(int argc, const char *argv[]){
   struct itimerval ghost_timer;
 
   ghost_timer.it_interval.tv_sec = 0;
-  ghost_timer.it_interval.tv_usec = 500000;//intervalo
+  ghost_timer.it_interval.tv_usec = INTERVAL;//intervalo
   ghost_timer.it_value.tv_sec = 0;
-  ghost_timer.it_value.tv_usec = 500000;//tempo ate o primeiro sinal
+  ghost_timer.it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
   setitimer(ITIMER_REAL, &ghost_timer, 0);
   signal(SIGALRM, ghost_timer_handler);
 
