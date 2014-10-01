@@ -8,6 +8,9 @@
 void init(void);
 void draw_borders(void);
 void timer_handler();
+FILE *load_level(int level); //Recebe o level (1 - nível um, 2 - nível dois, qualquer outra coisa - nível 3) e retorna um FILE
+void make_map(FILE * level, char *p);  //Recebe um FILE e o ponteiro da matriz e inicializa o mapa
+
 struct moving_element {
   int x, y;
 };
