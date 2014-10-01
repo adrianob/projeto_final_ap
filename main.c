@@ -14,25 +14,37 @@ void init(void);
 void draw_borders(void);
 void ghost_timer_handler();
 
+struct moving_element {
+  int x, y;
+};
+
 struct mr_do {
-	int start_x, start_y, last_x, last_y, state;
+  struct moving_element position;
+	int last_x, last_y, state;
   char representation;
 };
 
 struct ghost {
-  int x, y, state;
+  struct moving_element position;
+  int state;
   char representation;
 };
+
+struct moving_element move_right(struct moving_element position);
+struct moving_element move_left(struct moving_element position);
+struct moving_element move_up(struct moving_element position);
+struct moving_element move_down(struct moving_element position);
 
 int main(int argc, const char *argv[]){
   init();
   char MAP[MAX_X][MAX_Y];
-  int ch, x, y, i;
+  int ch, i;
   WINDOW *game_window;
   struct mr_do md;
   struct ghost gh;
   struct itimerval ghost_timer;
 
+  //configuracao do timer
   ghost_timer.it_interval.tv_sec = 0;
   ghost_timer.it_interval.tv_usec = INTERVAL;//intervalo
   ghost_timer.it_value.tv_sec = 0;
@@ -41,49 +53,40 @@ int main(int argc, const char *argv[]){
   signal(SIGALRM, ghost_timer_handler);
 
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
-  gh.x = gh.y = 0;
+  gh.position.x = gh.position.y = 0;
   gh.representation = 'g';
   md.representation = 64;
-  md.start_x = x = md.last_x = MAX_X / 2;
-  md.start_y = y = md.last_y = MAX_Y / 2;
+  md.position.x = md.last_x = MAX_X / 2;
+  md.position.y = md.last_y = MAX_Y / 2;
   while((ch = getch()) != KEY_F(1)){
     switch(ch){
       case KEY_RIGHT:
-        if (x < MAX_X - 1) {
-          x++;
-        }
+        md.position = move_right(md.position);
         break;
       case KEY_LEFT:
-        if (x > 0) {
-          x--;
-        }
+        md.position = move_left(md.position);
         break;
       case KEY_UP:
-        if (y > 0) {
-          y--;
-        }
+        md.position = move_up(md.position);
         break;
       case KEY_DOWN:
-        if (y < MAX_Y - 1) {
-          y++;
-        }
+        md.position = move_down(md.position);
         break;
     }
     if (ready_to_draw) {
       for (i = 0; i < MAX_GHOSTS; i++) {
-        mvwaddch(game_window, gh.y, gh.x, gh.representation);
-        gh.x++;
-        gh.y++;
+        mvwaddch(game_window, gh.position.y, gh.position.x, gh.representation);
+        gh.position = move_right(gh.position);
       }
       ready_to_draw = 0;
     }
     //move mr do
     //@TODO retirar isso quando tivermos o mapa em forma de matriz
     mvwaddch(game_window, md.last_y, md.last_x, ' ');//apaga a ultima posicao
-    mvwaddch(game_window, y, x, md.representation);
+    mvwaddch(game_window, md.position.y, md.position.x, md.representation);
     wrefresh(game_window);
-    md.last_x = x;
-    md.last_y = y;
+    md.last_x = md.position.x;
+    md.last_y = md.position.y;
   }
   endwin();
   return 0;
@@ -118,4 +121,33 @@ void draw_borders(void){
 
 void ghost_timer_handler(){
   ready_to_draw = 1;
+}
+
+//@TODO talvez seja melhor passar por referencia
+struct moving_element move_right(struct moving_element position){
+  if (position.x < MAX_X - 1) {
+    position.x++;
+  }
+  return position;
+}
+
+struct moving_element move_left(struct moving_element position){
+  if (position.x > 0) {
+    position.x--;
+  }
+  return position;
+}
+
+struct moving_element move_up(struct moving_element position){
+  if (position.y > 0) {
+    position.y--;
+  }
+  return position;
+}
+
+struct moving_element move_down(struct moving_element position){
+  if (position.y < MAX_Y - 1) {
+    position.y++;
+  }
+  return position;
 }
