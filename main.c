@@ -8,9 +8,7 @@
 #define MAX_Y 30 //tamanho de linhas do mapa principal
 #define MAX_GHOSTS 1
 
-//precisa ser global pois nao podemos passar argumentos pro handler de signal
-//@TODO transformar num array de struct
-int ghosts[MAX_GHOSTS][3];//vivo ou morto, y, x
+int ready_to_draw = 0;
 void init(void);
 void draw_borders(void);
 void ghost_timer_handler();
@@ -20,22 +18,30 @@ struct mr_do {
   char representation;
 };
 
+struct ghost {
+  int x, y, state;
+  char representation;
+};
+
 int main(int argc, const char *argv[]){
   init();
   char MAP[MAX_X][MAX_Y];
-  int ch, x, y;
-
+  int ch, x, y, i;
+  WINDOW *game_window;
+  struct mr_do md;
+  struct ghost gh;
   struct itimerval ghost_timer;
-  ghost_timer.it_interval.tv_usec = 0;
+
   ghost_timer.it_interval.tv_sec = 0;
-  ghost_timer.it_value.tv_sec = 1;
-  ghost_timer.it_value.tv_usec = 0;
+  ghost_timer.it_interval.tv_usec = 500000;//intervalo
+  ghost_timer.it_value.tv_sec = 0;
+  ghost_timer.it_value.tv_usec = 500000;//tempo ate o primeiro sinal
   setitimer(ITIMER_REAL, &ghost_timer, 0);
   signal(SIGALRM, ghost_timer_handler);
 
-  struct mr_do md;
-  WINDOW *game_window;
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
+  gh.x = gh.y = 0;
+  gh.representation = 'g';
   md.representation = 64;
   md.start_x = x = md.last_x = MAX_X / 2;
   md.start_y = y = md.last_y = MAX_Y / 2;
@@ -61,6 +67,14 @@ int main(int argc, const char *argv[]){
           y++;
         }
         break;
+    }
+    if (ready_to_draw) {
+      for (i = 0; i < MAX_GHOSTS; i++) {
+        mvwaddch(game_window, gh.y, gh.x, gh.representation);
+        gh.x++;
+        gh.y++;
+      }
+      ready_to_draw = 0;
     }
     //move mr do
     //@TODO retirar isso quando tivermos o mapa em forma de matriz
@@ -102,18 +116,5 @@ void draw_borders(void){
 }
 
 void ghost_timer_handler(){
-  struct itimerval ghost_timer;
-  int i;
-
-  for (i = 0; i < MAX_GHOSTS; i++) {
-    mvaddch(ghosts[i][1], ghosts[i][2], 'g');
-    ghosts[i][1]++;
-    ghosts[i][2]++;
-  }
-
-  ghost_timer.it_interval.tv_sec = 0;
-  ghost_timer.it_interval.tv_usec = 0;
-  ghost_timer.it_value.tv_sec = 0;
-  ghost_timer.it_value.tv_usec = 500000;
-  setitimer(ITIMER_REAL, &ghost_timer,0);
+  ready_to_draw = 1;
 }
