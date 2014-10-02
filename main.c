@@ -9,10 +9,11 @@
 #include "file_operations.h"
 
 int ready_to_draw = 0;
-void config_timer(struct itimerval* timer);//@TODO descobrir porque ocorre um warning quando botamos isso no header
 
 int main(int argc, const char *argv[]){
-  init();
+  //configuracoes iniciais
+  config();
+
   FILE *level_file;
   level_file = load_level(1);
   char MAP[MAX_Y][MAX_X];
@@ -21,15 +22,12 @@ int main(int argc, const char *argv[]){
   //cria a janela do jogo dentro da borda
   WINDOW *game_window;
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
+  //desenha as bordas
+  draw_borders();
   //desenha o mapa
-  for (int i = 0; i < MAX_Y; i++) {
-    for (int j = 0; j < MAX_X; j++) {
-        mvwaddch(game_window, i, j, MAP[i][j]);
-    }
-  }
+  draw_map(game_window, MAP);
   //configuracao do timer
-  struct itimerval timer;
-  config_timer(&timer);
+  config_timer();
 
   struct mr_do md;
   struct ghost gh;
@@ -43,35 +41,24 @@ int main(int argc, const char *argv[]){
   while((ch = getch()) != KEY_F(1)){
     switch(ch){
       case KEY_RIGHT:
-        move_right(&md.position);
+        move_right(game_window, &md.position, md.representation);
         break;
       case KEY_LEFT:
-        move_left(&md.position);
+        move_left(game_window, &md.position, md.representation);
         break;
       case KEY_UP:
-        move_up(&md.position);
+        move_up(game_window, &md.position, md.representation);
         break;
       case KEY_DOWN:
-        move_down(&md.position);
+        move_down(game_window, &md.position, md.representation);
         break;
     }
     if (ready_to_draw) {
       for (int i = 0; i < MAX_GHOSTS; i++) {
-        //@TODO mover para uma funcao
-        mvwaddch(game_window, gh.position.last_y, gh.position.last_x, ' ');//apaga a ultima posicao
-        mvwaddch(game_window, gh.position.y, gh.position.x, gh.representation);
-        gh.position.last_x = gh.position.x;
-        gh.position.last_y = gh.position.y;
-        move_right(&gh.position);
+        move_down(game_window, &gh.position, gh.representation);
       }
       ready_to_draw = 0;
     }
-    //move mr do
-    //@TODO retirar isso quando tivermos o mapa em forma de matriz
-    mvwaddch(game_window, md.position.last_y, md.position.last_x, ' ');//apaga a ultima posicao
-    mvwaddch(game_window, md.position.y, md.position.x, md.representation);
-    md.position.last_x = md.position.x;
-    md.position.last_y = md.position.y;
 
     wrefresh(game_window);
   }
@@ -79,15 +66,13 @@ int main(int argc, const char *argv[]){
   return 0;
 }
 
-//configuracoes iniciais
-void init(void){
+void config(void){
   initscr();			/* Start curses mode 		*/
   cbreak();				/* Line buffering disabled	*/
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
   noecho();			/* Don't echo() while we do getch */
   curs_set(0);
-  draw_borders();
 }
 
 void draw_borders(void){
@@ -109,11 +94,20 @@ void timer_handler(){
   ready_to_draw = 1;
 }
 
-void config_timer(struct itimerval* timer){
-  timer->it_interval.tv_sec = 0;
-  timer->it_interval.tv_usec = INTERVAL;//intervalo
-  timer->it_value.tv_sec = 0;
-  timer->it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
-  setitimer(ITIMER_REAL, timer, 0);
+void config_timer(void){
+  struct itimerval timer;
+  timer.it_interval.tv_sec = 0;
+  timer.it_interval.tv_usec = INTERVAL;//intervalo
+  timer.it_value.tv_sec = 0;
+  timer.it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
+  setitimer(ITIMER_REAL, &timer, 0);
   signal(SIGALRM, timer_handler);
+}
+
+void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]){
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      mvwaddch(w, i, j, MAP[i][j]);
+    }
+  }
 }

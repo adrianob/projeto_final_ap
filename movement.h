@@ -1,9 +1,10 @@
 #ifndef MR_DO_MOVEMENT
 #define MR_DO_MOVEMENT
 
-void move_right(struct moving_element* position);
-void move_left(struct moving_element* position);
-void move_up(struct moving_element* position);
-void move_down(struct moving_element* position);
+void print_char(WINDOW *w, struct moving_element* position, char c);
+void move_right(WINDOW *w, struct moving_element* position, char c);
+void move_left(WINDOW *w, struct moving_element* position, char c);
+void move_up(WINDOW *w, struct moving_element* position, char c);
+void move_down(WINDOW *w, struct moving_element* position, char c);
 
 #endif
