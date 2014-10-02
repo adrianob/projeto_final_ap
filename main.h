@@ -1,23 +1,22 @@
 #ifndef MR_DO_MAIN
 #define MR_DO_MAIN
 
-#define MAX_X 80 //tamanho de colunas do mapa principal
-#define MAX_Y 30 //tamanho de linhas do mapa principal
+#define MAX_X 60 //tamanho de colunas do mapa principal
+#define MAX_Y 23 //tamanho de linhas do mapa principal
 #define MAX_GHOSTS 1
 #define INTERVAL 500000
+#include <stdio.h>
 void init(void);
 void draw_borders(void);
 void timer_handler();
-FILE *load_level(int level); //Recebe o level (1 - nível um, 2 - nível dois, qualquer outra coisa - nível 3) e retorna um FILE
-void make_map(FILE * level, char *p);  //Recebe um FILE e o ponteiro da matriz e inicializa o mapa
 
 struct moving_element {
-  int x, y;
+  int x, y, last_x, last_y;
 };
 
 struct mr_do {
   struct moving_element position;
-	int last_x, last_y, state;
+	int state;
   char representation;
 };
 

@@ -6,32 +6,40 @@
 #include <unistd.h>
 #include "main.h"
 #include "movement.h"
+#include "file_operations.h"
 
 int ready_to_draw = 0;
+void config_timer(struct itimerval* timer);//@TODO descobrir porque ocorre um warning quando botamos isso no header
 
 int main(int argc, const char *argv[]){
   init();
+  FILE *level_file;
+  level_file = load_level(1);
+  char MAP[MAX_Y][MAX_X];
+  make_map(level_file, MAP);
+
+  //cria a janela do jogo dentro da borda
   WINDOW *game_window;
-  char MAP[MAX_X][MAX_Y];
-  int ch, i;
+  game_window = newwin(MAX_Y, MAX_X, 1, 1);
+  //desenha o mapa
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+        mvwaddch(game_window, i, j, MAP[i][j]);
+    }
+  }
+  //configuracao do timer
+  struct itimerval timer;
+  config_timer(&timer);
+
   struct mr_do md;
   struct ghost gh;
-  struct itimerval timer;
-
-  //configuracao do timer
-  timer.it_interval.tv_sec = 0;
-  timer.it_interval.tv_usec = INTERVAL;//intervalo
-  timer.it_value.tv_sec = 0;
-  timer.it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
-  setitimer(ITIMER_REAL, &timer, 0);
-  signal(SIGALRM, timer_handler);
-
-  game_window = newwin(MAX_Y, MAX_X, 1, 1);
   gh.position.x = gh.position.y = 0;
   gh.representation = 'g';
   md.representation = 64;
-  md.position.x = md.last_x = MAX_X / 2;
-  md.position.y = md.last_y = MAX_Y / 2;
+  md.position.x = md.position.last_x = MAX_X / 2;
+  md.position.y = md.position.last_y = MAX_Y / 2;
+
+  int ch;
   while((ch = getch()) != KEY_F(1)){
     switch(ch){
       case KEY_RIGHT:
@@ -48,19 +56,24 @@ int main(int argc, const char *argv[]){
         break;
     }
     if (ready_to_draw) {
-      for (i = 0; i < MAX_GHOSTS; i++) {
+      for (int i = 0; i < MAX_GHOSTS; i++) {
+        //@TODO mover para uma funcao
+        mvwaddch(game_window, gh.position.last_y, gh.position.last_x, ' ');//apaga a ultima posicao
         mvwaddch(game_window, gh.position.y, gh.position.x, gh.representation);
+        gh.position.last_x = gh.position.x;
+        gh.position.last_y = gh.position.y;
         move_right(&gh.position);
       }
       ready_to_draw = 0;
     }
     //move mr do
     //@TODO retirar isso quando tivermos o mapa em forma de matriz
-    mvwaddch(game_window, md.last_y, md.last_x, ' ');//apaga a ultima posicao
+    mvwaddch(game_window, md.position.last_y, md.position.last_x, ' ');//apaga a ultima posicao
     mvwaddch(game_window, md.position.y, md.position.x, md.representation);
+    md.position.last_x = md.position.x;
+    md.position.last_y = md.position.y;
+
     wrefresh(game_window);
-    md.last_x = md.position.x;
-    md.last_y = md.position.y;
   }
   endwin();
   return 0;
@@ -75,59 +88,6 @@ void init(void){
   noecho();			/* Don't echo() while we do getch */
   curs_set(0);
   draw_borders();
-}
-
-//Carrega o arquivo de cenário inicial
-//@TODO tratar erros?
-FILE* load_level(int level){
-  FILE *level_file;
-
-  if(level == 1){
-    level_file = fopen("level1.txt", "r");
-  }else if(level == 2){
-    level_file = fopen("level2.txt", "r");
-  }else{
-    level_file = fopen("continua.txt","r");
-  }
-
-  return level_file;
-}
-
-//Gera o mapa de acordo com o arquivo de texto
-//@TODO substituir os caracteres pelos corretos e tratamento de erros
-void make_map(FILE *level, char *p){
-
-  long lSize;
-  char *buffer;
-  int i, j, cont;
-
-  //Aloca espaço na memória e lê o arquivo carregado
-  fseek(level,0L,SEEK_END);
-  lSize = ftell(level);
-  rewind(level);
-  buffer = calloc( 1, lSize+1 );
-  fread(buffer,lSize,1,level);
-
-  //Atualiza a matriz, ignorando caracteres fora do padrão
-  for(i = 0; i < MAX_Y; i++){
-    for(j = 0; j < MAX_X; j++){
-      while(buffer[cont] != '@' && buffer[cont] != '.'){
-        cont ++;
-      }
-      switch(buffer[cont]){
-
-      case '@': *p = 'E';
-                p++;
-                break;
-      case '.': *p = ' ';
-                p++;
-                break;
-      default: break;
-      }
-      cont++;
-    }
-  }
-
 }
 
 void draw_borders(void){
@@ -147,4 +107,13 @@ void draw_borders(void){
 
 void timer_handler(){
   ready_to_draw = 1;
+}
+
+void config_timer(struct itimerval* timer){
+  timer->it_interval.tv_sec = 0;
+  timer->it_interval.tv_usec = INTERVAL;//intervalo
+  timer->it_value.tv_sec = 0;
+  timer->it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
+  setitimer(ITIMER_REAL, timer, 0);
+  signal(SIGALRM, timer_handler);
 }
