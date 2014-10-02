@@ -3,7 +3,6 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <ncurses.h>
-#include <unistd.h>
 #include <locale.h>
 #include "main.h"
 #include "movement.h"
@@ -78,10 +77,6 @@ void config(void){
   curs_set(0);
 }
 
-void timer_handler(){
-  ready_to_draw = 1;
-}
-
 void config_timer(void){
   struct itimerval timer;
   timer.it_interval.tv_sec = 0;
@@ -90,6 +85,10 @@ void config_timer(void){
   timer.it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
   setitimer(ITIMER_REAL, &timer, 0);
   signal(SIGALRM, timer_handler);
+}
+
+void timer_handler(){
+  ready_to_draw = 1;
 }
 
 void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]){

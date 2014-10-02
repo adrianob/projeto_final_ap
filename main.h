@@ -18,7 +18,7 @@ struct moving_element {
 
 struct mr_do {
   struct moving_element position;
-	int state;
+  int state;
   int representation;
 };
 

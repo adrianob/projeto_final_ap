@@ -41,7 +41,7 @@ void make_map(FILE *level, char p[MAX_Y][MAX_X]){
       switch(buffer[cont]){
 
         case 'P': 
-                  p[i][j] = '*';
+                  p[i][j] = '#';
                   break;
         case 'c': 
                   p[i][j] = ' ';
