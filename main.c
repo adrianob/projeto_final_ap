@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <ncurses.h>
 #include <unistd.h>
+#include <locale.h>
 #include "main.h"
 #include "movement.h"
 #include "file_operations.h"
@@ -20,11 +21,11 @@ int main(int argc, const char *argv[]){
   make_map(level_file, MAP);
 
   //cria a janela do jogo dentro da borda
+  WINDOW *border_window;
+  border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
   WINDOW *game_window;
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
-  //desenha as bordas
-  draw_borders();
-  //desenha o mapa
+  box(border_window, 0, 0);
   draw_map(game_window, MAP);
   //configuracao do timer
   config_timer();
@@ -32,8 +33,8 @@ int main(int argc, const char *argv[]){
   struct mr_do md;
   struct ghost gh;
   gh.position.x = gh.position.y = 0;
-  gh.representation = 'g';
-  md.representation = 64;
+  gh.representation = ACS_CKBOARD;
+  md.representation = ACS_PI;
   md.position.x = md.position.last_x = MAX_X / 2;
   md.position.y = md.position.last_y = MAX_Y / 2;
 
@@ -60,6 +61,7 @@ int main(int argc, const char *argv[]){
       ready_to_draw = 0;
     }
 
+    wrefresh(border_window);
     wrefresh(game_window);
   }
   endwin();
@@ -69,21 +71,11 @@ int main(int argc, const char *argv[]){
 void config(void){
   initscr();			/* Start curses mode 		*/
   cbreak();				/* Line buffering disabled	*/
+  setlocale(LC_ALL, "");
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
   noecho();			/* Don't echo() while we do getch */
   curs_set(0);
-}
-
-void draw_borders(void){
-  mvaddch(0, 0, '+');
-  mvaddch(0, MAX_X + 1, '+');
-  mvaddch(MAX_Y + 1, 0, '+');
-  mvaddch(MAX_Y + 1, MAX_X + 1, '+');
-  mvhline(0, 1, '-', MAX_X);
-  mvhline(MAX_Y + 1, 1, '-', MAX_X);
-  mvvline(1, 0, '|', MAX_Y);
-  mvvline(1, MAX_X + 1, '|', MAX_Y);
 }
 
 void timer_handler(){

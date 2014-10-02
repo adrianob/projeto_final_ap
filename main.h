@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <ncurses.h>
 void config(void);
-void draw_borders(void);
 void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]);
 void timer_handler();
 void config_timer();
@@ -20,13 +19,13 @@ struct moving_element {
 struct mr_do {
   struct moving_element position;
 	int state;
-  char representation;
+  int representation;
 };
 
 struct ghost {
   struct moving_element position;
   int state;
-  char representation;
+  int representation;
 };
 
 #endif
