@@ -76,18 +76,14 @@ void config(void){
 }
 
 void draw_borders(void){
-  int i;
-  //bordas horizontais
-  for (i = 0; i < MAX_X + 1; i++) {
-    mvaddch(0, i, '-');
-    mvaddch(MAX_Y + 1, i, '-');
-  }
-
-  //bordas verticais
-  for (i = 0; i < MAX_Y + 1; i++) {
-    mvaddch(i, 0, '|');
-    mvaddch(i, MAX_X + 1, '|');
-  }
+  mvaddch(0, 0, '+');
+  mvaddch(0, MAX_X + 1, '+');
+  mvaddch(MAX_Y + 1, 0, '+');
+  mvaddch(MAX_Y + 1, MAX_X + 1, '+');
+  mvhline(0, 1, '-', MAX_X);
+  mvhline(MAX_Y + 1, 1, '-', MAX_X);
+  mvvline(1, 0, '|', MAX_Y);
+  mvvline(1, MAX_X + 1, '|', MAX_Y);
 }
 
 void timer_handler(){
