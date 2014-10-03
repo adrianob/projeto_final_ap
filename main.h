@@ -26,6 +26,13 @@ struct ghost {
   struct moving_element position;
   int state;
   int representation;
+  int current_direction;
+  /*
+    1 - cima
+    2 - baixo
+    3 - direita
+    4 - esquerda
+   * */
 };
 
 #endif

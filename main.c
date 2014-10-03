@@ -33,6 +33,7 @@ int main(int argc, const char *argv[]){
   struct ghost gh;
   gh.position.x = gh.position.y = 0;
   gh.representation = ACS_CKBOARD;
+  gh.current_direction = 3;
   md.representation = ACS_PI;
   md.position.x = md.position.last_x = MAX_X / 2;
   md.position.y = md.position.last_y = MAX_Y / 2;
@@ -55,7 +56,7 @@ int main(int argc, const char *argv[]){
     }
     if (ready_to_draw) {
       for (int i = 0; i < MAX_GHOSTS; i++) {
-        move_down(game_window, &gh.position, gh.representation);
+        move_ghost(game_window, &gh);
       }
       ready_to_draw = 0;
     }
