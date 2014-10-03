@@ -30,11 +30,13 @@ int main(int argc, const char *argv[]){
   config_timer();
 
   struct mr_do md;
+  struct shot s;
   struct ghost gh;
+  s.position.representation = '-';
+  gh.position.representation = ACS_CKBOARD;
+  md.position.representation = ACS_PI;
   gh.position.x = gh.position.y = 0;
-  gh.representation = ACS_CKBOARD;
   gh.position.current_direction = 3;
-  md.representation = ACS_PI;
   md.position.x = md.position.last_x = MAX_X / 2;
   md.position.y = md.position.last_y = MAX_Y / 2;
 
@@ -42,22 +44,29 @@ int main(int argc, const char *argv[]){
   while((ch = getch()) != KEY_F(1)){
     switch(ch){
       case KEY_RIGHT:
-        move_right(game_window, &md.position, md.representation);
+        move_right(game_window, &md.position, md.position.representation);
         break;
       case KEY_LEFT:
-        move_left(game_window, &md.position, md.representation);
+        move_left(game_window, &md.position, md.position.representation);
         break;
       case KEY_UP:
-        move_up(game_window, &md.position, md.representation);
+        move_up(game_window, &md.position, md.position.representation);
         break;
       case KEY_DOWN:
-        move_down(game_window, &md.position, md.representation);
+        move_down(game_window, &md.position, md.position.representation);
+        break;
+      case ' ':
+        s.position.x = md.position.x;
+        s.position.y = md.position.y;
+        s.position.current_direction = md.position.current_direction;
+        shoot(game_window, &s);
         break;
     }
     if (ready_to_draw) {
       for (int i = 0; i < MAX_GHOSTS; i++) {
-        move_ghost(game_window, &gh);
+        move_ghost(game_window, &gh.position);
       }
+      shoot(game_window, &s);
       ready_to_draw = 0;
     }
 
