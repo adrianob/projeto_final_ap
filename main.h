@@ -14,6 +14,13 @@ void config_timer();
 
 struct moving_element {
   int x, y, last_x, last_y;
+  int current_direction;
+  /*
+    1 - cima
+    2 - baixo
+    3 - direita
+    4 - esquerda
+   * */
 };
 
 struct mr_do {
@@ -26,13 +33,6 @@ struct ghost {
   struct moving_element position;
   int state;
   int representation;
-  int current_direction;
-  /*
-    1 - cima
-    2 - baixo
-    3 - direita
-    4 - esquerda
-   * */
 };
 
 #endif
