@@ -36,41 +36,42 @@ void play_level_one(void){
   config_timer();
 
   struct shot s;
-  s.position.representation = '*';
+  s.sprite.representation = '*';
   struct ghost gh;
-  gh.position.representation = ACS_CKBOARD;
-  gh.position.x = gh.position.y = 0;
-  gh.position.current_direction = 3;
+  gh.sprite.representation = ACS_CKBOARD;
+  gh.sprite.position.x = gh.sprite.position.y = 0;
+  gh.sprite.direction = 3;
   struct mr_do md;
-  md.position.representation = ACS_PI;
-  md.position.x = md.position.last_x = MAX_X / 2;
-  md.position.y = md.position.last_y = MAX_Y / 2;
+  md.sprite.representation = ACS_PI;
+  md.sprite.position.x = md.sprite.position.last_x = MAX_X / 2;
+  md.sprite.position.y = md.sprite.position.last_y = MAX_Y / 2;
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
     switch(ch){
       case KEY_RIGHT:
-        move_right(game_window, &md.position);
+        move_sprite(game_window, &md.sprite, RIGHT_DIRECTION);
         break;
       case KEY_LEFT:
-        move_left(game_window, &md.position);
+        move_sprite(game_window, &md.sprite, LEFT_DIRECTION);
         break;
       case KEY_UP:
-        move_up(game_window, &md.position);
+        move_sprite(game_window, &md.sprite, UP_DIRECTION);
         break;
       case KEY_DOWN:
-        move_down(game_window, &md.position);
+        move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
         break;
       case ' ':
-        s.position.x = md.position.x;
-        s.position.y = md.position.y;
-        s.position.current_direction = md.position.current_direction;
+        s.sprite.position.x = md.sprite.position.x;
+        s.sprite.position.y = md.sprite.position.y;
+        s.sprite.direction = md.sprite.direction;
         break;
     }
     if (ready_to_draw) {
       for (int i = 0; i < MAX_GHOSTS; i++) {
-        move_ghost(game_window, &gh.position);
+        move_ghost(game_window, &gh);
       }
+      //@TODO transformar isso numa flag que mantem o tiro andando ate acertar alguma coisa
       shoot(game_window, &s);
       ready_to_draw = 0;
     }
