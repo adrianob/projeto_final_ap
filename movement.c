@@ -6,156 +6,117 @@
 #include <ncurses.h>
 #include <unistd.h>
 
-void print_char(WINDOW *w, struct moving_element* position){
-  mvwaddch(w, position->last_y, position->last_x, ' ');
-  mvwaddch(w, position->y, position->x, position->representation);
+void print_char(WINDOW *w, struct sprite* sprite){
+  mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
+  mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
 }
 
-void move_right(WINDOW *w, struct moving_element* position){
-  position->last_x = position->x;
-  position->last_y = position->y;
-  if (position->x < MAX_X - 1) {
-    position->x++;
+void move_sprite(WINDOW *w, struct sprite* sprite, int direction){
+  sprite->position.last_x = sprite->position.x;
+  sprite->position.last_y = sprite->position.y;
+  switch (direction) {
+    case UP_DIRECTION:
+      if (sprite->position.y > 0) {
+        sprite->position.y--;
+      }
+      break;
+    case RIGHT_DIRECTION:
+      if (sprite->position.x < MAX_X - 1) {
+        sprite->position.x++;
+      }
+      break;
+    case DOWN_DIRECTION:
+      if (sprite->position.y < MAX_Y - 1) {
+        sprite->position.y++;
+      }
+      break;
+    case LEFT_DIRECTION:
+      if (sprite->position.x > 0) {
+        sprite->position.x--;
+      }
   }
-  print_char(w, position);
-  position->current_direction = RIGHT_DIRECTION;
+
+  sprite->direction = direction;
+  print_char(w, sprite);
 }
 
-void move_left(WINDOW *w, struct moving_element* position){
-  position->last_x = position->x;
-  position->last_y = position->y;
-  if (position->x > 0) {
-    position->x--;
+//verifica se existe uma parede no caminho ou eh fim do mapa
+int can_go_to_direction(WINDOW *w, struct position* p, int direction){
+  int next_ch;
+  switch (direction) {
+    case UP_DIRECTION:
+      next_ch = mvwinch(w, p->y - 1, p->x );
+      break;
+    case DOWN_DIRECTION:
+      next_ch = mvwinch(w, p->y + 1, p->x );
+      break;
+    case RIGHT_DIRECTION:
+      next_ch = mvwinch(w, p->y, p->x + 1);
+      break;
+    case LEFT_DIRECTION:
+      next_ch = mvwinch(w, p->y, p->x - 1 );
+      break;
   }
-  print_char(w, position);
-  position->current_direction = LEFT_DIRECTION;
-}
-
-void move_up(WINDOW *w, struct moving_element* position){
-  position->last_x = position->x;
-  position->last_y = position->y;
-  if (position->y > 0) {
-    position->y--;
-  }
-  print_char(w, position);
-  position->current_direction = UP_DIRECTION;
-}
-
-void move_down(WINDOW *w, struct moving_element* position){
-  position->last_x = position->x;
-  position->last_y = position->y;
-  if (position->y < MAX_Y - 1) {
-    position->y++;
-  }
-  print_char(w, position);
-  position->current_direction = DOWN_DIRECTION;
-}
-
-//@TODO fazer algo menos tosco
-int can_go_up(WINDOW *w, struct moving_element* m){
-  int next_ch = mvwinch(w, m->y - 1, m->x );
-  return !(next_ch == '#' || next_ch == -1);
-}
-
-int can_go_down(WINDOW *w, struct moving_element* m){
-  int next_ch = mvwinch(w, m->y + 1, m->x );
-  return !(next_ch == '#' || next_ch == -1);
-}
-
-int can_go_left(WINDOW *w, struct moving_element* m){
-  int next_ch = mvwinch(w, m->y, m->x - 1 );
-  return !(next_ch == '#' || next_ch == -1);
-}
-
-int can_go_right(WINDOW *w, struct moving_element* m){
-  int next_ch = mvwinch(w, m->y, m->x + 1);
   return !(next_ch == '#' || next_ch == -1);
 }
 
 void move_ghost(WINDOW *w, struct ghost* gh){
-  switch (gh->position.current_direction) {
+    switch (gh->sprite.direction) {
     case UP_DIRECTION: //cima
-      if (can_go_up(w, &gh->position)) {
-        move_up(w, &gh->position);
-      }
-      else if (can_go_down(w, &gh->position)) {
-        move_down(w, &gh->position);
-      }
-      else if (can_go_right(w, &gh->position)) {
-        move_right(w, &gh->position);
-      }
-      else if (can_go_left(w, &gh->position)) {
-        move_left(w, &gh->position);
+      {
+        int directions[4] = {UP_DIRECTION, DOWN_DIRECTION, LEFT_DIRECTION, RIGHT_DIRECTION};
+        for (int i = 0; i < 4; i++) {
+          if (can_go_to_direction(w, &gh->sprite.position, directions[i])) {
+            move_sprite(w, &gh->sprite, directions[i]);
+            break;
+          }
+        }
       }
       break;
     case DOWN_DIRECTION: //baixo
-      if (can_go_down(w, &gh->position)) {
-        move_down(w, &gh->position);
-      }
-      else if (can_go_up(w, &gh->position)) {
-        move_up(w, &gh->position);
-      }
-      else if (can_go_right(w, &gh->position)) {
-        move_right(w, &gh->position);
-      }
-      else if (can_go_left(w, &gh->position)) {
-        move_left(w, &gh->position);
+      {
+        int directions[4] = {DOWN_DIRECTION, UP_DIRECTION, LEFT_DIRECTION, RIGHT_DIRECTION};
+        for (int i = 0; i < 4; i++) {
+          if (can_go_to_direction(w, &gh->sprite.position, directions[i])) {
+            move_sprite(w, &gh->sprite, directions[i]);
+            break;
+          }
+        }
       }
       break;
     case RIGHT_DIRECTION: //direita
-      if (can_go_right(w, &gh->position)) {
-        move_right(w, &gh->position);
-      }
-      else if (can_go_down(w, &gh->position)) {
-        move_down(w, &gh->position);
-      }
-      else if (can_go_up(w, &gh->position)) {
-        move_up(w, &gh->position);
-      }
-      else if (can_go_left(w, &gh->position)) {
-        move_left(w, &gh->position);
+      {
+        int directions[4] = {RIGHT_DIRECTION, DOWN_DIRECTION, LEFT_DIRECTION, UP_DIRECTION};
+        for (int i = 0; i < 4; i++) {
+          if (can_go_to_direction(w, &gh->sprite.position, directions[i])) {
+            move_sprite(w, &gh->sprite, directions[i]);
+            break;
+          }
+        }
       }
       break;
     case LEFT_DIRECTION: //esquerda
-      if (can_go_left(w, &gh->position)) {
-        move_left(w, &gh->position);
-      }
-      else if (can_go_down(w, &gh->position)) {
-        move_down(w, &gh->position);
-      }
-      else if (can_go_right(w, &gh->position)) {
-        move_right(w, &gh->position);
-      }
-      else if (can_go_up(w, &gh->position)) {
-        move_up(w, &gh->position);
+      {
+          int directions[4] = {LEFT_DIRECTION, DOWN_DIRECTION, UP_DIRECTION, RIGHT_DIRECTION};
+        for (int i = 0; i < 4; i++) {
+          if (can_go_to_direction(w, &gh->sprite.position, directions[i])) {
+            move_sprite(w, &gh->sprite, directions[i]);
+            break;
+          }
+        }
       }
       break;
   }
 }
 
-void shoot(WINDOW *w, struct shot* s){
-  switch (s->position.current_direction) {
-    case UP_DIRECTION:
-      if (can_go_up(w, &s->position)) {
-        move_up(w, &s->position);
-      }
-      break;
-    case DOWN_DIRECTION:
-      if (can_go_down(w, &s->position)) {
-        move_down(w, &s->position);
-      }
-      break;
-    case RIGHT_DIRECTION:
-      if (can_go_right(w, &s->position)) {
-        move_right(w, &s->position);
-      }
-      break;
-    case LEFT_DIRECTION:
-      if (can_go_left(w, &s->position)) {
-        move_left(w, &s->position);
-      }
-      break;
+void move_if_possible(WINDOW *w, struct sprite* s){
+  if (can_go_to_direction(w, &s->position, s->direction)) {
+    move_sprite(w, s, s->direction);
   }
+}
+
+void shoot(WINDOW *w, struct shot* s){
+  move_if_possible(w, &s->sprite);
 }
 
 #endif

@@ -19,11 +19,15 @@ void config_timer();
 void play_level_one(void);
 void show_menu(void);
 
-struct moving_element {
+struct position {
   int x, y, last_x, last_y;
-  int state;
+};
+
+struct sprite {
+  struct position position;
+  int state;//vivo ou morto
   int representation;
-  int current_direction;
+  int direction;
   /*
     1 - cima
     2 - baixo
@@ -33,15 +37,15 @@ struct moving_element {
 };
 
 struct mr_do {
-  struct moving_element position;
+  struct sprite sprite;
 };
 
 struct ghost {
-  struct moving_element position;
+  struct sprite sprite;
 };
 
 struct shot {
-  struct moving_element position;
+  struct sprite sprite;
 };
 
 #endif
