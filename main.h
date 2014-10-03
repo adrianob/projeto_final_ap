@@ -5,18 +5,25 @@
 #define MAX_Y 23 //tamanho de linhas do mapa principal
 #define MAX_GHOSTS 1
 #define INTERVAL 150000
+#define UP_DIRECTION 1
+#define DOWN_DIRECTION 2
+#define RIGHT_DIRECTION 3
+#define LEFT_DIRECTION 4
+
 #include <stdio.h>
 #include <ncurses.h>
 void config(void);
 void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]);
 void timer_handler();
 void config_timer();
+void play_level_one(void);
+void show_menu(void);
 
 struct moving_element {
   int x, y, last_x, last_y;
-  int current_direction;
   int state;
   int representation;
+  int current_direction;
   /*
     1 - cima
     2 - baixo

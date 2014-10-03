@@ -6,49 +6,49 @@
 #include <ncurses.h>
 #include <unistd.h>
 
-void print_char(WINDOW *w, struct moving_element* position, int c){
+void print_char(WINDOW *w, struct moving_element* position){
   mvwaddch(w, position->last_y, position->last_x, ' ');
-  mvwaddch(w, position->y, position->x, c);
+  mvwaddch(w, position->y, position->x, position->representation);
 }
 
-void move_right(WINDOW *w, struct moving_element* position, int c){
+void move_right(WINDOW *w, struct moving_element* position){
   position->last_x = position->x;
   position->last_y = position->y;
   if (position->x < MAX_X - 1) {
     position->x++;
   }
-  print_char(w, position, c);
-  position->current_direction = 3;
+  print_char(w, position);
+  position->current_direction = RIGHT_DIRECTION;
 }
 
-void move_left(WINDOW *w, struct moving_element* position, int c){
+void move_left(WINDOW *w, struct moving_element* position){
   position->last_x = position->x;
   position->last_y = position->y;
   if (position->x > 0) {
     position->x--;
   }
-  print_char(w, position, c);
-  position->current_direction = 4;
+  print_char(w, position);
+  position->current_direction = LEFT_DIRECTION;
 }
 
-void move_up(WINDOW *w, struct moving_element* position, int c){
+void move_up(WINDOW *w, struct moving_element* position){
   position->last_x = position->x;
   position->last_y = position->y;
   if (position->y > 0) {
     position->y--;
   }
-  print_char(w, position, c);
-  position->current_direction = 1;
+  print_char(w, position);
+  position->current_direction = UP_DIRECTION;
 }
 
-void move_down(WINDOW *w, struct moving_element* position, int c){
+void move_down(WINDOW *w, struct moving_element* position){
   position->last_x = position->x;
   position->last_y = position->y;
   if (position->y < MAX_Y - 1) {
     position->y++;
   }
-  print_char(w, position, c);
-  position->current_direction = 2;
+  print_char(w, position);
+  position->current_direction = DOWN_DIRECTION;
 }
 
 //@TODO fazer algo menos tosco
@@ -74,60 +74,60 @@ int can_go_right(WINDOW *w, struct moving_element* m){
 
 void move_ghost(WINDOW *w, struct ghost* gh){
   switch (gh->position.current_direction) {
-    case 1: //cima
+    case UP_DIRECTION: //cima
       if (can_go_up(w, &gh->position)) {
-        move_up(w, &gh->position, gh->position.representation);
+        move_up(w, &gh->position);
       }
       else if (can_go_down(w, &gh->position)) {
-        move_down(w, &gh->position, gh->position.representation);
+        move_down(w, &gh->position);
       }
       else if (can_go_right(w, &gh->position)) {
-        move_right(w, &gh->position, gh->position.representation);
+        move_right(w, &gh->position);
       }
       else if (can_go_left(w, &gh->position)) {
-        move_left(w, &gh->position, gh->position.representation);
+        move_left(w, &gh->position);
       }
       break;
-    case 2: //baixo
+    case DOWN_DIRECTION: //baixo
       if (can_go_down(w, &gh->position)) {
-        move_down(w, &gh->position, gh->position.representation);
+        move_down(w, &gh->position);
       }
       else if (can_go_up(w, &gh->position)) {
-        move_up(w, &gh->position, gh->position.representation);
+        move_up(w, &gh->position);
       }
       else if (can_go_right(w, &gh->position)) {
-        move_right(w, &gh->position, gh->position.representation);
+        move_right(w, &gh->position);
       }
       else if (can_go_left(w, &gh->position)) {
-        move_left(w, &gh->position, gh->position.representation);
+        move_left(w, &gh->position);
       }
       break;
-    case 3: //direita
+    case RIGHT_DIRECTION: //direita
       if (can_go_right(w, &gh->position)) {
-        move_right(w, &gh->position, gh->position.representation);
+        move_right(w, &gh->position);
       }
       else if (can_go_down(w, &gh->position)) {
-        move_down(w, &gh->position, gh->position.representation);
+        move_down(w, &gh->position);
       }
       else if (can_go_up(w, &gh->position)) {
-        move_up(w, &gh->position, gh->position.representation);
+        move_up(w, &gh->position);
       }
       else if (can_go_left(w, &gh->position)) {
-        move_left(w, &gh->position, gh->position.representation);
+        move_left(w, &gh->position);
       }
       break;
-    case 4: //esquerda
+    case LEFT_DIRECTION: //esquerda
       if (can_go_left(w, &gh->position)) {
-        move_left(w, &gh->position, gh->position.representation);
+        move_left(w, &gh->position);
       }
       else if (can_go_down(w, &gh->position)) {
-        move_down(w, &gh->position, gh->position.representation);
+        move_down(w, &gh->position);
       }
       else if (can_go_right(w, &gh->position)) {
-        move_right(w, &gh->position, gh->position.representation);
+        move_right(w, &gh->position);
       }
       else if (can_go_up(w, &gh->position)) {
-        move_up(w, &gh->position, gh->position.representation);
+        move_up(w, &gh->position);
       }
       break;
   }
@@ -135,28 +135,27 @@ void move_ghost(WINDOW *w, struct ghost* gh){
 
 void shoot(WINDOW *w, struct shot* s){
   switch (s->position.current_direction) {
-    case 1:
+    case UP_DIRECTION:
       if (can_go_up(w, &s->position)) {
-        move_up(w, &s->position, s->position.representation);
+        move_up(w, &s->position);
       }
       break;
-    case 2:
-      if (can_go_right(w, &s->position)) {
-        move_right(w, &s->position, s->position.representation);
-      }
-      break;
-    case 3:
+    case DOWN_DIRECTION:
       if (can_go_down(w, &s->position)) {
-        move_down(w, &s->position, s->position.representation);
+        move_down(w, &s->position);
       }
       break;
-    case 4:
+    case RIGHT_DIRECTION:
+      if (can_go_right(w, &s->position)) {
+        move_right(w, &s->position);
+      }
+      break;
+    case LEFT_DIRECTION:
       if (can_go_left(w, &s->position)) {
-        move_left(w, &s->position, s->position.representation);
+        move_left(w, &s->position);
       }
       break;
   }
-  
 }
 
 #endif
