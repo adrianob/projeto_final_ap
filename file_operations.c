@@ -30,6 +30,7 @@ void make_map(FILE *level, char p[MAX_Y][MAX_X]){
   rewind(level);
   buffer = calloc( 1, l_size + 1 );
   fread(buffer, l_size, 1, level);
+  cont = 0;
 
   //Atualiza a matriz, ignorando caracteres fora do padrão
   for(i = 0; i < MAX_Y; i++){
@@ -51,5 +52,36 @@ void make_map(FILE *level, char p[MAX_Y][MAX_X]){
       cont++;
     }
   }
+}
 
+//Salva o mapa atual em um .txt para continuar o jogo
+void write_map(char MAP[MAX_Y][MAX_X]){
+
+  char buffer[MAX_Y][MAX_X];
+
+  for(int i = 0; i < MAX_Y; i++){
+    for(int j = 0; j < MAX_X; j++){
+      switch(MAP[i][j]){
+
+        case '#': 
+                  buffer[i][j] = 'P';
+                  break;
+        case ' ': 
+                  buffer[i][j] = 'c';
+                  break;
+        default:  break;
+      }
+    }
+  }
+
+
+  FILE *cont_map;
+  cont_map = fopen("continue_level.txt", "wb");
+
+  for (int i=0; i < MAX_Y; i++){
+    for(int j = 0; j < MAX_X; j++){
+        fprintf(cont_map, "%c", buffer[i][j]);
+      }
+    fprintf(cont_map, "%s", "\n");
+  }
 }
