@@ -50,22 +50,21 @@ void play_level_one(void){
   while((ch = getch()) != KEY_F(1)){
     switch(ch){
       case KEY_RIGHT:
-        move_right(game_window, &md.position, md.position.representation);
+        move_right(game_window, &md.position);
         break;
       case KEY_LEFT:
-        move_left(game_window, &md.position, md.position.representation);
+        move_left(game_window, &md.position);
         break;
       case KEY_UP:
-        move_up(game_window, &md.position, md.position.representation);
+        move_up(game_window, &md.position);
         break;
       case KEY_DOWN:
-        move_down(game_window, &md.position, md.position.representation);
+        move_down(game_window, &md.position);
         break;
       case ' ':
         s.position.x = md.position.x;
         s.position.y = md.position.y;
         s.position.current_direction = md.position.current_direction;
-        shoot(game_window, &s);
         break;
     }
     if (ready_to_draw) {

@@ -5,6 +5,11 @@
 #define MAX_Y 23 //tamanho de linhas do mapa principal
 #define MAX_GHOSTS 1
 #define INTERVAL 150000
+#define UP_DIRECTION 1
+#define DOWN_DIRECTION 2
+#define RIGHT_DIRECTION 3
+#define LEFT_DIRECTION 4
+
 #include <stdio.h>
 #include <ncurses.h>
 void config(void);
