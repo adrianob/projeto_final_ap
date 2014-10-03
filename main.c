@@ -3,148 +3,108 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <ncurses.h>
-#include <unistd.h>
+#include <locale.h>
 #include "main.h"
 #include "movement.h"
+#include "file_operations.h"
 
 int ready_to_draw = 0;
 
 int main(int argc, const char *argv[]){
-  init();
-  WINDOW *game_window;
-  char MAP[MAX_X][MAX_Y];
-  int ch, i;
-  struct mr_do md;
-  struct ghost gh;
-  struct itimerval timer;
+  //configuracoes iniciais
+  config();
 
+  FILE *level_file;
+  level_file = load_level(1);
+  char MAP[MAX_Y][MAX_X];
+  make_map(level_file, MAP);
+
+  //cria a janela do jogo dentro da borda
+  WINDOW *border_window;
+  border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
+  WINDOW *game_window;
+  game_window = newwin(MAX_Y, MAX_X, 1, 1);
+  box(border_window, 0, 0);
+  draw_map(game_window, MAP);
   //configuracao do timer
+  config_timer();
+
+  struct mr_do md;
+  struct shot s;
+  struct ghost gh;
+  s.position.representation = '-';
+  gh.position.representation = ACS_CKBOARD;
+  md.position.representation = ACS_PI;
+  gh.position.x = gh.position.y = 0;
+  gh.position.current_direction = 3;
+  md.position.x = md.position.last_x = MAX_X / 2;
+  md.position.y = md.position.last_y = MAX_Y / 2;
+
+  int ch;
+  while((ch = getch()) != KEY_F(1)){
+    switch(ch){
+      case KEY_RIGHT:
+        move_right(game_window, &md.position, md.position.representation);
+        break;
+      case KEY_LEFT:
+        move_left(game_window, &md.position, md.position.representation);
+        break;
+      case KEY_UP:
+        move_up(game_window, &md.position, md.position.representation);
+        break;
+      case KEY_DOWN:
+        move_down(game_window, &md.position, md.position.representation);
+        break;
+      case ' ':
+        s.position.x = md.position.x;
+        s.position.y = md.position.y;
+        s.position.current_direction = md.position.current_direction;
+        shoot(game_window, &s);
+        break;
+    }
+    if (ready_to_draw) {
+      for (int i = 0; i < MAX_GHOSTS; i++) {
+        move_ghost(game_window, &gh.position);
+      }
+      shoot(game_window, &s);
+      ready_to_draw = 0;
+    }
+
+    wrefresh(border_window);
+    wrefresh(game_window);
+  }
+  endwin();
+  return 0;
+}
+
+void config(void){
+  initscr();			/* Start curses mode 		*/
+  cbreak();				/* Line buffering disabled	*/
+  setlocale(LC_ALL, "");
+  nodelay(stdscr, TRUE);
+  keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
+  noecho();			/* Don't echo() while we do getch */
+  curs_set(0);
+}
+
+void config_timer(void){
+  struct itimerval timer;
   timer.it_interval.tv_sec = 0;
   timer.it_interval.tv_usec = INTERVAL;//intervalo
   timer.it_value.tv_sec = 0;
   timer.it_value.tv_usec = INTERVAL;//tempo ate o primeiro sinal
   setitimer(ITIMER_REAL, &timer, 0);
   signal(SIGALRM, timer_handler);
-
-  game_window = newwin(MAX_Y, MAX_X, 1, 1);
-  gh.position.x = gh.position.y = 0;
-  gh.representation = 'g';
-  md.representation = 64;
-  md.position.x = md.last_x = MAX_X / 2;
-  md.position.y = md.last_y = MAX_Y / 2;
-  while((ch = getch()) != KEY_F(1)){
-    switch(ch){
-      case KEY_RIGHT:
-        move_right(&md.position);
-        break;
-      case KEY_LEFT:
-        move_left(&md.position);
-        break;
-      case KEY_UP:
-        move_up(&md.position);
-        break;
-      case KEY_DOWN:
-        move_down(&md.position);
-        break;
-    }
-    if (ready_to_draw) {
-      for (i = 0; i < MAX_GHOSTS; i++) {
-        mvwaddch(game_window, gh.position.y, gh.position.x, gh.representation);
-        move_right(&gh.position);
-      }
-      ready_to_draw = 0;
-    }
-    //move mr do
-    //@TODO retirar isso quando tivermos o mapa em forma de matriz
-    mvwaddch(game_window, md.last_y, md.last_x, ' ');//apaga a ultima posicao
-    mvwaddch(game_window, md.position.y, md.position.x, md.representation);
-    wrefresh(game_window);
-    md.last_x = md.position.x;
-    md.last_y = md.position.y;
-  }
-  endwin();
-  return 0;
-}
-
-//configuracoes iniciais
-void init(void){
-  initscr();			/* Start curses mode 		*/
-  cbreak();				/* Line buffering disabled	*/
-  nodelay(stdscr, TRUE);
-  keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
-  noecho();			/* Don't echo() while we do getch */
-  curs_set(0);
-  draw_borders();
-}
-
-//Carrega o arquivo de cenário inicial
-//@TODO tratar erros?
-FILE* load_level(int level){
-  FILE *level_file;
-
-  if(level == 1){
-    level_file = fopen("level1.txt", "r");
-  }else if(level == 2){
-    level_file = fopen("level2.txt", "r");
-  }else{
-    level_file = fopen("continua.txt","r");
-  }
-
-  return level_file;
-}
-
-//Gera o mapa de acordo com o arquivo de texto
-//@TODO substituir os caracteres pelos corretos e tratamento de erros
-void make_map(FILE *level, char *p){
-
-  long lSize;
-  char *buffer;
-  int i, j, cont;
-
-  //Aloca espaço na memória e lê o arquivo carregado
-  fseek(level,0L,SEEK_END);
-  lSize = ftell(level);
-  rewind(level);
-  buffer = calloc( 1, lSize+1 );
-  fread(buffer,lSize,1,level);
-
-  //Atualiza a matriz, ignorando caracteres fora do padrão
-  for(i = 0; i < MAX_Y; i++){
-    for(j = 0; j < MAX_X; j++){
-      while(buffer[cont] != '@' && buffer[cont] != '.'){
-        cont ++;
-      }
-      switch(buffer[cont]){
-
-      case '@': *p = 'E';
-                p++;
-                break;
-      case '.': *p = ' ';
-                p++;
-                break;
-      default: break;
-      }
-      cont++;
-    }
-  }
-
-}
-
-void draw_borders(void){
-  int i;
-  //bordas horizontais
-  for (i = 0; i < MAX_X + 1; i++) {
-    mvaddch(0, i, '-');
-    mvaddch(MAX_Y + 1, i, '-');
-  }
-
-  //bordas verticais
-  for (i = 0; i < MAX_Y + 1; i++) {
-    mvaddch(i, 0, '|');
-    mvaddch(i, MAX_X + 1, '|');
-  }
 }
 
 void timer_handler(){
   ready_to_draw = 1;
+}
+
+void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]){
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      mvwaddch(w, i, j, MAP[i][j]);
+    }
+  }
 }

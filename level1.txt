@@ -1,34 +1,24 @@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@..............................................................................@
-@..............................................................................@                      **********************************************
-@..............................................................................@                              APENAS ILUSTRANDO QUE O MAPA NÃO PRECISA
-@....................////..........................................................@                     ESTAR PERFEITAMENTE FORMATADO
-@..............................................................................@                       *********************************************
-@..............................................................................@
-@..............................................................................@
-@..............................................................................@
-@..............................................................................@
-@..............................................................................@
-@..............................................................................@                  :D
-@..............................................................................@
-@..............................................................................@
-@..............................................................................@
-@.......DESDE QUE EXISTA A QUANTIDADE CERTA DE CARACTERES VÁLIDOS.......................................................................@
-@..............................................................................@
-@..............................................................................@
-@..............................................................................@
-@..............................................................................@
-@..............................................................................@
-@..............................................................................@
-@............................................LIXO NO MEIO DO MAPA..................................@
-@..............................................................................@
-@..............................................................................@
-@......................SERÁ IGNORADO PELA FUNÇÃO........................................................@
-@..............................................................................@
-@......................................................
-MESMO QUE HAJA QUEBRA DE LINHA.....
-.....
-..........
-....@
-@..............................................................................@
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+ccccccccccccccccccccccccccccPccccccccccccccccccccccccccccccc
+PPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPccPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPccPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPccPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPcPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
