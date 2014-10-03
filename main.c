@@ -3,21 +3,26 @@
 #include <signal.h>
 #include <sys/time.h>
 #include <ncurses.h>
+#include <menu.h>
 #include <locale.h>
 #include "main.h"
 #include "movement.h"
 #include "file_operations.h"
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 int ready_to_draw = 0;
 
 int main(int argc, const char *argv[]){
   //configuracoes iniciais
   config();
+  show_menu();
 
-  FILE *level_file;
-  level_file = load_level(1);
+  return 0;
+}
+
+void play_level_one(void){
   char MAP[MAX_Y][MAX_X];
-  make_map(level_file, MAP);
+  make_map(load_level(1), MAP);
 
   //cria a janela do jogo dentro da borda
   WINDOW *border_window;
@@ -26,17 +31,18 @@ int main(int argc, const char *argv[]){
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
   box(border_window, 0, 0);
   draw_map(game_window, MAP);
+
   //configuracao do timer
   config_timer();
 
-  struct mr_do md;
   struct shot s;
+  s.position.representation = '*';
   struct ghost gh;
-  s.position.representation = '-';
   gh.position.representation = ACS_CKBOARD;
-  md.position.representation = ACS_PI;
   gh.position.x = gh.position.y = 0;
   gh.position.current_direction = 3;
+  struct mr_do md;
+  md.position.representation = ACS_PI;
   md.position.x = md.position.last_x = MAX_X / 2;
   md.position.y = md.position.last_y = MAX_Y / 2;
 
@@ -74,7 +80,54 @@ int main(int argc, const char *argv[]){
     wrefresh(game_window);
   }
   endwin();
-  return 0;
+}
+
+void show_menu(void){
+  char *choices[] = {
+                    "Fase 1",
+                    "Fase 2",
+                    "High Scores",
+                    "Sair"
+  };
+
+  ITEM **menu_items;
+  MENU *game_menu;
+  int n_choices = ARRAY_SIZE(choices);
+  menu_items = (ITEM **)calloc(n_choices + 1, sizeof(ITEM *));
+
+  for(int i = 0; i < n_choices; ++i){
+    menu_items[i] = new_item(choices[i], "");
+  }
+
+  set_item_userptr(menu_items[0], play_level_one);//nivel 1
+  set_item_userptr(menu_items[3], exit);//sair
+
+  game_menu = new_menu((ITEM **)menu_items);
+  post_menu(game_menu);
+  refresh();
+
+  int c;
+  while((c = getch()) != KEY_F(1)){
+    switch(c){
+      case KEY_DOWN:
+        menu_driver(game_menu, REQ_DOWN_ITEM);
+        break;
+      case KEY_UP:
+        menu_driver(game_menu, REQ_UP_ITEM);
+        break;
+      case 10: //enter
+        {
+        ITEM *cur;
+				void (*p)(char *);
+
+        cur = current_item(game_menu);
+        p = item_userptr(cur);
+        p((char *)item_name(cur));
+        pos_menu_cursor(game_menu);
+        }
+        break;
+    }
+  }
 }
 
 void config(void){

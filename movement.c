@@ -141,13 +141,13 @@ void shoot(WINDOW *w, struct shot* s){
       }
       break;
     case 2:
-      if (can_go_right(w, &s->position)) {
-        move_right(w, &s->position, s->position.representation);
+      if (can_go_down(w, &s->position)) {
+        move_down(w, &s->position, s->position.representation);
       }
       break;
     case 3:
-      if (can_go_down(w, &s->position)) {
-        move_down(w, &s->position, s->position.representation);
+      if (can_go_right(w, &s->position)) {
+        move_right(w, &s->position, s->position.representation);
       }
       break;
     case 4:
@@ -156,7 +156,6 @@ void shoot(WINDOW *w, struct shot* s){
       }
       break;
   }
-  
 }
 
 #endif

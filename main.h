@@ -11,12 +11,14 @@ void config(void);
 void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]);
 void timer_handler();
 void config_timer();
+void play_level_one(void);
+void show_menu(void);
 
 struct moving_element {
   int x, y, last_x, last_y;
-  int current_direction;
   int state;
   int representation;
+  int current_direction;
   /*
     1 - cima
     2 - baixo
