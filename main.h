@@ -23,7 +23,7 @@ struct position {
   int x, y, last_x, last_y;
 };
 
-struct sprite {
+typedef struct {
   struct position position;
   int state;//vivo ou morto
   int representation;
@@ -34,18 +34,18 @@ struct sprite {
     3 - direita
     4 - esquerda
    * */
-};
+} sprite;
 
 struct mr_do {
-  struct sprite sprite;
+  sprite sprite;
 };
 
 struct ghost {
-  struct sprite sprite;
+  sprite sprite;
 };
 
 struct shot {
-  struct sprite sprite;
+  sprite sprite;
 };
 
 #endif
