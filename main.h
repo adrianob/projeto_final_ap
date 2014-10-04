@@ -18,6 +18,7 @@ void timer_handler(void);
 void config_timer(void);
 void play_level_one(void);
 void show_menu(void);
+struct position find_mr_do(WINDOW *w, char MAP[MAX_Y][MAX_X]);
 
 struct position {
   int x, y, last_x, last_y;

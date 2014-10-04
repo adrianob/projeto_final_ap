@@ -42,9 +42,8 @@ void play_level_one(void){
   gh.sprite.position.x = gh.sprite.position.y = 0;
   gh.sprite.direction = 3;
   struct mr_do md;
+  md.sprite.position = find_mr_do(game_window, MAP);
   md.sprite.representation = ACS_PI;
-  md.sprite.position.x = md.sprite.position.last_x = MAX_X / 2;
-  md.sprite.position.y = md.sprite.position.last_y = MAX_Y / 2;
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
@@ -160,4 +159,17 @@ void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]){
       mvwaddch(w, i, j, MAP[i][j]);
     }
   }
+}
+
+struct position find_mr_do(WINDOW *w, char MAP[MAX_Y][MAX_X]){
+  struct position position;
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      if (MAP[i][j] == 'd') {
+        position.x = j;
+        position.y = i;
+      }
+    }
+  }
+  return position;
 }
