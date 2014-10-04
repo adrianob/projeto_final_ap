@@ -14,8 +14,8 @@
 #include <ncurses.h>
 void config(void);
 void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]);
-void timer_handler();
-void config_timer();
+void timer_handler(void);
+void config_timer(void);
 void play_level_one(void);
 void show_menu(void);
 

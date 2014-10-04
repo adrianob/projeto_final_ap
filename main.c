@@ -150,7 +150,7 @@ void config_timer(void){
   signal(SIGALRM, timer_handler);
 }
 
-void timer_handler(){
+void timer_handler(void){
   ready_to_draw = 1;
 }
 

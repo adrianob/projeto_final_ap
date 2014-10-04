@@ -1,6 +1,3 @@
-#ifndef MR_DO_MOVEMENT
-#define MR_DO_MOVEMENT
-
 #include "main.h"
 #include "movement.h"
 #include <ncurses.h>
@@ -109,14 +106,12 @@ void move_ghost(WINDOW *w, struct ghost* gh){
   }
 }
 
+void shoot(WINDOW *w, struct shot* s){
+  move_if_possible(w, &s->sprite);
+}
+
 void move_if_possible(WINDOW *w, sprite* s){
   if (can_go_to_direction(w, &s->position, s->direction)) {
     move_sprite(w, s, s->direction);
   }
 }
-
-void shoot(WINDOW *w, struct shot* s){
-  move_if_possible(w, &s->sprite);
-}
-
-#endif
