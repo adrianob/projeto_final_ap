@@ -2,6 +2,7 @@
 #include "movement.h"
 #include <ncurses.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 void print_char(WINDOW *w, sprite* sprite){
   mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
@@ -58,52 +59,15 @@ int can_go_to_direction(WINDOW *w, struct position* p, int direction){
 }
 
 void move_ghost(WINDOW *w, struct ghost* gh){
-    switch (gh->sprite.direction) {
-    case UP_DIRECTION: //cima
-      {
-        int directions[4] = {UP_DIRECTION, DOWN_DIRECTION, LEFT_DIRECTION, RIGHT_DIRECTION};
-        for (int i = 0; i < 4; i++) {
-          if (can_go_to_direction(w, &gh->sprite.position, directions[i])) {
-            move_sprite(w, &gh->sprite, directions[i]);
-            break;
-          }
-        }
-      }
-      break;
-    case DOWN_DIRECTION: //baixo
-      {
-        int directions[4] = {DOWN_DIRECTION, UP_DIRECTION, LEFT_DIRECTION, RIGHT_DIRECTION};
-        for (int i = 0; i < 4; i++) {
-          if (can_go_to_direction(w, &gh->sprite.position, directions[i])) {
-            move_sprite(w, &gh->sprite, directions[i]);
-            break;
-          }
-        }
-      }
-      break;
-    case RIGHT_DIRECTION: //direita
-      {
-        int directions[4] = {RIGHT_DIRECTION, DOWN_DIRECTION, LEFT_DIRECTION, UP_DIRECTION};
-        for (int i = 0; i < 4; i++) {
-          if (can_go_to_direction(w, &gh->sprite.position, directions[i])) {
-            move_sprite(w, &gh->sprite, directions[i]);
-            break;
-          }
-        }
-      }
-      break;
-    case LEFT_DIRECTION: //esquerda
-      {
-          int directions[4] = {LEFT_DIRECTION, DOWN_DIRECTION, UP_DIRECTION, RIGHT_DIRECTION};
-        for (int i = 0; i < 4; i++) {
-          if (can_go_to_direction(w, &gh->sprite.position, directions[i])) {
-            move_sprite(w, &gh->sprite, directions[i]);
-            break;
-          }
-        }
-      }
-      break;
-  }
+
+  if (!can_go_to_direction(w, &gh->sprite.position, gh->sprite.direction)){
+    int d = rand() % 4 + 1;
+    while(!can_go_to_direction(w, &gh->sprite.position, d))
+      d = rand() % 4 + 1;
+
+    move_sprite(w, &gh->sprite, d);
+    }else
+      move_sprite(w, &gh->sprite, gh->sprite.direction);
 }
 
 void shoot(WINDOW *w, struct shot* s){

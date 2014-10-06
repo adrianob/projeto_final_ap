@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/time.h>
+#include <time.h>
 #include <ncurses.h>
 #include <menu.h>
 #include <locale.h>
@@ -130,6 +131,7 @@ void show_menu(void){
 }
 
 void config(void){
+  srand(time(NULL));
   initscr();			/* Start curses mode 		*/
   cbreak();				/* Line buffering disabled	*/
   setlocale(LC_ALL, "");
