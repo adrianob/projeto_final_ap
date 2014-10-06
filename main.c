@@ -42,40 +42,53 @@ void play_level_one(void){
   gh.sprite.representation = ACS_CKBOARD;
   gh.sprite.position.x = gh.sprite.position.y = 0;
   gh.sprite.direction = 3;
+  gh.sprite.state = 1;
   struct mr_do md;
   md.sprite.position = find_mr_do(game_window, MAP);
   md.sprite.representation = ACS_PI;
+  md.sprite.state = 1;
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
-    switch(ch){
-      case KEY_RIGHT:
-        move_sprite(game_window, &md.sprite, RIGHT_DIRECTION);
-        break;
-      case KEY_LEFT:
-        move_sprite(game_window, &md.sprite, LEFT_DIRECTION);
-        break;
-      case KEY_UP:
-        move_sprite(game_window, &md.sprite, UP_DIRECTION);
-        break;
-      case KEY_DOWN:
-        move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
-        break;
-      case ' ':
-        s.sprite.position.x = md.sprite.position.x;
-        s.sprite.position.y = md.sprite.position.y;
-        s.sprite.direction = md.sprite.direction;
-        break;
+    if(md.sprite.state == 1){
+      switch(ch){
+        case KEY_RIGHT:
+          move_sprite(game_window, &md.sprite, RIGHT_DIRECTION);
+          break;
+        case KEY_LEFT:
+          move_sprite(game_window, &md.sprite, LEFT_DIRECTION);
+          break;
+        case KEY_UP:
+          move_sprite(game_window, &md.sprite, UP_DIRECTION);
+          break;
+        case KEY_DOWN:
+          move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
+          break;
+        case ' ':
+          if (s.sprite.state == 0){
+            s.sprite.state = 1;
+            if (md.sprite.direction == 1 || md.sprite.direction == 2)
+              s.sprite.representation = '|';
+            else
+              s.sprite.representation = '-';
+            s.sprite.position.x = md.sprite.position.x + (md.sprite.position.x - md.sprite.position.last_x);
+            s.sprite.position.y = md.sprite.position.y + (md.sprite.position.y - md.sprite.position.last_y);
+            s.sprite.direction = md.sprite.direction;
+          }
+          break;
+      }
     }
     if (ready_to_draw) {
+      check_collision(game_window, &md, &gh, &s);
       for (int i = 0; i < MAX_GHOSTS; i++) {
+        if(gh.sprite.state == 1)
         move_ghost(game_window, &gh);
       }
       //@TODO transformar isso numa flag que mantem o tiro andando ate acertar alguma coisa
       shoot(game_window, &s);
       ready_to_draw = 0;
     }
-
+    check_collision(game_window, &md, &gh, &s);
     wrefresh(border_window);
     wrefresh(game_window);
   }

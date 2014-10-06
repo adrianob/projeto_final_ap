@@ -59,7 +59,6 @@ int can_go_to_direction(WINDOW *w, struct position* p, int direction){
 }
 
 void move_ghost(WINDOW *w, struct ghost* gh){
-
   if (!can_go_to_direction(w, &gh->sprite.position, gh->sprite.direction)){
     int d = rand() % 4 + 1;
     while(!can_go_to_direction(w, &gh->sprite.position, d))
@@ -77,5 +76,32 @@ void shoot(WINDOW *w, struct shot* s){
 void move_if_possible(WINDOW *w, sprite* s){
   if (can_go_to_direction(w, &s->position, s->direction)) {
     move_sprite(w, s, s->direction);
+  }else{
+    s->state = 0;
+    mvwaddch(w, s->position.y, s->position.x, ' ');
+    s->position.x = -2;
+    s->position.y = -2;
+  }
+}
+
+void check_collision(WINDOW *w, struct mr_do* md, struct ghost* gh, struct shot* s){
+
+  int mr_do[2] = {md->sprite.position.x,md->sprite.position.y};
+  int ghost[2] = {gh->sprite.position.x,gh->sprite.position.y};
+  int ghost_last[2] = {gh->sprite.position.last_x,gh->sprite.position.last_y};
+  int shot[2]  = {s->sprite.position.x,s->sprite.position.y};
+  int shot_last[2]  = {s->sprite.position.last_x,s->sprite.position.last_y};
+
+
+  if (mr_do[0] == ghost[0] && mr_do[1] == ghost[1])
+    md->sprite.state = 0;
+  if ((shot[0] == ghost[0] && shot[1] == ghost[1]) || ((shot_last[0] == ghost[0] && shot_last[1] == ghost[1]) && (shot[0] == ghost_last[0] && shot[1] == ghost_last[1]))){
+    gh->sprite.state = 0;
+    gh->sprite.position.x = -1;
+    gh->sprite.position.y = -1;
+    s->sprite.state = 0;
+    mvwaddch(w, s->sprite.position.y, s->sprite.position.x, ' ');
+    s->sprite.position.x = -2;
+    s->sprite.position.y = -2;
   }
 }
