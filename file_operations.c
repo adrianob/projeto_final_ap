@@ -53,6 +53,9 @@ void make_map(FILE *level, int p[MAX_Y][MAX_X]){
         case 'n': 
                   p[i][j] = '&';
                   break;
+        case 'f': 
+                  p[i][j] = 'f';
+                  break;
         default: break;
       }
       cont++;

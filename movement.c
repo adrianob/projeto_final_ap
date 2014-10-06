@@ -73,12 +73,15 @@ void move_ghost(WINDOW *w, struct ghost* gh){
   }
 }
 
-void shoot(WINDOW *w, struct shot* s){
-  move_if_possible(w, &s->sprite);
-}
-
-void move_if_possible(WINDOW *w, sprite* s){
-  if (can_go_to_direction(w, &s->position, s->direction)) {
-    move_sprite(w, s, s->direction);
+void shoot(WINDOW *w, struct shot* s, struct game_state *game_state){
+  if (can_go_to_direction(w, &s->sprite.position, s->sprite.direction)) {
+    move_sprite(w, &s->sprite, s->sprite.direction);
+  }
+  else{
+    game_state->shooting = 0;
+    game_state->can_shoot= 1;
+    s->sprite.state = 0;
+    s->sprite.representation = ' ';
+    print_char(w, &s->sprite);
   }
 }

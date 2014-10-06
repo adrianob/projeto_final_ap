@@ -39,6 +39,10 @@ void play_level_one(void){
   //configuracao do timer
   config_timer();
 
+  struct game_state game_state;
+  game_state.score = 0;
+  game_state.can_shoot = 1;
+  game_state.shooting = 0;
   struct position nest_position = find_char(game_window, MAP, '&');
   sprite nest;
   nest.position = nest_position;
@@ -73,8 +77,14 @@ void play_level_one(void){
         move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
         break;
       case ' ':
-        s.sprite.position = md.sprite.position;
-        s.sprite.direction = md.sprite.direction;
+        if (game_state.can_shoot) {
+          game_state.shooting = 1;
+          game_state.can_shoot= 0;
+          //@TODO tornar isso desnecessario
+          s.sprite.representation = '*';
+          s.sprite.position = md.sprite.position;
+          s.sprite.direction = md.sprite.direction;
+        }
         break;
     }
     if (timer_ready) {
@@ -83,12 +93,14 @@ void play_level_one(void){
         move_ghost(game_window, &ghosts[i]);
       }
       //@TODO transformar isso numa flag que mantem o tiro andando ate acertar alguma coisa
-      shoot(game_window, &s);
-      timer_ready = 0;
+      if (game_state.shooting) {
+        shoot(game_window, &s, &game_state);
+      }
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
         ready_to_create = 1; 
         ghost_timer = 0;
       }
+      timer_ready = 0;
     }
 
     if (ready_to_create && created_ghosts < MAX_GHOSTS) {

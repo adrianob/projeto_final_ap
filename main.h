@@ -25,6 +25,10 @@ struct position {
   int x, y, last_x, last_y;
 };
 
+struct game_state {
+  int score, can_shoot, shooting;
+};
+
 typedef struct {
   struct position position;
   int state;//vivo ou morto
