@@ -14,16 +14,17 @@
 #include <ncurses.h>
 void config(void);
 void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]);
-void timer_handler();
-void config_timer();
+void timer_handler(void);
+void config_timer(void);
 void play_level_one(void);
 void show_menu(void);
+struct position find_mr_do(WINDOW *w, char MAP[MAX_Y][MAX_X]);
 
 struct position {
   int x, y, last_x, last_y;
 };
 
-struct sprite {
+typedef struct {
   struct position position;
   int state;//vivo ou morto
   int representation;
@@ -34,18 +35,18 @@ struct sprite {
     3 - direita
     4 - esquerda
    * */
-};
+} sprite;
 
 struct mr_do {
-  struct sprite sprite;
+  sprite sprite;
 };
 
 struct ghost {
-  struct sprite sprite;
+  sprite sprite;
 };
 
 struct shot {
-  struct sprite sprite;
+  sprite sprite;
 };
 
 #endif

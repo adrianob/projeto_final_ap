@@ -35,17 +35,20 @@ void make_map(FILE *level, char p[MAX_Y][MAX_X]){
   //Atualiza a matriz, ignorando caracteres fora do padrão
   for(i = 0; i < MAX_Y; i++){
     for(j = 0; j < MAX_X; j++){
-      while(buffer[cont] != 'P' && buffer[cont] != 'c'){
+      while(buffer[cont] != 'p' && buffer[cont] != 'v' && buffer[cont] != 'd'){
         cont ++;
       }
 
       switch(buffer[cont]){
 
-        case 'P': 
+        case 'p': 
                   p[i][j] = '#';
                   break;
-        case 'c': 
+        case 'v': 
                   p[i][j] = ' ';
+                  break;
+        case 'd': 
+                  p[i][j] = 'd';
                   break;
         default: break;
       }
@@ -64,10 +67,10 @@ void write_map(char MAP[MAX_Y][MAX_X]){
       switch(MAP[i][j]){
 
         case '#': 
-                  buffer[i][j] = 'P';
+                  buffer[i][j] = 'p';
                   break;
         case ' ': 
-                  buffer[i][j] = 'c';
+                  buffer[i][j] = 'v';
                   break;
         default:  break;
       }
