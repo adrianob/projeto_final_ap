@@ -18,7 +18,7 @@ FILE* load_level(int level){
 
 //Gera o mapa de acordo com o arquivo de texto
 //@TODO substituir os caracteres pelos corretos e tratamento de erros
-void make_map(FILE *level, char p[MAX_Y][MAX_X]){
+void make_map(FILE *level, int p[MAX_Y][MAX_X]){
 
   long l_size;
   char *buffer;
@@ -35,7 +35,7 @@ void make_map(FILE *level, char p[MAX_Y][MAX_X]){
   //Atualiza a matriz, ignorando caracteres fora do padrão
   for(i = 0; i < MAX_Y; i++){
     for(j = 0; j < MAX_X; j++){
-      while(buffer[cont] != 'p' && buffer[cont] != 'v' && buffer[cont] != 'd'){
+      while(buffer[cont] == '\n'){
         cont ++;
       }
 
@@ -48,7 +48,13 @@ void make_map(FILE *level, char p[MAX_Y][MAX_X]){
                   p[i][j] = ' ';
                   break;
         case 'd': 
-                  p[i][j] = 'd';
+                  p[i][j] = ACS_PI;
+                  break;
+        case 'n': 
+                  p[i][j] = '&';
+                  break;
+        case 'f': 
+                  p[i][j] = 'f';
                   break;
         default: break;
       }
@@ -58,7 +64,7 @@ void make_map(FILE *level, char p[MAX_Y][MAX_X]){
 }
 
 //Salva o mapa atual em um .txt para continuar o jogo
-void write_map(char MAP[MAX_Y][MAX_X]){
+void write_map(int MAP[MAX_Y][MAX_X]){
 
   char buffer[MAX_Y][MAX_X];
 

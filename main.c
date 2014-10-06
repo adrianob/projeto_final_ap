@@ -11,7 +11,7 @@
 #include "file_operations.h"
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
-int ready_to_draw = 0;
+int timer_ready = 0;
 
 int main(int argc, const char *argv[]){
   //configuracoes iniciais
@@ -22,8 +22,11 @@ int main(int argc, const char *argv[]){
 }
 
 void play_level_one(void){
-  char MAP[MAX_Y][MAX_X];
+  int MAP[MAX_Y][MAX_X];
   make_map(load_level(1), MAP);
+  unsigned int created_ghosts = 0;
+  unsigned int ghost_timer = 0;
+  int ready_to_create = 1;
 
   //cria a janela do jogo dentro da borda
   WINDOW *border_window;
@@ -38,13 +41,21 @@ void play_level_one(void){
 
   struct shot s;
   s.sprite.representation = '*';
-  struct ghost gh;
-  gh.sprite.representation = ACS_CKBOARD;
-  gh.sprite.position.x = gh.sprite.position.y = 0;
-  gh.sprite.direction = 3;
-  gh.sprite.state = 1;
+  s.sprite.state = 0;
+  struct position nest_position = find_char(game_window, MAP, '&');
+  sprite nest;
+  nest.position = nest_position;
+  nest.representation = '&';
+  struct ghost ghosts[MAX_GHOSTS];
+  //cria fantasmas
+  for (int i = 0; i < MAX_GHOSTS; i++) {
+    ghosts[i].sprite.representation = ACS_CKBOARD;
+    ghosts[i].sprite.position = nest_position;
+    ghosts[i].sprite.direction = 3;
+    ghosts[i].sprite.state = 0;
+  }
   struct mr_do md;
-  md.sprite.position = find_mr_do(game_window, MAP);
+  md.sprite.position = find_char(game_window, MAP, ACS_PI);
   md.sprite.representation = ACS_PI;
   md.sprite.state = 1;
 
@@ -65,12 +76,9 @@ void play_level_one(void){
           move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
           break;
         case ' ':
-          if (s.sprite.state == 0){
+          if (!s.sprite.state){
             s.sprite.state = 1;
-            if (md.sprite.direction == 1 || md.sprite.direction == 2)
-              s.sprite.representation = '|';
-            else
-              s.sprite.representation = '-';
+            s.sprite.representation = '*';
             s.sprite.position.x = md.sprite.position.x + (md.sprite.position.x - md.sprite.position.last_x);
             s.sprite.position.y = md.sprite.position.y + (md.sprite.position.y - md.sprite.position.last_y);
             s.sprite.direction = md.sprite.direction;
@@ -78,17 +86,35 @@ void play_level_one(void){
           break;
       }
     }
-    if (ready_to_draw) {
-      check_collision(game_window, &md, &gh, &s);
+    if (timer_ready) {
+      ghost_timer++;
       for (int i = 0; i < MAX_GHOSTS; i++) {
-        if(gh.sprite.state == 1)
-        move_ghost(game_window, &gh);
+        check_collision(game_window, &md, &ghosts[i], &s);
+        if(ghosts[i].sprite.state){
+          move_ghost(game_window, &ghosts[i]);
+        }
+      }
+      if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
+        ready_to_create = 1; 
+        ghost_timer = 0;
       }
       //@TODO transformar isso numa flag que mantem o tiro andando ate acertar alguma coisa
       shoot(game_window, &s);
-      ready_to_draw = 0;
+      timer_ready = 0;
     }
-    check_collision(game_window, &md, &gh, &s);
+
+    if (ready_to_create && created_ghosts < MAX_GHOSTS) {
+      ghosts[created_ghosts].sprite.state = 1;
+      created_ghosts++;
+      ready_to_create = 0;
+    }
+    for (int i = 0; i < MAX_GHOSTS; i++) {
+      check_collision(game_window, &md, &ghosts[i], &s);
+    }
+    print_char(game_window, &nest);
+    if (md.sprite.state) {
+      print_char(game_window, &md.sprite);
+    }
     wrefresh(border_window);
     wrefresh(game_window);
   }
@@ -164,11 +190,11 @@ void config_timer(void){
   signal(SIGALRM, timer_handler);
 }
 
-void timer_handler(void){
-  ready_to_draw = 1;
+void timer_handler(int i){
+  timer_ready = 1;
 }
 
-void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]){
+void draw_map(WINDOW *w, int MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
       mvwaddch(w, i, j, MAP[i][j]);
@@ -176,11 +202,11 @@ void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]){
   }
 }
 
-struct position find_mr_do(WINDOW *w, char MAP[MAX_Y][MAX_X]){
+struct position find_char(WINDOW *w, int MAP[MAX_Y][MAX_X], int ch){
   struct position position;
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
-      if (MAP[i][j] == 'd') {
+      if (MAP[i][j] == ch) {
         position.x = j;
         position.y = i;
       }

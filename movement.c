@@ -92,9 +92,9 @@ void check_collision(WINDOW *w, struct mr_do* md, struct ghost* gh, struct shot*
   int shot[2]  = {s->sprite.position.x,s->sprite.position.y};
   int shot_last[2]  = {s->sprite.position.last_x,s->sprite.position.last_y};
 
-
-  if (mr_do[0] == ghost[0] && mr_do[1] == ghost[1])
+  if (mr_do[0] == ghost[0] && mr_do[1] == ghost[1]){
     md->sprite.state = 0;
+  }
   if ((shot[0] == ghost[0] && shot[1] == ghost[1]) || ((shot_last[0] == ghost[0] && shot_last[1] == ghost[1]) && (shot[0] == ghost_last[0] && shot[1] == ghost_last[1]))){
     gh->sprite.state = 0;
     gh->sprite.position.x = -1;
