@@ -39,9 +39,9 @@ void play_level_one(void){
   //configuracao do timer
   config_timer();
 
-  struct shot s;
-  s.sprite.representation = '*';
-  s.sprite.state = 0;
+  struct shot shot;
+  shot.sprite.representation = '*';
+  shot.sprite.state = 0;
   struct position nest_position = find_char(game_window, MAP, '&');
   sprite nest;
   nest.position = nest_position;
@@ -76,12 +76,10 @@ void play_level_one(void){
           move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
           break;
         case ' ':
-          if (!s.sprite.state){
-            s.sprite.state = 1;
-            s.sprite.representation = '*';
-            s.sprite.position.x = md.sprite.position.x + (md.sprite.position.x - md.sprite.position.last_x);
-            s.sprite.position.y = md.sprite.position.y + (md.sprite.position.y - md.sprite.position.last_y);
-            s.sprite.direction = md.sprite.direction;
+          if (!shot.sprite.state){
+            shot.sprite.state = 1;
+            shot.sprite.position = md.sprite.position;
+            shot.sprite.direction = md.sprite.direction;
           }
           break;
       }
@@ -89,17 +87,20 @@ void play_level_one(void){
     if (timer_ready) {
       ghost_timer++;
       for (int i = 0; i < MAX_GHOSTS; i++) {
-        check_collision(game_window, &md, &ghosts[i], &s);
         if(ghosts[i].sprite.state){
           move_ghost(game_window, &ghosts[i]);
         }
       }
+
+      //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
-        ready_to_create = 1; 
+        ready_to_create = 1;
         ghost_timer = 0;
       }
-      //@TODO transformar isso numa flag que mantem o tiro andando ate acertar alguma coisa
-      shoot(game_window, &s);
+
+      if(shot.sprite.state){
+        shoot(game_window, &shot);
+      }
       timer_ready = 0;
     }
 
@@ -108,9 +109,12 @@ void play_level_one(void){
       created_ghosts++;
       ready_to_create = 0;
     }
+
     for (int i = 0; i < MAX_GHOSTS; i++) {
-      check_collision(game_window, &md, &ghosts[i], &s);
+      check_collision(game_window, &ghosts[i].sprite, &md.sprite);
+      check_shot_collision(game_window, &shot.sprite, &ghosts[i].sprite);
     }
+
     print_char(game_window, &nest);
     if (md.sprite.state) {
       print_char(game_window, &md.sprite);
@@ -124,7 +128,7 @@ void play_level_one(void){
 void show_menu(void){
   char *choices[] = {
                     "Fase 1",
-                    "Fase 2",
+                    "Continua",
                     "High Scores",
                     "Sair"
   };

@@ -5,8 +5,13 @@
 #include <stdlib.h>
 
 void print_char(WINDOW *w, sprite* sprite){
-  mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
-  mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
+  if (sprite->state) {
+    mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
+    mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
+  }
+  else{
+    mvwaddch(w, sprite->position.y, sprite->position.x, ' ');
+  }
 }
 
 void move_sprite(WINDOW *w, sprite* sprite, int direction){
@@ -65,8 +70,10 @@ void move_ghost(WINDOW *w, struct ghost* gh){
       d = rand() % 4 + 1;
 
     move_sprite(w, &gh->sprite, d);
-    }else
+    }
+    else{
       move_sprite(w, &gh->sprite, gh->sprite.direction);
+    }
 }
 
 void shoot(WINDOW *w, struct shot* s){
@@ -76,32 +83,31 @@ void shoot(WINDOW *w, struct shot* s){
 void move_if_possible(WINDOW *w, sprite* s){
   if (can_go_to_direction(w, &s->position, s->direction)) {
     move_sprite(w, s, s->direction);
-  }else{
+  }
+  else{
     s->state = 0;
-    mvwaddch(w, s->position.y, s->position.x, ' ');
-    s->position.x = -2;
-    s->position.y = -2;
+    print_char(w, s);
   }
 }
 
-void check_collision(WINDOW *w, struct mr_do* md, struct ghost* gh, struct shot* s){
-
-  int mr_do[2] = {md->sprite.position.x,md->sprite.position.y};
-  int ghost[2] = {gh->sprite.position.x,gh->sprite.position.y};
-  int ghost_last[2] = {gh->sprite.position.last_x,gh->sprite.position.last_y};
-  int shot[2]  = {s->sprite.position.x,s->sprite.position.y};
-  int shot_last[2]  = {s->sprite.position.last_x,s->sprite.position.last_y};
-
-  if (mr_do[0] == ghost[0] && mr_do[1] == ghost[1]){
-    md->sprite.state = 0;
+//se colidir morre o segundo sprite
+void check_collision(WINDOW *w, sprite *sp1, sprite *sp2){
+  if (sp1->position.x == sp2->position.x 
+      && sp1->position.y == sp2->position.y
+      && sp1->state && sp2->state){
+    sp2->state = 0;
   }
-  if ((shot[0] == ghost[0] && shot[1] == ghost[1]) || ((shot_last[0] == ghost[0] && shot_last[1] == ghost[1]) && (shot[0] == ghost_last[0] && shot[1] == ghost_last[1]))){
-    gh->sprite.state = 0;
-    gh->sprite.position.x = -1;
-    gh->sprite.position.y = -1;
-    s->sprite.state = 0;
-    mvwaddch(w, s->sprite.position.y, s->sprite.position.x, ' ');
-    s->sprite.position.x = -2;
-    s->sprite.position.y = -2;
+}
+
+void check_shot_collision(WINDOW *w, sprite *sp1, sprite *sp2){
+  int ghost[2] = {sp2->position.x,sp2->position.y};
+  int ghost_last[2] = {sp2->position.last_x,sp2->position.last_y};
+  int shot[2]  = {sp1->position.x,sp1->position.y};
+  int shot_last[2]  = {sp1->position.last_x,sp1->position.last_y};
+
+  if ((sp1->state && sp2->state )&& ((shot[0] == ghost[0] && shot[1] == ghost[1]) || ((shot_last[0] == ghost[0] && shot_last[1] == ghost[1]) && (shot[0] == ghost_last[0] && shot[1] == ghost_last[1])))){
+    sp2->state = 0;
+    sp1->state = 0;
+    print_char(w, sp1);
   }
 }
