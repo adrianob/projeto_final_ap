@@ -11,7 +11,7 @@
 #include "file_operations.h"
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
-int ready_to_draw = 0;
+int timer_ready = 0;
 
 int main(int argc, const char *argv[]){
   //configuracoes iniciais
@@ -22,7 +22,10 @@ int main(int argc, const char *argv[]){
 }
 
 void play_level_one(void){
-  char MAP[MAX_Y][MAX_X];
+  unsigned int created_ghosts = 0;
+  unsigned int ghost_timer = 0;
+  int ready_to_create = 1;
+  int MAP[MAX_Y][MAX_X];
   make_map(load_level(1), MAP);
 
   //cria a janela do jogo dentro da borda
@@ -36,17 +39,29 @@ void play_level_one(void){
   //configuracao do timer
   config_timer();
 
+  struct game_state game_state;
+  game_state.score = 0;
+  game_state.can_shoot = 1;
+  game_state.shooting = 0;
+  struct position nest_position = find_char(game_window, MAP, '&');
+  sprite nest;
+  nest.position = nest_position;
+  nest.representation = '&';
   struct shot s;
   s.sprite.representation = '*';
-  struct ghost gh;
-  gh.sprite.representation = ACS_CKBOARD;
-  gh.sprite.position.x = gh.sprite.position.y = 0;
-  gh.sprite.direction = 3;
+  struct ghost ghosts[MAX_GHOSTS];
+  for (int i = 0; i < MAX_GHOSTS; i++) {
+    ghosts[i].sprite.representation = ACS_CKBOARD;
+    ghosts[i].sprite.position = nest_position;
+    ghosts[i].sprite.direction = 3;
+    ghosts[i].sprite.state = 0;
+  }
   struct mr_do md;
-  md.sprite.position = find_mr_do(game_window, MAP);
+  md.sprite.position = find_char(game_window, MAP, ACS_PI);
   md.sprite.representation = ACS_PI;
 
   int ch;
+  //main loop
   while((ch = getch()) != KEY_F(1)){
     switch(ch){
       case KEY_RIGHT:
@@ -62,23 +77,45 @@ void play_level_one(void){
         move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
         break;
       case ' ':
-        s.sprite.position.x = md.sprite.position.x;
-        s.sprite.position.y = md.sprite.position.y;
-        s.sprite.direction = md.sprite.direction;
+        if (game_state.can_shoot) {
+          game_state.shooting = 1;
+          game_state.can_shoot= 0;
+          //@TODO tornar isso desnecessario
+          s.sprite.representation = '*';
+          s.sprite.position = md.sprite.position;
+          s.sprite.direction = md.sprite.direction;
+        }
         break;
     }
-    if (ready_to_draw) {
+    if (timer_ready) {
+      ghost_timer++;
       for (int i = 0; i < MAX_GHOSTS; i++) {
-        move_ghost(game_window, &gh);
+        move_ghost(game_window, &ghosts[i]);
       }
       //@TODO transformar isso numa flag que mantem o tiro andando ate acertar alguma coisa
-      shoot(game_window, &s);
-      ready_to_draw = 0;
+      if (game_state.shooting) {
+        shoot(game_window, &s, &game_state);
+      }
+      if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
+        ready_to_create = 1; 
+        ghost_timer = 0;
+      }
+      timer_ready = 0;
     }
 
+    if (ready_to_create && created_ghosts < MAX_GHOSTS) {
+      ghosts[created_ghosts].sprite.state = 1;
+      created_ghosts++;
+      ready_to_create = 0;
+    }
+
+    //imprime na tela de novo para manter sempre no topo
+    print_char(game_window, &nest);
+    print_char(game_window, &md.sprite);
     wrefresh(border_window);
     wrefresh(game_window);
   }
+
   endwin();
 }
 
@@ -151,11 +188,11 @@ void config_timer(void){
   signal(SIGALRM, timer_handler);
 }
 
-void timer_handler(void){
-  ready_to_draw = 1;
+void timer_handler(int i){
+  timer_ready = 1;
 }
 
-void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]){
+void draw_map(WINDOW *w, int MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
       mvwaddch(w, i, j, MAP[i][j]);
@@ -163,11 +200,11 @@ void draw_map(WINDOW *w, char MAP[MAX_Y][MAX_X]){
   }
 }
 
-struct position find_mr_do(WINDOW *w, char MAP[MAX_Y][MAX_X]){
+struct position find_char(WINDOW *w, int MAP[MAX_Y][MAX_X], int ch){
   struct position position;
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
-      if (MAP[i][j] == 'd') {
+      if (MAP[i][j] == ch) {
         position.x = j;
         position.y = i;
       }

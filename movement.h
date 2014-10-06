@@ -3,9 +3,8 @@
 
 void print_char(WINDOW *w, sprite* sprite);
 void move_ghost(WINDOW *w, struct ghost* gh);
-void shoot(WINDOW *w, struct shot* s);
+void shoot(WINDOW *w, struct shot* s, struct game_state* game_state);
 int can_go_to_direction(WINDOW *w, struct position* p, int direction);
 void move_sprite(WINDOW *w, sprite* sprite, int direction);
-void move_if_possible(WINDOW *w, sprite* s);
 
 #endif
