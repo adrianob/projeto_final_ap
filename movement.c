@@ -59,15 +59,18 @@ int can_go_to_direction(WINDOW *w, struct position* p, int direction){
 }
 
 void move_ghost(WINDOW *w, struct ghost* gh){
-
-  if (!can_go_to_direction(w, &gh->sprite.position, gh->sprite.direction)){
-    int d = rand() % 4 + 1;
-    while(!can_go_to_direction(w, &gh->sprite.position, d))
-      d = rand() % 4 + 1;
-
-    move_sprite(w, &gh->sprite, d);
-    }else
-      move_sprite(w, &gh->sprite, gh->sprite.direction);
+  if (gh->sprite.state) {
+    if (!can_go_to_direction(w, &gh->sprite.position, gh->sprite.direction)){
+      int d = rand() % 4 + 1;
+      while(!can_go_to_direction(w, &gh->sprite.position, d)){
+        d = rand() % 4 + 1;
+      }
+      move_sprite(w, &gh->sprite, d);
+      }
+    else{
+        move_sprite(w, &gh->sprite, gh->sprite.direction);
+    }
+  }
 }
 
 void shoot(WINDOW *w, struct shot* s){
