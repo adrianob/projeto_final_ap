@@ -107,7 +107,9 @@ void check_shot_collision(WINDOW *w, sprite *sp1, sprite *sp2){
   int shot[2]  = {sp1->position.x,sp1->position.y};
   int shot_last[2]  = {sp1->position.last_x,sp1->position.last_y};
 
-  if ((sp1->alive && sp2->alive )&& ((shot[0] == ghost[0] && shot[1] == ghost[1]) || ((shot_last[0] == ghost[0] && shot_last[1] == ghost[1]) && (shot[0] == ghost_last[0] && shot[1] == ghost_last[1])))){
+  if ((sp1->alive && sp2->alive ) && 
+      ((shot[0] == ghost[0] && shot[1] == ghost[1]) || 
+       ((shot_last[0] == ghost[0] && shot_last[1] == ghost[1])))){
     sp2->alive = 0;
     sp1->alive = 0;
     print_char(w, sp1);

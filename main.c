@@ -41,19 +41,17 @@ void play_level_one(void){
   struct position nest_position = find_char(game_window, MAP, '&');
   struct ghost ghosts[MAX_GHOSTS];
   create_ghosts(game_window, ghosts, nest_position);
-  struct shot shot;
-  shot.sprite = DEFAULT_SHOT;
+  struct shot shot = {.sprite = DEFAULT_SHOT};
   sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
   //cria fantasmas
-  struct mr_do md;
-  md.sprite = DEFAULT_MR_DO;
+  struct mr_do md = {.sprite = DEFAULT_MR_DO};
   md.sprite.position = find_char(game_window, MAP, ACS_PI);
   md.sprite.representation = ACS_PI;
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
-    if(md.sprite.alive == 1){
+    if(md.sprite.alive){
       switch(ch){
         case KEY_RIGHT:
           move_sprite(game_window, &md.sprite, RIGHT_DIRECTION);
@@ -101,9 +99,7 @@ void play_level_one(void){
     }
 
     print_char(game_window, &nest);
-    if (md.sprite.alive) {
-      print_char(game_window, &md.sprite);
-    }
+    print_char(game_window, &md.sprite);
     wrefresh(border_window);
     wrefresh(game_window);
   }
