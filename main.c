@@ -53,7 +53,7 @@ void play_level_one(void){
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
-    if(md.sprite.state == 1){
+    if(md.sprite.alive == 1){
       switch(ch){
         case KEY_RIGHT:
           move_sprite(game_window, &md.sprite, RIGHT_DIRECTION);
@@ -68,8 +68,8 @@ void play_level_one(void){
           move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
           break;
         case ' ':
-          if (!shot.sprite.state){
-            shot.sprite.state = 1;
+          if (!shot.sprite.alive){
+            shot.sprite.alive = 1;
             shot.sprite.position = md.sprite.position;
             shot.sprite.direction = md.sprite.direction;
           }
@@ -83,13 +83,13 @@ void play_level_one(void){
       //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
         if (created_ghosts < MAX_GHOSTS) {
-          ghosts[created_ghosts].sprite.state = 1;
+          ghosts[created_ghosts].sprite.alive = 1;
           created_ghosts++;
         }
         ghost_timer = 0;
       }
 
-      if(shot.sprite.state){
+      if(shot.sprite.alive){
         shoot(game_window, &shot);
       }
       timer_ready = 0;
@@ -101,7 +101,7 @@ void play_level_one(void){
     }
 
     print_char(game_window, &nest);
-    if (md.sprite.state) {
+    if (md.sprite.alive) {
       print_char(game_window, &md.sprite);
     }
     wrefresh(border_window);
@@ -226,14 +226,14 @@ void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position p
 
 void move_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS]){
   for (int i = 0; i < MAX_GHOSTS; i++) {
-    if(ghosts[i].sprite.state){
+    if(ghosts[i].sprite.alive){
       move_ghost(w, &ghosts[i]);
     }
   }
 }
 
 const sprite DEFAULT_GHOST = {
-  .state = 0,
+  .alive = 0,
   .direction = 1,
   .color = 2
 };
@@ -241,16 +241,16 @@ const sprite DEFAULT_GHOST = {
 const sprite DEFAULT_NEST = {
   .representation = '&',
   .color = 1,
-  .state = 1
+  .alive = 1
 };
 
 const sprite DEFAULT_SHOT = {
   .representation = '*',
-  .state = 0,
+  .alive = 0,
   .color = 3
 };
 
 const sprite DEFAULT_MR_DO = {
-  .state = 1,
+  .alive = 1,
   .color = 3
 };
