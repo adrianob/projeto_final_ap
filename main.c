@@ -26,7 +26,6 @@ void play_level_one(void){
   make_map(load_level(1), MAP);
   unsigned int created_ghosts = 0;
   unsigned int ghost_timer = 0;
-  int ready_to_create = 1;
 
   //cria a janela do jogo dentro da borda
   WINDOW *border_window;
@@ -39,29 +38,22 @@ void play_level_one(void){
   //configuracao do timer
   config_timer();
 
-  struct shot shot;
-  shot.sprite.representation = '*';
-  shot.sprite.state = 0;
   struct position nest_position = find_char(game_window, MAP, '&');
-  sprite nest;
-  nest.position = nest_position;
-  nest.representation = '&';
   struct ghost ghosts[MAX_GHOSTS];
+  create_ghosts(game_window, ghosts, nest_position);
+  struct shot shot;
+  shot.sprite = DEFAULT_SHOT;
+  sprite nest = DEFAULT_NEST;
+  nest.position = nest_position;
   //cria fantasmas
-  for (int i = 0; i < MAX_GHOSTS; i++) {
-    ghosts[i].sprite.representation = ACS_CKBOARD;
-    ghosts[i].sprite.position = nest_position;
-    ghosts[i].sprite.direction = 3;
-    ghosts[i].sprite.state = 0;
-  }
   struct mr_do md;
+  md.sprite = DEFAULT_MR_DO;
   md.sprite.position = find_char(game_window, MAP, ACS_PI);
   md.sprite.representation = ACS_PI;
-  md.sprite.state = 1;
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
-    if(md.sprite.state == 1){
+    if(md.sprite.alive == 1){
       switch(ch){
         case KEY_RIGHT:
           move_sprite(game_window, &md.sprite, RIGHT_DIRECTION);
@@ -76,8 +68,8 @@ void play_level_one(void){
           move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
           break;
         case ' ':
-          if (!shot.sprite.state){
-            shot.sprite.state = 1;
+          if (!shot.sprite.alive){
+            shot.sprite.alive = 1;
             shot.sprite.position = md.sprite.position;
             shot.sprite.direction = md.sprite.direction;
           }
@@ -86,28 +78,21 @@ void play_level_one(void){
     }
     if (timer_ready) {
       ghost_timer++;
-      for (int i = 0; i < MAX_GHOSTS; i++) {
-        if(ghosts[i].sprite.state){
-          move_ghost(game_window, &ghosts[i]);
-        }
-      }
+      move_ghosts(game_window, ghosts);
 
       //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
-        ready_to_create = 1;
+        if (created_ghosts < MAX_GHOSTS) {
+          ghosts[created_ghosts].sprite.alive = 1;
+          created_ghosts++;
+        }
         ghost_timer = 0;
       }
 
-      if(shot.sprite.state){
+      if(shot.sprite.alive){
         shoot(game_window, &shot);
       }
       timer_ready = 0;
-    }
-
-    if (ready_to_create && created_ghosts < MAX_GHOSTS) {
-      ghosts[created_ghosts].sprite.state = 1;
-      created_ghosts++;
-      ready_to_create = 0;
     }
 
     for (int i = 0; i < MAX_GHOSTS; i++) {
@@ -116,7 +101,7 @@ void play_level_one(void){
     }
 
     print_char(game_window, &nest);
-    if (md.sprite.state) {
+    if (md.sprite.alive) {
       print_char(game_window, &md.sprite);
     }
     wrefresh(border_window);
@@ -180,6 +165,11 @@ void config(void){
   setlocale(LC_ALL, "");
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
+  start_color();
+  init_pair(1, COLOR_RED, COLOR_BLACK);
+  init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(3, COLOR_BLUE, COLOR_BLACK);
+  init_pair(4, COLOR_CYAN, COLOR_BLACK);
   noecho();			/* Don't echo() while we do getch */
   curs_set(0);
 }
@@ -201,7 +191,14 @@ void timer_handler(int i){
 void draw_map(WINDOW *w, int MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
-      mvwaddch(w, i, j, MAP[i][j]);
+      if (MAP[i][j] == 'f') {
+        wattron(w, COLOR_PAIR(4));
+        mvwaddch(w, i, j, MAP[i][j]);
+        wattroff(w, COLOR_PAIR(4));
+      }
+      else{
+        mvwaddch(w, i, j, MAP[i][j]);
+      }
     }
   }
 }
@@ -218,3 +215,34 @@ struct position find_char(WINDOW *w, int MAP[MAX_Y][MAX_X], int ch){
   }
   return position;
 }
+
+void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position){
+  for (int i = 0; i < MAX_GHOSTS; i++) {
+    ghosts[i].sprite = DEFAULT_GHOST;
+    ghosts[i].sprite.representation = ACS_CKBOARD;
+    ghosts[i].sprite.position = position;
+  }
+}
+
+const sprite DEFAULT_GHOST = {
+  .alive = 0,
+  .direction = 1,
+  .color = 2
+};
+
+const sprite DEFAULT_NEST = {
+  .representation = '&',
+  .color = 1,
+  .alive = 1
+};
+
+const sprite DEFAULT_SHOT = {
+  .representation = '*',
+  .alive = 0,
+  .color = 3
+};
+
+const sprite DEFAULT_MR_DO = {
+  .alive = 1,
+  .color = 3
+};

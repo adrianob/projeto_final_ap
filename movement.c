@@ -5,9 +5,11 @@
 #include <stdlib.h>
 
 void print_char(WINDOW *w, sprite* sprite){
-  if (sprite->state) {
+  if (sprite->alive) {
     mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
+    wattron(w, COLOR_PAIR(sprite->color));
     mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
+    wattroff(w, COLOR_PAIR(sprite->color));
   }
   else{
     mvwaddch(w, sprite->position.y, sprite->position.x, ' ');
@@ -85,7 +87,7 @@ void move_if_possible(WINDOW *w, sprite* s){
     move_sprite(w, s, s->direction);
   }
   else{
-    s->state = 0;
+    s->alive = 0;
     print_char(w, s);
   }
 }
@@ -94,8 +96,8 @@ void move_if_possible(WINDOW *w, sprite* s){
 void check_collision(WINDOW *w, sprite *sp1, sprite *sp2){
   if (sp1->position.x == sp2->position.x 
       && sp1->position.y == sp2->position.y
-      && sp1->state && sp2->state){
-    sp2->state = 0;
+      && sp1->alive && sp2->alive){
+    sp2->alive = 0;
   }
 }
 
@@ -105,9 +107,17 @@ void check_shot_collision(WINDOW *w, sprite *sp1, sprite *sp2){
   int shot[2]  = {sp1->position.x,sp1->position.y};
   int shot_last[2]  = {sp1->position.last_x,sp1->position.last_y};
 
-  if ((sp1->state && sp2->state )&& ((shot[0] == ghost[0] && shot[1] == ghost[1]) || ((shot_last[0] == ghost[0] && shot_last[1] == ghost[1]) && (shot[0] == ghost_last[0] && shot[1] == ghost_last[1])))){
-    sp2->state = 0;
-    sp1->state = 0;
+  if ((sp1->alive && sp2->alive )&& ((shot[0] == ghost[0] && shot[1] == ghost[1]) || ((shot_last[0] == ghost[0] && shot_last[1] == ghost[1]) && (shot[0] == ghost_last[0] && shot[1] == ghost_last[1])))){
+    sp2->alive = 0;
+    sp1->alive = 0;
     print_char(w, sp1);
+  }
+}
+
+void move_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS]){
+  for (int i = 0; i < MAX_GHOSTS; i++) {
+    if(ghosts[i].sprite.alive){
+      move_ghost(w, &ghosts[i]);
+    }
   }
 }
