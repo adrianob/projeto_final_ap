@@ -41,19 +41,19 @@ void make_map(FILE *level, int p[MAX_Y][MAX_X]){
 
       switch(buffer[cont]){
 
-        case 'p': 
+        case 'p':
                   p[i][j] = '#';
                   break;
-        case 'v': 
+        case 'v':
                   p[i][j] = ' ';
                   break;
-        case 'd': 
+        case 'd':
                   p[i][j] = ACS_PI;
                   break;
-        case 'n': 
+        case 'n':
                   p[i][j] = '&';
                   break;
-        case 'f': 
+        case 'f':
                   p[i][j] = 'f';
                   break;
         default: break;
