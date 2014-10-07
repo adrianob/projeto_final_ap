@@ -40,24 +40,21 @@ void play_level_one(void){
   config_timer();
 
   struct shot shot;
-  shot.sprite.representation = '*';
-  shot.sprite.state = 0;
+  shot.sprite = DEFAULT_SHOT;
   struct position nest_position = find_char(game_window, MAP, '&');
-  sprite nest;
+  sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
-  nest.representation = '&';
   struct ghost ghosts[MAX_GHOSTS];
   //cria fantasmas
   for (int i = 0; i < MAX_GHOSTS; i++) {
+    ghosts[i].sprite = DEFAULT_GHOST;
     ghosts[i].sprite.representation = ACS_CKBOARD;
     ghosts[i].sprite.position = nest_position;
-    ghosts[i].sprite.direction = 3;
-    ghosts[i].sprite.state = 0;
   }
   struct mr_do md;
+  md.sprite = DEFAULT_MR_DO;
   md.sprite.position = find_char(game_window, MAP, ACS_PI);
   md.sprite.representation = ACS_PI;
-  md.sprite.state = 1;
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
@@ -88,9 +85,7 @@ void play_level_one(void){
       ghost_timer++;
       for (int i = 0; i < MAX_GHOSTS; i++) {
         if(ghosts[i].sprite.state){
-          wattron(game_window, COLOR_PAIR(2));
           move_ghost(game_window, &ghosts[i]);
-          wattroff(game_window, COLOR_PAIR(2));
         }
       }
 
@@ -100,16 +95,16 @@ void play_level_one(void){
         ghost_timer = 0;
       }
 
+      if (ready_to_create && created_ghosts < MAX_GHOSTS) {
+        ghosts[created_ghosts].sprite.state = 1;
+        created_ghosts++;
+        ready_to_create = 0;
+      }
+
       if(shot.sprite.state){
         shoot(game_window, &shot);
       }
       timer_ready = 0;
-    }
-
-    if (ready_to_create && created_ghosts < MAX_GHOSTS) {
-      ghosts[created_ghosts].sprite.state = 1;
-      created_ghosts++;
-      ready_to_create = 0;
     }
 
     for (int i = 0; i < MAX_GHOSTS; i++) {
@@ -117,13 +112,9 @@ void play_level_one(void){
       check_shot_collision(game_window, &shot.sprite, &ghosts[i].sprite);
     }
 
-    wattron(game_window, COLOR_PAIR(3));
     print_char(game_window, &nest);
-    wattroff(game_window, COLOR_PAIR(3));
     if (md.sprite.state) {
-      wattron(game_window, COLOR_PAIR(1));
       print_char(game_window, &md.sprite);
-      wattroff(game_window, COLOR_PAIR(1));
     }
     wrefresh(border_window);
     wrefresh(game_window);
@@ -236,3 +227,26 @@ struct position find_char(WINDOW *w, int MAP[MAX_Y][MAX_X], int ch){
   }
   return position;
 }
+
+const sprite DEFAULT_GHOST = {
+  .state = 0,
+  .direction = 1,
+  .color = 2
+};
+
+const sprite DEFAULT_NEST = {
+  .representation = '&',
+  .color = 1,
+  .state = 1
+};
+
+const sprite DEFAULT_SHOT = {
+  .representation = '*',
+  .state = 0,
+  .color = 3
+};
+
+const sprite DEFAULT_MR_DO = {
+  .state = 1,
+  .color = 3
+};

@@ -4,7 +4,7 @@
 #define MAX_X 60 //tamanho de colunas do mapa principal
 #define MAX_Y 23 //tamanho de linhas do mapa principal
 #define MAX_GHOSTS 10
-#define INTERVAL 150000
+#define INTERVAL 100000
 #define GHOST_INTERVAL 3000000
 #define UP_DIRECTION 1
 #define DOWN_DIRECTION 2
@@ -33,6 +33,7 @@ typedef struct {
   struct position position;
   int state;//vivo ou morto
   int representation;
+  int color;
   int direction;
   /*
     1 - cima
@@ -53,5 +54,10 @@ struct ghost {
 struct shot {
   sprite sprite;
 };
+
+extern const sprite DEFAULT_GHOST;
+extern const sprite DEFAULT_SHOT;
+extern const sprite DEFAULT_MR_DO;
+extern const sprite DEFAULT_NEST;
 
 #endif

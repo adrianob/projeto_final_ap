@@ -7,7 +7,9 @@
 void print_char(WINDOW *w, sprite* sprite){
   if (sprite->state) {
     mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
+    wattron(w, COLOR_PAIR(sprite->color));
     mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
+    wattroff(w, COLOR_PAIR(sprite->color));
   }
   else{
     mvwaddch(w, sprite->position.y, sprite->position.x, ' ');
