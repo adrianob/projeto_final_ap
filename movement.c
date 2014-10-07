@@ -7,7 +7,16 @@
 void print_char(WINDOW *w, sprite* sprite){
   if (sprite->state) {
     mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
-    mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
+    if (sprite->representation == ACS_CKBOARD){
+      wattron(w, COLOR_PAIR(2));
+      mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
+    }else if (sprite->representation == ACS_PI){
+      wattron(w, COLOR_PAIR(5));
+      mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
+    }else if (sprite->representation == '*'){
+      wattron(w, COLOR_PAIR(3));
+      mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
+    }
   }
   else{
     mvwaddch(w, sprite->position.y, sprite->position.x, ' ');
@@ -92,7 +101,7 @@ void move_if_possible(WINDOW *w, sprite* s){
 
 //se colidir morre o segundo sprite
 void check_collision(WINDOW *w, sprite *sp1, sprite *sp2){
-  if (sp1->position.x == sp2->position.x 
+  if (sp1->position.x == sp2->position.x
       && sp1->position.y == sp2->position.y
       && sp1->state && sp2->state){
     sp2->state = 0;

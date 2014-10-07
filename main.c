@@ -35,6 +35,7 @@ void play_level_one(void){
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
   box(border_window, 0, 0);
   draw_map(game_window, MAP);
+  //wbkgd(game_window,COLOR_PAIR(1));
 
   //configuracao do timer
   config_timer();
@@ -182,6 +183,13 @@ void config(void){
   keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
   noecho();			/* Don't echo() while we do getch */
   curs_set(0);
+  start_color();
+  init_pair(1,COLOR_GREEN,  COLOR_BLACK);
+  init_pair(2,COLOR_WHITE,  COLOR_BLACK);
+  init_pair(3,COLOR_CYAN,   COLOR_BLACK);
+  init_pair(4,COLOR_RED,    COLOR_BLACK);
+  init_pair(5,COLOR_YELLOW, COLOR_BLACK);
+  init_pair(6,COLOR_MAGENTA,  COLOR_BLACK);
 }
 
 void config_timer(void){
@@ -201,7 +209,16 @@ void timer_handler(int i){
 void draw_map(WINDOW *w, int MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
-      mvwaddch(w, i, j, MAP[i][j]);
+      if (MAP[i][j] == '#'){
+        wattron(w, COLOR_PAIR(1));
+        mvwaddch(w, i, j, MAP[i][j]);
+      }else if (MAP[i][j] == 'f'){
+        wattron(w, COLOR_PAIR(4));
+        mvwaddch(w, i, j, MAP[i][j]);
+      }else if (MAP[i][j] == '&'){
+        wattron(w, COLOR_PAIR(6));
+        mvwaddch(w, i, j, MAP[i][j]);
+      }
     }
   }
 }
