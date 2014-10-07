@@ -113,3 +113,11 @@ void check_shot_collision(WINDOW *w, sprite *sp1, sprite *sp2){
     print_char(w, sp1);
   }
 }
+
+void move_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS]){
+  for (int i = 0; i < MAX_GHOSTS; i++) {
+    if(ghosts[i].sprite.alive){
+      move_ghost(w, &ghosts[i]);
+    }
+  }
+}

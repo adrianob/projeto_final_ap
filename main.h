@@ -56,7 +56,6 @@ struct shot {
 };
 
 void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position);
-void move_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS]);
 
 extern const sprite DEFAULT_GHOST;
 extern const sprite DEFAULT_SHOT;

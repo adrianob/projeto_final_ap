@@ -224,14 +224,6 @@ void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position p
   }
 }
 
-void move_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS]){
-  for (int i = 0; i < MAX_GHOSTS; i++) {
-    if(ghosts[i].sprite.alive){
-      move_ghost(w, &ghosts[i]);
-    }
-  }
-}
-
 const sprite DEFAULT_GHOST = {
   .alive = 0,
   .direction = 1,
