@@ -88,7 +88,9 @@ void play_level_one(void){
       ghost_timer++;
       for (int i = 0; i < MAX_GHOSTS; i++) {
         if(ghosts[i].sprite.state){
+          wattron(game_window, COLOR_PAIR(2));
           move_ghost(game_window, &ghosts[i]);
+          wattroff(game_window, COLOR_PAIR(2));
         }
       }
 
@@ -115,9 +117,13 @@ void play_level_one(void){
       check_shot_collision(game_window, &shot.sprite, &ghosts[i].sprite);
     }
 
+    wattron(game_window, COLOR_PAIR(3));
     print_char(game_window, &nest);
+    wattroff(game_window, COLOR_PAIR(3));
     if (md.sprite.state) {
+      wattron(game_window, COLOR_PAIR(1));
       print_char(game_window, &md.sprite);
+      wattroff(game_window, COLOR_PAIR(1));
     }
     wrefresh(border_window);
     wrefresh(game_window);
@@ -180,6 +186,11 @@ void config(void){
   setlocale(LC_ALL, "");
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
+  start_color();
+  init_pair(1, COLOR_RED, COLOR_BLACK);
+  init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(3, COLOR_BLUE, COLOR_BLACK);
+  init_pair(4, COLOR_CYAN, COLOR_BLACK);
   noecho();			/* Don't echo() while we do getch */
   curs_set(0);
 }
@@ -201,7 +212,14 @@ void timer_handler(int i){
 void draw_map(WINDOW *w, int MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
-      mvwaddch(w, i, j, MAP[i][j]);
+      if (MAP[i][j] == 'f') {
+        wattron(w, COLOR_PAIR(4));
+        mvwaddch(w, i, j, MAP[i][j]);
+        wattroff(w, COLOR_PAIR(4));
+      }
+      else{
+        mvwaddch(w, i, j, MAP[i][j]);
+      }
     }
   }
 }
