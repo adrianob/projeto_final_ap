@@ -26,7 +26,6 @@ void play_level_one(void){
   make_map(load_level(1), MAP);
   unsigned int created_ghosts = 0;
   unsigned int ghost_timer = 0;
-  int ready_to_create = 1;
 
   //cria a janela do jogo dentro da borda
   WINDOW *border_window;
@@ -39,18 +38,14 @@ void play_level_one(void){
   //configuracao do timer
   config_timer();
 
+  struct position nest_position = find_char(game_window, MAP, '&');
+  struct ghost ghosts[MAX_GHOSTS];
+  create_ghosts(game_window, ghosts, nest_position);
   struct shot shot;
   shot.sprite = DEFAULT_SHOT;
-  struct position nest_position = find_char(game_window, MAP, '&');
   sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
-  struct ghost ghosts[MAX_GHOSTS];
   //cria fantasmas
-  for (int i = 0; i < MAX_GHOSTS; i++) {
-    ghosts[i].sprite = DEFAULT_GHOST;
-    ghosts[i].sprite.representation = ACS_CKBOARD;
-    ghosts[i].sprite.position = nest_position;
-  }
   struct mr_do md;
   md.sprite = DEFAULT_MR_DO;
   md.sprite.position = find_char(game_window, MAP, ACS_PI);
@@ -83,22 +78,15 @@ void play_level_one(void){
     }
     if (timer_ready) {
       ghost_timer++;
-      for (int i = 0; i < MAX_GHOSTS; i++) {
-        if(ghosts[i].sprite.state){
-          move_ghost(game_window, &ghosts[i]);
-        }
-      }
+      move_ghosts(game_window, ghosts);
 
       //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
-        ready_to_create = 1;
+        if (created_ghosts < MAX_GHOSTS) {
+          ghosts[created_ghosts].sprite.state = 1;
+          created_ghosts++;
+        }
         ghost_timer = 0;
-      }
-
-      if (ready_to_create && created_ghosts < MAX_GHOSTS) {
-        ghosts[created_ghosts].sprite.state = 1;
-        created_ghosts++;
-        ready_to_create = 0;
       }
 
       if(shot.sprite.state){
@@ -226,6 +214,22 @@ struct position find_char(WINDOW *w, int MAP[MAX_Y][MAX_X], int ch){
     }
   }
   return position;
+}
+
+void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position){
+  for (int i = 0; i < MAX_GHOSTS; i++) {
+    ghosts[i].sprite = DEFAULT_GHOST;
+    ghosts[i].sprite.representation = ACS_CKBOARD;
+    ghosts[i].sprite.position = position;
+  }
+}
+
+void move_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS]){
+  for (int i = 0; i < MAX_GHOSTS; i++) {
+    if(ghosts[i].sprite.state){
+      move_ghost(w, &ghosts[i]);
+    }
+  }
 }
 
 const sprite DEFAULT_GHOST = {
