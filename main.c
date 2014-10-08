@@ -12,9 +12,9 @@
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 int timer_ready = 0;
+struct game_state game_state = {.score = 0};
 
 int main(int argc, const char *argv[]){
-  //configuracoes iniciais
   config();
   show_menu();
 
@@ -32,6 +32,8 @@ void play_level_one(void){
   border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
   WINDOW *game_window;
   game_window = newwin(MAX_Y, MAX_X, 1, 1);
+  WINDOW *info_window;
+  info_window = newwin(5, 11, 0, MAX_X + 5);
   box(border_window, 0, 0);
   draw_map(game_window, MAP);
 
@@ -44,7 +46,6 @@ void play_level_one(void){
   struct shot shot = {.sprite = DEFAULT_SHOT};
   sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
-  //cria fantasmas
   struct mr_do md = {.sprite = DEFAULT_MR_DO};
   md.sprite.position = find_char(game_window, MAP, ACS_PI);
   md.sprite.representation = ACS_PI;
@@ -97,9 +98,13 @@ void play_level_one(void){
       check_collision(game_window, &ghosts[i].sprite, &md.sprite);
       check_shot_collision(game_window, &shot.sprite, &ghosts[i].sprite);
     }
-
+    mvwprintw(info_window, 1, 0, "SCORE: %d", game_state.score);
+    if (!md.sprite.alive) {
+      mvwprintw(info_window, 2, 0, "GAME OVER");
+    }
     print_char(game_window, &nest);
     print_char(game_window, &md.sprite);
+    wrefresh(info_window);
     wrefresh(border_window);
     wrefresh(game_window);
   }
@@ -108,8 +113,8 @@ void play_level_one(void){
 
 void show_menu(void){
   char *choices[] = {
-                    "Fase 1",
-                    "Continua",
+                    "Novo Jogo",
+                    "Continuar",
                     "High Scores",
                     "Sair"
   };
@@ -222,7 +227,7 @@ void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position p
 
 const sprite DEFAULT_GHOST = {
   .alive = 0,
-  .direction = 1,
+  .direction = UP_DIRECTION,
   .color = 2
 };
 
