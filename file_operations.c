@@ -6,11 +6,11 @@ FILE* load_level(int level){
   FILE *level_file;
 
   if(level == 1){
-    level_file = fopen("level1.txt", "rb");
+    level_file = fopen("fase1.txt", "rb");
   }else if(level == 2){
-    level_file = fopen("level2.txt", "rb");
+    level_file = fopen("fase2.txt", "rb");
   }else{
-    level_file = fopen("continua.txt","rb");
+    level_file = fopen("continuar.txt","rb");
   }
 
   return level_file;

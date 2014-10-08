@@ -55,6 +55,10 @@ struct shot {
   sprite sprite;
 };
 
+struct game_state {
+  int score;
+};
+
 void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position);
 
 extern const sprite DEFAULT_GHOST;
