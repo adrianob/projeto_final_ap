@@ -44,10 +44,14 @@ void move_sprite(WINDOW *w, sprite* sprite, int direction){
 }
 
 void check_fruit_collision(WINDOW *w, sprite* sprite, int direction){
-  if ((char)mvwinch(w, sprite->position.y, sprite->position.x) == 'f') {
+  if (mvwinch(w, sprite->position.y, sprite->position.x) ==  (213 | A_ALTCHARSET | COLOR_PAIR(4))) {
     //@TODO pegar soh o char com um bitmap
     if ((sprite->representation ) == (ACS_PI | COLOR_PAIR(2))) {
       game_state.score += 50;
+    }
+    if ((sprite->representation ) == (183 | A_ALTCHARSET)) {
+      sprite->alive = 0;
+      mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
     }
   }
 }
@@ -55,7 +59,7 @@ void check_fruit_collision(WINDOW *w, sprite* sprite, int direction){
 //verifica se existe uma parede no caminho ou eh fim do mapa
 int can_go_to_direction(WINDOW *w, struct position* p, int direction){
   int next_ch = next_char(w, p, direction);
-  return !(next_ch == '#' || next_ch == -1);
+  return !(next_ch == (97 | A_ALTCHARSET) || next_ch == -1);
 }
 
 int next_char(WINDOW *w, struct position* p, int direction){
@@ -107,7 +111,7 @@ void move_if_possible(WINDOW *w, sprite* s){
 
 //se colidir morre o segundo sprite
 void check_collision(WINDOW *w, sprite *sp1, sprite *sp2){
-  if (sp1->position.x == sp2->position.x 
+  if (sp1->position.x == sp2->position.x
       && sp1->position.y == sp2->position.y
       && sp1->alive && sp2->alive){
     sp2->alive = 0;
@@ -119,8 +123,8 @@ void check_shot_collision(WINDOW *w, sprite *sp1, sprite *sp2){
   int shot[2]  = {sp1->position.x,sp1->position.y};
   int shot_last[2]  = {sp1->position.last_x,sp1->position.last_y};
 
-  if ((sp1->alive && sp2->alive ) && 
-      ((shot[0] == ghost[0] && shot[1] == ghost[1]) || 
+  if ((sp1->alive && sp2->alive ) &&
+      ((shot[0] == ghost[0] && shot[1] == ghost[1]) ||
        ((shot_last[0] == ghost[0] && shot_last[1] == ghost[1])))){
     game_state.score += 10;
     sp2->alive = 0;

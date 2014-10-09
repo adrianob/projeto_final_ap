@@ -194,12 +194,7 @@ void timer_handler(int i){
 void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
-      if (MAP[i][j] == 'f') {
-        mvwaddch(w, i, j, 'f' | COLOR_PAIR(4));
-      }
-      else{
-        mvwaddch(w, i, j, MAP[i][j]);
-      }
+      mvwaddch(w, i, j, MAP[i][j]);
     }
   }
 }
@@ -220,7 +215,7 @@ struct position find_char(chtype MAP[MAX_Y][MAX_X], int ch){
 void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position){
   for (int i = 0; i < MAX_GHOSTS; i++) {
     ghosts[i].sprite = DEFAULT_GHOST;
-    ghosts[i].sprite.representation = ACS_CKBOARD | COLOR_PAIR(3);
+    ghosts[i].sprite.representation = 214 | A_ALTCHARSET | COLOR_PAIR(3);
     ghosts[i].sprite.position = position;
   }
 }
@@ -231,12 +226,12 @@ const sprite DEFAULT_GHOST = {
 };
 
 const sprite DEFAULT_NEST = {
-  .representation = '&' | COLOR_PAIR(1),
+  .representation = 110 | A_ALTCHARSET | COLOR_PAIR(1),
   .alive = 1
 };
 
 const sprite DEFAULT_SHOT = {
-  .representation = '*',
+  .representation = 183 | A_ALTCHARSET,
   .alive = 0
 };
 
