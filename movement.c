@@ -7,9 +7,7 @@
 void print_char(WINDOW *w, sprite* sprite){
   if (sprite->alive) {
     mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
-    wattron(w, COLOR_PAIR(sprite->color));
     mvwaddch(w, sprite->position.y, sprite->position.x, sprite->representation);
-    wattroff(w, COLOR_PAIR(sprite->color));
   }
   else{
     mvwaddch(w, sprite->position.y, sprite->position.x, ' ');
@@ -47,7 +45,8 @@ void move_sprite(WINDOW *w, sprite* sprite, int direction){
 
 void check_fruit_collision(WINDOW *w, sprite* sprite, int direction){
   if ((char)mvwinch(w, sprite->position.y, sprite->position.x) == 'f') {
-    if (sprite->representation == ACS_PI) {
+    //@TODO pegar soh o char com um bitmap
+    if ((sprite->representation ) == (ACS_PI | COLOR_PAIR(2))) {
       game_state.score += 50;
     }
   }

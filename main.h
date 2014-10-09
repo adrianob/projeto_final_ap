@@ -15,12 +15,12 @@
 #include <stdio.h>
 #include <ncurses.h>
 void config(void);
-void draw_map(WINDOW *w, int MAP[MAX_Y][MAX_X]);
+void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]);
 void timer_handler(int i);
 void config_timer(void);
 void play_level_one(void);
 void show_menu(void);
-struct position find_char(int MAP[MAX_Y][MAX_X], int ch);
+struct position find_char(chtype MAP[MAX_Y][MAX_X], int ch);
 void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
 
 struct position {
@@ -30,8 +30,7 @@ struct position {
 typedef struct {
   struct position position;
   int alive;//vivo ou morto
-  int representation;
-  int color;
+  chtype representation;
   int direction;
   /*
     1 - cima
