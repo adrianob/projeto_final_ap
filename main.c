@@ -21,7 +21,7 @@ int main(int argc, const char *argv[]){
 }
 
 void play_level_one(void){
-  int MAP[MAX_Y][MAX_X];
+  chtype MAP[MAX_Y][MAX_X];
   make_map(load_level(1), MAP);
   unsigned int created_ghosts = 0;
   unsigned int ghost_timer = 0;
@@ -45,7 +45,7 @@ void play_level_one(void){
   nest.position = nest_position;
   struct mr_do md = {.sprite = DEFAULT_MR_DO};
   md.sprite.position = find_char(MAP, ACS_PI);
-  md.sprite.representation = ACS_PI;
+  md.sprite.representation = ACS_PI | COLOR_PAIR(2);
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
@@ -191,13 +191,11 @@ void timer_handler(int i){
   timer_ready = 1;
 }
 
-void draw_map(WINDOW *w, int MAP[MAX_Y][MAX_X]){
+void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
       if (MAP[i][j] == 'f') {
-        wattron(w, COLOR_PAIR(4));
-        mvwaddch(w, i, j, MAP[i][j]);
-        wattroff(w, COLOR_PAIR(4));
+        mvwaddch(w, i, j, 'f' | COLOR_PAIR(4));
       }
       else{
         mvwaddch(w, i, j, MAP[i][j]);
@@ -206,7 +204,7 @@ void draw_map(WINDOW *w, int MAP[MAX_Y][MAX_X]){
   }
 }
 
-struct position find_char(int MAP[MAX_Y][MAX_X], int ch){
+struct position find_char(chtype MAP[MAX_Y][MAX_X], int ch){
   struct position position;
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
@@ -222,30 +220,26 @@ struct position find_char(int MAP[MAX_Y][MAX_X], int ch){
 void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position){
   for (int i = 0; i < MAX_GHOSTS; i++) {
     ghosts[i].sprite = DEFAULT_GHOST;
-    ghosts[i].sprite.representation = ACS_CKBOARD;
+    ghosts[i].sprite.representation = ACS_CKBOARD | COLOR_PAIR(3);
     ghosts[i].sprite.position = position;
   }
 }
 
 const sprite DEFAULT_GHOST = {
   .alive = 0,
-  .direction = UP_DIRECTION,
-  .color = 2
+  .direction = UP_DIRECTION
 };
 
 const sprite DEFAULT_NEST = {
-  .representation = '&',
-  .color = 1,
+  .representation = '&' | COLOR_PAIR(1),
   .alive = 1
 };
 
 const sprite DEFAULT_SHOT = {
   .representation = '*',
-  .alive = 0,
-  .color = 3
+  .alive = 0
 };
 
 const sprite DEFAULT_MR_DO = {
-  .alive = 1,
-  .color = 3
+  .alive = 1
 };
