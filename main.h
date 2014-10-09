@@ -10,6 +10,7 @@
 #define DOWN_DIRECTION 2
 #define RIGHT_DIRECTION 3
 #define LEFT_DIRECTION 4
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 #include <stdio.h>
 #include <ncurses.h>
@@ -19,14 +20,11 @@ void timer_handler(int i);
 void config_timer(void);
 void play_level_one(void);
 void show_menu(void);
-struct position find_char(WINDOW *w, int MAP[MAX_Y][MAX_X], int ch);
+struct position find_char(int MAP[MAX_Y][MAX_X], int ch);
+void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
 
 struct position {
   int x, y, last_x, last_y;
-};
-
-struct game_alive {
-  int score, can_shoot, shooting;
 };
 
 typedef struct {

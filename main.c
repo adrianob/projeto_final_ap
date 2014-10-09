@@ -9,7 +9,6 @@
 #include "main.h"
 #include "movement.h"
 #include "file_operations.h"
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 int timer_ready = 0;
 struct game_state game_state = {.score = 0};
@@ -28,26 +27,24 @@ void play_level_one(void){
   unsigned int ghost_timer = 0;
 
   //cria a janela do jogo dentro da borda
-  WINDOW *border_window;
-  border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
-  WINDOW *game_window;
-  game_window = newwin(MAX_Y, MAX_X, 1, 1);
-  WINDOW *info_window;
-  info_window = newwin(5, 11, 0, MAX_X + 5);
+  WINDOW *border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
+  WINDOW *game_window = newwin(MAX_Y, MAX_X, 1, 1);
+  WINDOW *info_window = newwin(5, 11, 0, MAX_X + 5);
   box(border_window, 0, 0);
+
   draw_map(game_window, MAP);
 
   //configuracao do timer
   config_timer();
 
-  struct position nest_position = find_char(game_window, MAP, '&');
+  struct position nest_position = find_char(MAP, '&');
   struct ghost ghosts[MAX_GHOSTS];
   create_ghosts(game_window, ghosts, nest_position);
   struct shot shot = {.sprite = DEFAULT_SHOT};
   sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
   struct mr_do md = {.sprite = DEFAULT_MR_DO};
-  md.sprite.position = find_char(game_window, MAP, ACS_PI);
+  md.sprite.position = find_char(MAP, ACS_PI);
   md.sprite.representation = ACS_PI;
 
   int ch;
@@ -75,6 +72,7 @@ void play_level_one(void){
           break;
       }
     }
+
     if (timer_ready) {
       ghost_timer++;
       move_ghosts(game_window, ghosts);
@@ -104,11 +102,15 @@ void play_level_one(void){
     }
     print_char(game_window, &nest);
     print_char(game_window, &md.sprite);
-    wrefresh(info_window);
-    wrefresh(border_window);
-    wrefresh(game_window);
+    refresh_windows(info_window, game_window, border_window);
   }
   endwin();
+}
+
+void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window){
+  wrefresh(info_window);
+  wrefresh(border_window);
+  wrefresh(game_window);
 }
 
 void show_menu(void){
@@ -204,7 +206,7 @@ void draw_map(WINDOW *w, int MAP[MAX_Y][MAX_X]){
   }
 }
 
-struct position find_char(WINDOW *w, int MAP[MAX_Y][MAX_X], int ch){
+struct position find_char(int MAP[MAX_Y][MAX_X], int ch){
   struct position position;
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
