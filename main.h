@@ -18,7 +18,7 @@ void config(void);
 void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]);
 void timer_handler(int i);
 void config_timer(void);
-void play_level_one(void);
+void play(void);
 void show_menu(void);
 struct position find_char(chtype MAP[MAX_Y][MAX_X], int ch);
 void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
@@ -54,9 +54,11 @@ struct shot {
 
 struct game_state {
   int score;
+  int level;
 };
 
 void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position);
+void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do* md, int created_ghosts);
 
 extern const sprite DEFAULT_GHOST;
 extern const sprite DEFAULT_SHOT;
