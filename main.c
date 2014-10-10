@@ -37,17 +37,17 @@ void play(void){
   //configuracao do timer
   config_timer();
 
-  struct position nest_position = find_char(MAP, '&');
+  struct position nest_position = find_char(MAP, CH_NEST);
   struct ghost ghosts[MAX_GHOSTS];
   create_ghosts(game_window, ghosts, nest_position);
-  struct fruit fruits[MAX_FRUITS];
-  create_fruits(game_window, fruits);
+  struct rock rocks[MAX_ROCKS];
+  create_rocks(game_window, rocks);
   struct shot shot = {.sprite = DEFAULT_SHOT};
   sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
   struct mr_do md = {.sprite = DEFAULT_MR_DO};
-  md.sprite.position = find_char(MAP, ACS_PI);
-  md.sprite.representation = ACS_PI | COLOR_PAIR(2);
+  md.sprite.position = find_char(MAP, CH_MR_DO);
+  md.sprite.representation = CH_MR_DO;
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
@@ -78,7 +78,7 @@ void play(void){
     if (timer_ready) {
       ghost_timer++;
       move_ghosts(game_window, ghosts);
-      move_fruits(game_window, fruits);
+      move_rocks(game_window, rocks);
 
       //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
@@ -103,8 +103,7 @@ void play(void){
     if (!md.sprite.alive) {
       mvwprintw(info_window, 2, 0, "GAME OVER");
     }
-    print_char(game_window, &nest);
-    print_char(game_window, &md.sprite);
+    debug_print(game_window, &md.sprite, &nest);
     check_state (info_window, game_window, &ghosts[0],&md, created_ghosts);
     refresh_windows(info_window, game_window, border_window);
   }
@@ -173,10 +172,10 @@ void config(void){
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
   start_color();
-  init_pair(1, COLOR_RED, COLOR_BLACK);
-  init_pair(2, COLOR_YELLOW, COLOR_BLACK);
-  init_pair(3, COLOR_BLUE, COLOR_BLACK);
-  init_pair(4, COLOR_CYAN, COLOR_BLACK);
+  init_pair(1, COLOR_CYAN, COLOR_BLACK);
+  init_pair(2, COLOR_RED, COLOR_BLACK);
+  init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(4, COLOR_GREEN, COLOR_BLACK);
   noecho();			/* Don't echo() while we do getch */
   curs_set(0);
 }
@@ -219,26 +218,26 @@ struct position find_char(chtype MAP[MAX_Y][MAX_X], int ch){
 void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position){
   for (int i = 0; i < MAX_GHOSTS; i++) {
     ghosts[i].sprite = DEFAULT_GHOST;
-    ghosts[i].sprite.representation = 214 | A_ALTCHARSET | COLOR_PAIR(3);
+    ghosts[i].sprite.representation = CH_GHOST;
     ghosts[i].sprite.position = position;
   }
 }
 
-void create_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]){
-  for (int i = 0; i < MAX_FRUITS; i++) {
+void create_rocks(WINDOW *w, struct rock rocks[MAX_ROCKS]){
+  for (int i = 0; i < MAX_ROCKS; i++) {
 
-    fruits[i].sprite = DEFAULT_FRUIT;
+    rocks[i].sprite = DEFAULT_ROCK;
 
     do{
       int x = rand() % MAX_X;
       int y = rand() % MAX_Y;
 
-      if (mvwinch(w,y,x) == (97 | A_ALTCHARSET)) {
-        fruits[i].sprite.position.x = x;
-        fruits[i].sprite.position.y = y;
-        fruits[i].sprite.alive = 1;
+      if (mvwinch(w,y,x) == CH_WALL) {
+        rocks[i].sprite.position.x = x;
+        rocks[i].sprite.position.y = y;
+        rocks[i].sprite.alive = 1;
       }
-    }while(!fruits[i].sprite.alive);
+    }while(!rocks[i].sprite.alive);
   }
 }
 
@@ -249,7 +248,7 @@ void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do
 
    for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
-      if (mvwinch(g,i,j) == (213 | A_ALTCHARSET | COLOR_PAIR(4))) {
+      if (mvwinch(g,i,j) == CH_FRUIT) {
         fruit++;
       }
     }
@@ -277,19 +276,19 @@ const sprite DEFAULT_GHOST = {
   .direction = UP_DIRECTION
 };
 
-const sprite DEFAULT_FRUIT = {
+const sprite DEFAULT_ROCK = {
   .alive = 0,
   .direction = DOWN_DIRECTION,
-  .representation = 199 | A_ALTCHARSET | COLOR_PAIR(3)
+  .representation = CH_ROCK
 };
 
 const sprite DEFAULT_NEST = {
-  .representation = 110 | A_ALTCHARSET | COLOR_PAIR(1),
+  .representation = CH_NEST,
   .alive = 1
 };
 
 const sprite DEFAULT_SHOT = {
-  .representation = 183 | A_ALTCHARSET,
+  .representation = CH_SHOT,
   .alive = 0
 };
 
