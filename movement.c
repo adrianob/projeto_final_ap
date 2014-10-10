@@ -59,7 +59,12 @@ void check_fruit_collision(WINDOW *w, sprite* sprite, int direction){
 //verifica se existe uma parede no caminho ou eh fim do mapa
 int can_go_to_direction(WINDOW *w, struct position* p, int direction){
   int next_ch = next_char(w, p, direction);
-  return !(next_ch == (97 | A_ALTCHARSET) || next_ch == -1);
+  return !(next_ch == (97 | A_ALTCHARSET) || next_ch == (199 | A_ALTCHARSET | COLOR_PAIR(3)) || next_ch == -1);
+}
+
+int can_fall(WINDOW *w, struct position* p, int direction){
+  int next_ch = next_char(w, p, direction);
+  return !(next_ch == (97 | A_ALTCHARSET) || next_ch == (ACS_PI | COLOR_PAIR(2)) || next_ch == -1);
 }
 
 int next_char(WINDOW *w, struct position* p, int direction){
@@ -92,6 +97,15 @@ void move_ghost(WINDOW *w, struct ghost* gh){
   }
   else{
     move_sprite(w, &gh->sprite, gh->sprite.direction);
+  }
+}
+
+void move_fruit(WINDOW *w, struct fruit* fr){
+  if (can_fall(w, &fr->sprite.position, fr->sprite.direction)){
+    move_sprite(w, &fr->sprite, fr->sprite.direction);
+  }
+  else{
+    print_char(w, &fr->sprite);
   }
 }
 
@@ -137,6 +151,14 @@ void move_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS]){
   for (int i = 0; i < MAX_GHOSTS; i++) {
     if(ghosts[i].sprite.alive){
       move_ghost(w, &ghosts[i]);
+    }
+  }
+}
+
+void move_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]){
+  for (int i = 0; i < MAX_FRUITS; i++) {
+    if(fruits[i].sprite.alive){
+      move_fruit(w, &fruits[i]);
     }
   }
 }

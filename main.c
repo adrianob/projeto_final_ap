@@ -11,7 +11,7 @@
 #include "file_operations.h"
 
 int timer_ready = 0;
-struct game_state game_state = {.score = 0};
+struct game_state game_state = {.score = 0, .level = 1};
 
 int main(int argc, const char *argv[]){
   config();
@@ -20,16 +20,16 @@ int main(int argc, const char *argv[]){
   return 0;
 }
 
-void play_level_one(void){
+void play(void){
   chtype MAP[MAX_Y][MAX_X];
-  make_map(load_level(1), MAP);
+  make_map(load_level(game_state.level), MAP);
   unsigned int created_ghosts = 0;
   unsigned int ghost_timer = 0;
 
   //cria a janela do jogo dentro da borda
   WINDOW *border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
   WINDOW *game_window = newwin(MAX_Y, MAX_X, 1, 1);
-  WINDOW *info_window = newwin(5, 11, 0, MAX_X + 5);
+  WINDOW *info_window = newwin(10, 13, 0, MAX_X + 5);
   box(border_window, 0, 0);
 
   draw_map(game_window, MAP);
@@ -40,6 +40,8 @@ void play_level_one(void){
   struct position nest_position = find_char(MAP, '&');
   struct ghost ghosts[MAX_GHOSTS];
   create_ghosts(game_window, ghosts, nest_position);
+  struct fruit fruits[MAX_FRUITS];
+  create_fruits(game_window, fruits);
   struct shot shot = {.sprite = DEFAULT_SHOT};
   sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
@@ -76,6 +78,7 @@ void play_level_one(void){
     if (timer_ready) {
       ghost_timer++;
       move_ghosts(game_window, ghosts);
+      move_fruits(game_window, fruits);
 
       //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
@@ -102,6 +105,7 @@ void play_level_one(void){
     }
     print_char(game_window, &nest);
     print_char(game_window, &md.sprite);
+    check_state (info_window, game_window, &ghosts[0],&md, created_ghosts);
     refresh_windows(info_window, game_window, border_window);
   }
   endwin();
@@ -130,7 +134,7 @@ void show_menu(void){
     menu_items[i] = new_item(choices[i], "");
   }
 
-  set_item_userptr(menu_items[0], play_level_one);//nivel 1
+  set_item_userptr(menu_items[0], play);//nivel 1
   set_item_userptr(menu_items[3], exit);//sair
 
   game_menu = new_menu((ITEM **)menu_items);
@@ -220,9 +224,63 @@ void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position p
   }
 }
 
+void create_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]){
+  for (int i = 0; i < MAX_FRUITS; i++) {
+
+    fruits[i].sprite = DEFAULT_FRUIT;
+
+    do{
+      int x = rand() % MAX_X;
+      int y = rand() % MAX_Y;
+
+      if (mvwinch(w,y,x) == (97 | A_ALTCHARSET)) {
+        fruits[i].sprite.position.x = x;
+        fruits[i].sprite.position.y = y;
+        fruits[i].sprite.alive = 1;
+      }
+    }while(!fruits[i].sprite.alive);
+  }
+}
+
+void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do* md, int created_ghosts){
+
+  int gh_alive = 0;
+  int fruit = 0;
+
+   for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      if (mvwinch(g,i,j) == (213 | A_ALTCHARSET | COLOR_PAIR(4))) {
+        fruit++;
+      }
+    }
+  }
+
+  for (int i = 0; i < MAX_GHOSTS; i++) {
+    gh_alive += gh[i].sprite.alive;
+  }
+
+  if ((gh_alive == 0 && created_ghosts == MAX_GHOSTS) || (!fruit)) {
+    mvwprintw(w, 2, 0, "YOU WIN! ");
+  }else if(!md->sprite.alive) {
+    mvwprintw(w, 2, 0, "GAME OVER!");
+  }else{
+    mvwprintw(w, 2, 0, "Fruits: %d ", fruit);
+    mvwprintw(w, 5, 0, "--GHOSTS--");
+    mvwprintw(w, 6, 0, "Remaining  %d ", MAX_GHOSTS - created_ghosts);
+    mvwprintw(w, 7, 0, "Alive      %d ", gh_alive);
+    mvwprintw(w, 8, 0, "Killed     %d ", (created_ghosts - gh_alive));
+  }
+}
+
 const sprite DEFAULT_GHOST = {
   .alive = 0,
   .direction = UP_DIRECTION
+};
+
+const sprite DEFAULT_FRUIT = {
+  .alive = 0,
+  .direction = DOWN_DIRECTION,
+  .representation = 199 | A_ALTCHARSET | COLOR_PAIR(3)
 };
 
 const sprite DEFAULT_NEST = {
