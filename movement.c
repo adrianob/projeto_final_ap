@@ -14,6 +14,16 @@ void print_char(WINDOW *w, sprite* sprite){
   }
 }
 
+void debug_print(WINDOW *w, sprite* md, sprite* nest){
+  mvwaddch(w, nest->position.y, nest->position.x, nest->representation);
+  if (md->alive) {
+    mvwaddch(w, md->position.y, md->position.x, md->representation);
+  }
+  else{
+    mvwaddch(w, md->position.y, md->position.x, ' ');
+  }
+}
+
 void move_sprite(WINDOW *w, sprite* sprite, int direction){
   sprite->position.last_x = sprite->position.x;
   sprite->position.last_y = sprite->position.y;
@@ -44,12 +54,12 @@ void move_sprite(WINDOW *w, sprite* sprite, int direction){
 }
 
 void check_fruit_collision(WINDOW *w, sprite* sprite, int direction){
-  if (mvwinch(w, sprite->position.y, sprite->position.x) ==  (213 | A_ALTCHARSET | COLOR_PAIR(4))) {
+  if (mvwinch(w, sprite->position.y, sprite->position.x) ==  CH_FRUIT) {
     //@TODO pegar soh o char com um bitmap
-    if ((sprite->representation ) == (ACS_PI | COLOR_PAIR(2))) {
+    if ((sprite->representation ) == CH_MR_DO) {
       game_state.score += 50;
     }
-    if ((sprite->representation ) == (183 | A_ALTCHARSET)) {
+    if ((sprite->representation ) == CH_SHOT) {
       sprite->alive = 0;
       mvwaddch(w, sprite->position.last_y, sprite->position.last_x, ' ');
     }
@@ -59,7 +69,12 @@ void check_fruit_collision(WINDOW *w, sprite* sprite, int direction){
 //verifica se existe uma parede no caminho ou eh fim do mapa
 int can_go_to_direction(WINDOW *w, struct position* p, int direction){
   int next_ch = next_char(w, p, direction);
-  return !(next_ch == (97 | A_ALTCHARSET) || next_ch == -1);
+  return !(next_ch == CH_WALL || next_ch == CH_ROCK || next_ch == -1);
+}
+
+int can_fall(WINDOW *w, struct position* p, int direction){
+  int next_ch = next_char(w, p, direction);
+  return !(next_ch == CH_WALL || next_ch == CH_MR_DO || next_ch == -1);
 }
 
 int next_char(WINDOW *w, struct position* p, int direction){
@@ -92,6 +107,17 @@ void move_ghost(WINDOW *w, struct ghost* gh){
   }
   else{
     move_sprite(w, &gh->sprite, gh->sprite.direction);
+  }
+}
+
+void move_rock(WINDOW *w, struct rock* rk){
+  if (can_fall(w, &rk->sprite.position, rk->sprite.direction)){
+    move_sprite(w, &rk->sprite, rk->sprite.direction);
+  }
+  else{
+    rk->sprite.position.last_x = rk->sprite.position.x;
+    rk->sprite.position.last_y = rk->sprite.position.y;
+    print_char(w, &rk->sprite);
   }
 }
 
@@ -137,6 +163,14 @@ void move_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS]){
   for (int i = 0; i < MAX_GHOSTS; i++) {
     if(ghosts[i].sprite.alive){
       move_ghost(w, &ghosts[i]);
+    }
+  }
+}
+
+void move_rocks(WINDOW *w, struct rock rocks[MAX_ROCKS]){
+  for (int i = 0; i < MAX_ROCKS; i++) {
+    if(rocks[i].sprite.alive){
+      move_rock(w, &rocks[i]);
     }
   }
 }
