@@ -40,6 +40,8 @@ void play(void){
   struct position nest_position = find_char(MAP, '&');
   struct ghost ghosts[MAX_GHOSTS];
   create_ghosts(game_window, ghosts, nest_position);
+  struct fruit fruits[MAX_FRUITS];
+  create_fruits(game_window, fruits);
   struct shot shot = {.sprite = DEFAULT_SHOT};
   sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
@@ -76,6 +78,7 @@ void play(void){
     if (timer_ready) {
       ghost_timer++;
       move_ghosts(game_window, ghosts);
+      move_fruits(game_window, fruits);
 
       //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
@@ -221,6 +224,24 @@ void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position p
   }
 }
 
+void create_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]){
+  for (int i = 0; i < MAX_FRUITS; i++) {
+
+    fruits[i].sprite = DEFAULT_FRUIT;
+
+    do{
+      int x = rand() % MAX_X;
+      int y = rand() % MAX_Y;
+
+      if (mvwinch(w,y,x) == (97 | A_ALTCHARSET)) {
+        fruits[i].sprite.position.x = x;
+        fruits[i].sprite.position.y = y;
+        fruits[i].sprite.alive = 1;
+      }
+    }while(!fruits[i].sprite.alive);
+  }
+}
+
 void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do* md, int created_ghosts){
 
   int gh_alive = 0;
@@ -238,23 +259,28 @@ void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do
     gh_alive += gh[i].sprite.alive;
   }
 
-  mvwprintw(w, 2, 0, "Fruits: %d ", fruit);
-  mvwprintw(w, 5, 0, "--GHOSTS--");
-  mvwprintw(w, 6, 0, "Remaining  %d ", MAX_GHOSTS - created_ghosts);
-  mvwprintw(w, 7, 0, "Alive      %d ", gh_alive);
-  mvwprintw(w, 8, 0, "Killed     %d ", (created_ghosts - gh_alive));
-
   if ((gh_alive == 0 && created_ghosts == MAX_GHOSTS) || (!fruit)) {
     mvwprintw(w, 2, 0, "YOU WIN! ");
   }else if(!md->sprite.alive) {
     mvwprintw(w, 2, 0, "GAME OVER!");
+  }else{
+    mvwprintw(w, 2, 0, "Fruits: %d ", fruit);
+    mvwprintw(w, 5, 0, "--GHOSTS--");
+    mvwprintw(w, 6, 0, "Remaining  %d ", MAX_GHOSTS - created_ghosts);
+    mvwprintw(w, 7, 0, "Alive      %d ", gh_alive);
+    mvwprintw(w, 8, 0, "Killed     %d ", (created_ghosts - gh_alive));
   }
-
 }
 
 const sprite DEFAULT_GHOST = {
   .alive = 0,
   .direction = UP_DIRECTION
+};
+
+const sprite DEFAULT_FRUIT = {
+  .alive = 0,
+  .direction = DOWN_DIRECTION,
+  .representation = 199 | A_ALTCHARSET | COLOR_PAIR(3)
 };
 
 const sprite DEFAULT_NEST = {
