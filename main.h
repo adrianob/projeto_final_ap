@@ -22,7 +22,6 @@
 #define CH_GHOST (214 | A_ALTCHARSET)
 #define CH_SHOT  (183 | A_ALTCHARSET)
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>

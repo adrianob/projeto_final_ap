@@ -67,11 +67,7 @@ void play(void){
           move_sprite(game_window, &md, DOWN_DIRECTION);
           break;
         case ' ':
-          if (!shot.alive){
-            shot.alive = 1;
-            shot.position = md.position;
-            shot.direction = md.direction;
-          }
+          shoot(&shot, md.position, md.direction);
           break;
       }
     }
@@ -91,7 +87,7 @@ void play(void){
       }
 
       if(shot.alive){
-        shoot(game_window, &shot);
+        move_shot(game_window, &shot);
       }
       timer_ready = 0;
     }

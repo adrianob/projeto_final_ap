@@ -121,7 +121,15 @@ void move_rock(WINDOW *w, sprite *rk){
   }
 }
 
-void shoot(WINDOW *w, sprite* s){
+void shoot(sprite *shot, struct position position, int direction){
+  if (!shot->alive){
+    shot->alive = 1;
+    shot->position = position;
+    shot->direction = direction;
+  }
+
+}
+void move_shot(WINDOW *w, sprite* s){
   move_if_possible(w, s);
 }
 
