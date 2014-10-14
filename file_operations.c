@@ -42,19 +42,19 @@ void make_map(FILE *level, chtype p[MAX_Y][MAX_X]){
       switch(buffer[cont]){
 
         case 'p':
-                  p[i][j] = 97 | A_ALTCHARSET;
+                  p[i][j] = CH_WALL;
                   break;
         case 'v':
                   p[i][j] = ' ';
                   break;
         case 'd':
-                  p[i][j] = ACS_PI;
+                  p[i][j] = CH_MR_DO;
                   break;
         case 'n':
-                  p[i][j] = '&';
+                  p[i][j] = CH_NEST;
                   break;
         case 'f':
-                  p[i][j] = 213 | A_ALTCHARSET | COLOR_PAIR(4);
+                  p[i][j] = CH_FRUIT;
                   break;
         default: break;
       }
@@ -72,7 +72,7 @@ void write_map(chtype MAP[MAX_Y][MAX_X]){
     for(int j = 0; j < MAX_X; j++){
       switch(MAP[i][j]){
 
-        case 97 | A_ALTCHARSET:
+        case CH_WALL:
                   buffer[i][j] = 'p';
                   break;
         case ' ':

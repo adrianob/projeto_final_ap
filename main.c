@@ -11,7 +11,7 @@
 #include "file_operations.h"
 
 int timer_ready = 0;
-struct game_state game_state = {.score = 0};
+struct game_state game_state = {.score = 0, .level = 1};
 
 int main(int argc, const char *argv[]){
   config();
@@ -20,16 +20,16 @@ int main(int argc, const char *argv[]){
   return 0;
 }
 
-void play_level_one(void){
+void play(void){
   chtype MAP[MAX_Y][MAX_X];
-  make_map(load_level(1), MAP);
+  make_map(load_level(game_state.level), MAP);
   unsigned int created_ghosts = 0;
   unsigned int ghost_timer = 0;
 
   //cria a janela do jogo dentro da borda
   WINDOW *border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
   WINDOW *game_window = newwin(MAX_Y, MAX_X, 1, 1);
-  WINDOW *info_window = newwin(5, 11, 0, MAX_X + 5);
+  WINDOW *info_window = newwin(10, 13, 0, MAX_X + 5);
   box(border_window, 0, 0);
 
   draw_map(game_window, MAP);
@@ -37,15 +37,22 @@ void play_level_one(void){
   //configuracao do timer
   config_timer();
 
-  struct position nest_position = find_char(MAP, '&');
+  struct position nest_position = find_char(MAP, CH_NEST);
   struct ghost ghosts[MAX_GHOSTS];
   create_ghosts(game_window, ghosts, nest_position);
+  struct fruit fruits[MAX_FRUITS];
+  struct position fruits_pos[MAX_FRUITS];
+  find_fruits(MAP, fruits_pos);
+  create_fruits(game_window, fruits, fruits_pos);
+  print_fruits(game_window,fruits);
+  struct rock rocks[MAX_ROCKS];
+  create_rocks(game_window, rocks);
   struct shot shot = {.sprite = DEFAULT_SHOT};
   sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
   struct mr_do md = {.sprite = DEFAULT_MR_DO};
-  md.sprite.position = find_char(MAP, ACS_PI);
-  md.sprite.representation = ACS_PI | COLOR_PAIR(2);
+  md.sprite.position = find_char(MAP, CH_MR_DO);
+  md.sprite.representation = CH_MR_DO;
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
@@ -76,6 +83,7 @@ void play_level_one(void){
     if (timer_ready) {
       ghost_timer++;
       move_ghosts(game_window, ghosts);
+      move_rocks(game_window, rocks);
 
       //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
@@ -100,8 +108,8 @@ void play_level_one(void){
     if (!md.sprite.alive) {
       mvwprintw(info_window, 2, 0, "GAME OVER");
     }
-    print_char(game_window, &nest);
-    print_char(game_window, &md.sprite);
+    debug_print(game_window, &md.sprite, &nest);
+    check_state (info_window, game_window, ghosts, fruits, &md, created_ghosts);
     refresh_windows(info_window, game_window, border_window);
   }
   endwin();
@@ -130,7 +138,7 @@ void show_menu(void){
     menu_items[i] = new_item(choices[i], "");
   }
 
-  set_item_userptr(menu_items[0], play_level_one);//nivel 1
+  set_item_userptr(menu_items[0], play);//nivel 1
   set_item_userptr(menu_items[3], exit);//sair
 
   game_menu = new_menu((ITEM **)menu_items);
@@ -169,10 +177,10 @@ void config(void){
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
   start_color();
-  init_pair(1, COLOR_RED, COLOR_BLACK);
-  init_pair(2, COLOR_YELLOW, COLOR_BLACK);
-  init_pair(3, COLOR_BLUE, COLOR_BLACK);
-  init_pair(4, COLOR_CYAN, COLOR_BLACK);
+  init_pair(1, COLOR_CYAN, COLOR_BLACK);
+  init_pair(2, COLOR_RED, COLOR_BLACK);
+  init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+  init_pair(4, COLOR_GREEN, COLOR_BLACK);
   noecho();			/* Don't echo() while we do getch */
   curs_set(0);
 }
@@ -194,6 +202,7 @@ void timer_handler(int i){
 void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
+      if(MAP[i][j] == CH_WALL || MAP[i][j] == ' ')
       mvwaddch(w, i, j, MAP[i][j]);
     }
   }
@@ -215,8 +224,77 @@ struct position find_char(chtype MAP[MAX_Y][MAX_X], int ch){
 void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position){
   for (int i = 0; i < MAX_GHOSTS; i++) {
     ghosts[i].sprite = DEFAULT_GHOST;
-    ghosts[i].sprite.representation = 214 | A_ALTCHARSET | COLOR_PAIR(3);
+    ghosts[i].sprite.representation = CH_GHOST;
     ghosts[i].sprite.position = position;
+  }
+}
+
+void create_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS], struct position *fruits_pos){
+  for (int i = 0; i < MAX_FRUITS; i++) {
+    fruits[i].sprite = DEFAULT_FRUIT;
+    fruits[i].sprite.position = fruits_pos[i];
+  }
+}
+
+void create_rocks(WINDOW *w, struct rock rocks[MAX_ROCKS]){
+  for (int i = 0; i < MAX_ROCKS; i++) {
+
+    rocks[i].sprite = DEFAULT_ROCK;
+
+    do{
+      int x = rand() % MAX_X;
+      int y = rand() % MAX_Y;
+
+      if (mvwinch(w,y,x) == CH_WALL) {
+        rocks[i].sprite.position.x = x;
+        rocks[i].sprite.position.y = y;
+        rocks[i].sprite.alive = 1;
+      }
+    }while(!rocks[i].sprite.alive);
+  }
+}
+
+void find_fruits(chtype MAP[MAX_Y][MAX_X], struct position *fruits_pos){
+  int f = 0;
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      if (MAP[i][j] == CH_FRUIT) {
+        fruits_pos[f].x = j;
+        fruits_pos[f].y = i;
+        f++;
+      }
+    }
+  }
+}
+
+void print_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]){
+  for(int i = 0; i < MAX_FRUITS; i++)
+    mvwaddch(w, fruits[i].sprite.position.y, fruits[i].sprite.position.x, fruits[i].sprite.representation);
+}
+
+void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct fruit fr[MAX_FRUITS], struct mr_do* md, int created_ghosts){
+
+  int gh_alive = 0;
+  int fr_alive = 0;
+
+  for (int i = 0; i < MAX_FRUITS; i++) {
+    fr_alive += fr[i].sprite.alive;
+  }
+
+  for (int i = 0; i < MAX_GHOSTS; i++) {
+    gh_alive += gh[i].sprite.alive;
+  }
+
+  if ((gh_alive == 0 && created_ghosts == MAX_GHOSTS) || (!fr_alive)) {
+    mvwprintw(w, 2, 0, "YOU WIN! ");
+  }else if(!md->sprite.alive) {
+    mvwprintw(w, 2, 0, "GAME OVER!");
+  }else{
+    mvwprintw(w, 2, 0, "Fruits: %d ", fr_alive);
+    mvwprintw(w, 5, 0, "--GHOSTS--");
+    mvwprintw(w, 6, 0, "Remaining  %d ", MAX_GHOSTS - created_ghosts);
+    mvwprintw(w, 7, 0, "Alive      %d ", gh_alive);
+    mvwprintw(w, 8, 0, "Killed     %d ", (created_ghosts - gh_alive));
   }
 }
 
@@ -225,13 +303,24 @@ const sprite DEFAULT_GHOST = {
   .direction = UP_DIRECTION
 };
 
+const sprite DEFAULT_FRUIT = {
+  .alive = 1,
+  .representation = CH_FRUIT
+};
+
+const sprite DEFAULT_ROCK = {
+  .alive = 0,
+  .direction = DOWN_DIRECTION,
+  .representation = CH_ROCK
+};
+
 const sprite DEFAULT_NEST = {
-  .representation = 110 | A_ALTCHARSET | COLOR_PAIR(1),
+  .representation = CH_NEST,
   .alive = 1
 };
 
 const sprite DEFAULT_SHOT = {
-  .representation = 183 | A_ALTCHARSET,
+  .representation = CH_SHOT,
   .alive = 0
 };
 
