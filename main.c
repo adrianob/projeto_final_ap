@@ -1,13 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <sys/time.h>
-#include <time.h>
-#include <ncurses.h>
-#include <menu.h>
-#include <locale.h>
 #include "main.h"
 #include "movement.h"
+#include "sprites.h"
 #include "file_operations.h"
 
 int timer_ready = 0;
@@ -38,44 +31,43 @@ void play(void){
   config_timer();
 
   struct position nest_position = find_char(MAP, CH_NEST);
-  struct ghost ghosts[MAX_GHOSTS];
+  sprite ghosts[MAX_GHOSTS];
   create_ghosts(game_window, ghosts, nest_position);
-  struct fruit fruits[MAX_FRUITS];
-  struct position fruits_pos[MAX_FRUITS];
-  find_fruits(MAP, fruits_pos);
-  create_fruits(game_window, fruits, fruits_pos);
+
+  sprite fruits[MAX_FRUITS];
+  create_fruits(game_window, fruits);
+  find_fruits(MAP, fruits);
   print_fruits(game_window,fruits);
-  struct rock rocks[MAX_ROCKS];
+
+  sprite rocks[MAX_ROCKS];
   create_rocks(game_window, rocks);
-  struct shot shot = {.sprite = DEFAULT_SHOT};
+
+  sprite shot = DEFAULT_SHOT;
   sprite nest = DEFAULT_NEST;
   nest.position = nest_position;
-  struct mr_do md = {.sprite = DEFAULT_MR_DO};
-  md.sprite.position = find_char(MAP, CH_MR_DO);
-  md.sprite.representation = CH_MR_DO;
+
+  sprite md = DEFAULT_MR_DO;
+  md.position = find_char(MAP, CH_MR_DO);
+  md.representation = CH_MR_DO;
 
   int ch;
   while((ch = getch()) != KEY_F(1)){
-    if(md.sprite.alive){
+    if(md.alive){
       switch(ch){
         case KEY_RIGHT:
-          move_sprite(game_window, &md.sprite, RIGHT_DIRECTION);
+          move_sprite(game_window, &md, RIGHT_DIRECTION);
           break;
         case KEY_LEFT:
-          move_sprite(game_window, &md.sprite, LEFT_DIRECTION);
+          move_sprite(game_window, &md, LEFT_DIRECTION);
           break;
         case KEY_UP:
-          move_sprite(game_window, &md.sprite, UP_DIRECTION);
+          move_sprite(game_window, &md, UP_DIRECTION);
           break;
         case KEY_DOWN:
-          move_sprite(game_window, &md.sprite, DOWN_DIRECTION);
+          move_sprite(game_window, &md, DOWN_DIRECTION);
           break;
         case ' ':
-          if (!shot.sprite.alive){
-            shot.sprite.alive = 1;
-            shot.sprite.position = md.sprite.position;
-            shot.sprite.direction = md.sprite.direction;
-          }
+          shoot(&shot, md.position, md.direction);
           break;
       }
     }
@@ -88,28 +80,24 @@ void play(void){
       //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
         if (created_ghosts < MAX_GHOSTS) {
-          ghosts[created_ghosts].sprite.alive = 1;
+          ghosts[created_ghosts].alive = 1;
           created_ghosts++;
         }
         ghost_timer = 0;
       }
 
-      if(shot.sprite.alive){
-        shoot(game_window, &shot);
+      if(shot.alive){
+        move_shot(game_window, &shot);
       }
       timer_ready = 0;
     }
 
     for (int i = 0; i < MAX_GHOSTS; i++) {
-      check_collision(game_window, &ghosts[i].sprite, &md.sprite);
-      check_shot_collision(game_window, &shot.sprite, &ghosts[i].sprite);
+      check_collision(game_window, &ghosts[i], &md);
+      check_shot_collision(game_window, &shot, &ghosts[i]);
     }
-    mvwprintw(info_window, 1, 0, "SCORE: %d", game_state.score);
-    if (!md.sprite.alive) {
-      mvwprintw(info_window, 2, 0, "GAME OVER");
-    }
-    debug_print(game_window, &md.sprite, &nest);
-    check_state (info_window, game_window, ghosts, fruits, &md, created_ghosts);
+    debug_print(game_window, &md, &nest);
+    check_state(info_window, MAP, game_window, ghosts, fruits, &md, created_ghosts);
     refresh_windows(info_window, game_window, border_window);
   }
   endwin();
@@ -202,128 +190,48 @@ void timer_handler(int i){
 void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
-      if(MAP[i][j] == CH_WALL || MAP[i][j] == ' ')
-      mvwaddch(w, i, j, MAP[i][j]);
+      if(MAP[i][j] == CH_WALL || MAP[i][j] == ' '){
+        mvwaddch(w, i, j, MAP[i][j]);
+      }
     }
   }
 }
 
-struct position find_char(chtype MAP[MAX_Y][MAX_X], int ch){
+struct position find_char(chtype MAP[MAX_Y][MAX_X], chtype ch){
   struct position position;
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
       if (MAP[i][j] == ch) {
         position.x = j;
         position.y = i;
+        break;
       }
     }
   }
   return position;
 }
 
-void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position){
-  for (int i = 0; i < MAX_GHOSTS; i++) {
-    ghosts[i].sprite = DEFAULT_GHOST;
-    ghosts[i].sprite.representation = CH_GHOST;
-    ghosts[i].sprite.position = position;
-  }
-}
+void check_state(WINDOW *w, chtype MAP[MAX_Y][MAX_X], WINDOW *g, sprite gh[MAX_GHOSTS], sprite *fr, sprite  *md, int created_ghosts){
 
-void create_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS], struct position *fruits_pos){
-  for (int i = 0; i < MAX_FRUITS; i++) {
-    fruits[i].sprite = DEFAULT_FRUIT;
-    fruits[i].sprite.position = fruits_pos[i];
-  }
-}
-
-void create_rocks(WINDOW *w, struct rock rocks[MAX_ROCKS]){
-  for (int i = 0; i < MAX_ROCKS; i++) {
-
-    rocks[i].sprite = DEFAULT_ROCK;
-
-    do{
-      int x = rand() % MAX_X;
-      int y = rand() % MAX_Y;
-
-      if (mvwinch(w,y,x) == CH_WALL) {
-        rocks[i].sprite.position.x = x;
-        rocks[i].sprite.position.y = y;
-        rocks[i].sprite.alive = 1;
-      }
-    }while(!rocks[i].sprite.alive);
-  }
-}
-
-void find_fruits(chtype MAP[MAX_Y][MAX_X], struct position *fruits_pos){
-  int f = 0;
-  for (int i = 0; i < MAX_Y; i++) {
-    for (int j = 0; j < MAX_X; j++) {
-      if (MAP[i][j] == CH_FRUIT) {
-        fruits_pos[f].x = j;
-        fruits_pos[f].y = i;
-        f++;
-      }
-    }
-  }
-}
-
-void print_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]){
-  for(int i = 0; i < MAX_FRUITS; i++)
-    mvwaddch(w, fruits[i].sprite.position.y, fruits[i].sprite.position.x, fruits[i].sprite.representation);
-}
-
-void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct fruit fr[MAX_FRUITS], struct mr_do* md, int created_ghosts){
-
-  int gh_alive = 0;
-  int fr_alive = 0;
-
-  for (int i = 0; i < MAX_FRUITS; i++) {
-    fr_alive += fr[i].sprite.alive;
-  }
+  int alive_ghosts = 0;
+  int alive_fruits = wfind_fruits(g, fr);
 
   for (int i = 0; i < MAX_GHOSTS; i++) {
-    gh_alive += gh[i].sprite.alive;
+    alive_ghosts += gh[i].alive;
   }
 
-  if ((gh_alive == 0 && created_ghosts == MAX_GHOSTS) || (!fr_alive)) {
+  if ((alive_ghosts == 0 && created_ghosts == MAX_GHOSTS) || (!alive_fruits)) {
     mvwprintw(w, 2, 0, "YOU WIN! ");
-  }else if(!md->sprite.alive) {
+    game_state.level = 2;
+    play();
+  }else if(!md->alive) {
     mvwprintw(w, 2, 0, "GAME OVER!");
   }else{
-    mvwprintw(w, 2, 0, "Fruits: %d ", fr_alive);
+    mvwprintw(w, 1, 0, "SCORE: %d", game_state.score);
+    mvwprintw(w, 2, 0, "Fruits: %d ", alive_fruits);
     mvwprintw(w, 5, 0, "--GHOSTS--");
     mvwprintw(w, 6, 0, "Remaining  %d ", MAX_GHOSTS - created_ghosts);
-    mvwprintw(w, 7, 0, "Alive      %d ", gh_alive);
-    mvwprintw(w, 8, 0, "Killed     %d ", (created_ghosts - gh_alive));
+    mvwprintw(w, 7, 0, "Alive      %d ", alive_ghosts);
+    mvwprintw(w, 8, 0, "Killed     %d ", (created_ghosts - alive_ghosts));
   }
 }
-
-const sprite DEFAULT_GHOST = {
-  .alive = 0,
-  .direction = UP_DIRECTION
-};
-
-const sprite DEFAULT_FRUIT = {
-  .alive = 1,
-  .representation = CH_FRUIT
-};
-
-const sprite DEFAULT_ROCK = {
-  .alive = 0,
-  .direction = DOWN_DIRECTION,
-  .representation = CH_ROCK
-};
-
-const sprite DEFAULT_NEST = {
-  .representation = CH_NEST,
-  .alive = 1
-};
-
-const sprite DEFAULT_SHOT = {
-  .representation = CH_SHOT,
-  .alive = 0
-};
-
-const sprite DEFAULT_MR_DO = {
-  .alive = 1
-};

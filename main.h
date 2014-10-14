@@ -23,16 +23,13 @@
 #define CH_SHOT  (183 | A_ALTCHARSET)
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <signal.h>
+#include <sys/time.h>
+#include <time.h>
 #include <ncurses.h>
-void config(void);
-void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]);
-void timer_handler(int i);
-void config_timer(void);
-void play(void);
-void show_menu(void);
-struct position find_char(chtype MAP[MAX_Y][MAX_X], int ch);
-void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
-void find_fruits(chtype MAP[MAX_Y][MAX_X], struct position *fruits_pos);
+#include <menu.h>
+#include <locale.h>
 
 struct position {
   int x, y, last_x, last_y;
@@ -51,42 +48,19 @@ typedef struct {
    * */
 } sprite;
 
-struct mr_do {
-  sprite sprite;
-};
-
-struct ghost {
-  sprite sprite;
-};
-
-struct fruit {
-  sprite sprite;
-};
-
-struct rock {
-  sprite sprite;
-};
-
-struct shot {
-  sprite sprite;
-};
-
 struct game_state {
   int score;
   int level;
 };
 
-void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position);
-void create_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS], struct position *fruit_pos);
-void print_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]);
-void create_rocks(WINDOW *w, struct rock rocks[MAX_ROCKS]);
-void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct fruit fr[MAX_FRUITS], struct mr_do* md, int created_ghosts);
-
-extern const sprite DEFAULT_GHOST;
-extern const sprite DEFAULT_FRUIT;
-extern const sprite DEFAULT_ROCK;
-extern const sprite DEFAULT_SHOT;
-extern const sprite DEFAULT_MR_DO;
-extern const sprite DEFAULT_NEST;
+void config(void);
+void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]);
+void timer_handler(int i);
+void config_timer(void);
+void play(void);
+void show_menu(void);
+struct position find_char(chtype MAP[MAX_Y][MAX_X], chtype ch);
+void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
+void check_state(WINDOW *w, chtype MAP[MAX_Y][MAX_X], WINDOW *g, sprite gh[MAX_GHOSTS], sprite *fr, sprite *md, int created_ghosts);
 
 #endif
