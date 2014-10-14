@@ -109,7 +109,7 @@ void play(void){
       mvwprintw(info_window, 2, 0, "GAME OVER");
     }
     debug_print(game_window, &md.sprite, &nest);
-    check_state (info_window, game_window, &ghosts[0],&md, created_ghosts);
+    check_state (info_window, game_window, ghosts, fruits, &md, created_ghosts);
     refresh_windows(info_window, game_window, border_window);
   }
   endwin();
@@ -272,29 +272,25 @@ void print_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]){
     mvwaddch(w, fruits[i].sprite.position.y, fruits[i].sprite.position.x, fruits[i].sprite.representation);
 }
 
-void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do* md, int created_ghosts){
+void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct fruit fr[MAX_FRUITS], struct mr_do* md, int created_ghosts){
 
   int gh_alive = 0;
-  int fruit = 0;
+  int fr_alive = 0;
 
-   for (int i = 0; i < MAX_Y; i++) {
-    for (int j = 0; j < MAX_X; j++) {
-      if (mvwinch(g,i,j) == CH_FRUIT) {
-        fruit++;
-      }
-    }
+  for (int i = 0; i < MAX_FRUITS; i++) {
+    fr_alive += fr[i].sprite.alive;
   }
 
   for (int i = 0; i < MAX_GHOSTS; i++) {
     gh_alive += gh[i].sprite.alive;
   }
 
-  if ((gh_alive == 0 && created_ghosts == MAX_GHOSTS) || (!fruit)) {
+  if ((gh_alive == 0 && created_ghosts == MAX_GHOSTS) || (!fr_alive)) {
     mvwprintw(w, 2, 0, "YOU WIN! ");
   }else if(!md->sprite.alive) {
     mvwprintw(w, 2, 0, "GAME OVER!");
   }else{
-    mvwprintw(w, 2, 0, "Fruits: %d ", fruit);
+    mvwprintw(w, 2, 0, "Fruits: %d ", fr_alive);
     mvwprintw(w, 5, 0, "--GHOSTS--");
     mvwprintw(w, 6, 0, "Remaining  %d ", MAX_GHOSTS - created_ghosts);
     mvwprintw(w, 7, 0, "Alive      %d ", gh_alive);

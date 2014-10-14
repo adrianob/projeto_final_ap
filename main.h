@@ -80,7 +80,7 @@ void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position p
 void create_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS], struct position *fruit_pos);
 void print_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]);
 void create_rocks(WINDOW *w, struct rock rocks[MAX_ROCKS]);
-void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do* md, int created_ghosts);
+void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct fruit fr[MAX_FRUITS], struct mr_do* md, int created_ghosts);
 
 extern const sprite DEFAULT_GHOST;
 extern const sprite DEFAULT_FRUIT;
