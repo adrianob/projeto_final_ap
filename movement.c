@@ -74,7 +74,7 @@ int can_go_to_direction(WINDOW *w, struct position* p, int direction){
 
 int can_fall(WINDOW *w, struct position* p, int direction){
   int next_ch = next_char(w, p, direction);
-  return !(next_ch == CH_WALL || next_ch == CH_MR_DO || next_ch == -1);
+  return (next_ch == ' ');
 }
 
 int next_char(WINDOW *w, struct position* p, int direction){

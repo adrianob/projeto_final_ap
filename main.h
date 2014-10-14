@@ -4,6 +4,7 @@
 #define MAX_X 60 //tamanho de colunas do mapa principal
 #define MAX_Y 23 //tamanho de linhas do mapa principal
 #define MAX_GHOSTS 10
+#define MAX_FRUITS 32
 #define MAX_ROCKS 8
 #define INTERVAL 100000
 #define GHOST_INTERVAL 3000000
@@ -21,13 +22,6 @@
 #define CH_GHOST (214 | A_ALTCHARSET)
 #define CH_SHOT  (183 | A_ALTCHARSET)
 
-
-
-
-
-
-
-
 #include <stdio.h>
 #include <ncurses.h>
 void config(void);
@@ -38,6 +32,7 @@ void play(void);
 void show_menu(void);
 struct position find_char(chtype MAP[MAX_Y][MAX_X], int ch);
 void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
+void find_fruits(chtype MAP[MAX_Y][MAX_X], struct position *fruits_pos);
 
 struct position {
   int x, y, last_x, last_y;
@@ -64,6 +59,10 @@ struct ghost {
   sprite sprite;
 };
 
+struct fruit {
+  sprite sprite;
+};
+
 struct rock {
   sprite sprite;
 };
@@ -78,10 +77,13 @@ struct game_state {
 };
 
 void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position position);
+void create_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS], struct position *fruit_pos);
+void print_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]);
 void create_rocks(WINDOW *w, struct rock rocks[MAX_ROCKS]);
 void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do* md, int created_ghosts);
 
 extern const sprite DEFAULT_GHOST;
+extern const sprite DEFAULT_FRUIT;
 extern const sprite DEFAULT_ROCK;
 extern const sprite DEFAULT_SHOT;
 extern const sprite DEFAULT_MR_DO;

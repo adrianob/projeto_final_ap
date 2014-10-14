@@ -40,6 +40,11 @@ void play(void){
   struct position nest_position = find_char(MAP, CH_NEST);
   struct ghost ghosts[MAX_GHOSTS];
   create_ghosts(game_window, ghosts, nest_position);
+  struct fruit fruits[MAX_FRUITS];
+  struct position fruits_pos[MAX_FRUITS];
+  find_fruits(MAP, fruits_pos);
+  create_fruits(game_window, fruits, fruits_pos);
+  print_fruits(game_window,fruits);
   struct rock rocks[MAX_ROCKS];
   create_rocks(game_window, rocks);
   struct shot shot = {.sprite = DEFAULT_SHOT};
@@ -197,6 +202,7 @@ void timer_handler(int i){
 void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
+      if(MAP[i][j] == CH_WALL || MAP[i][j] == ' ')
       mvwaddch(w, i, j, MAP[i][j]);
     }
   }
@@ -223,6 +229,13 @@ void create_ghosts(WINDOW *w, struct ghost ghosts[MAX_GHOSTS], struct position p
   }
 }
 
+void create_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS], struct position *fruits_pos){
+  for (int i = 0; i < MAX_FRUITS; i++) {
+    fruits[i].sprite = DEFAULT_FRUIT;
+    fruits[i].sprite.position = fruits_pos[i];
+  }
+}
+
 void create_rocks(WINDOW *w, struct rock rocks[MAX_ROCKS]){
   for (int i = 0; i < MAX_ROCKS; i++) {
 
@@ -239,6 +252,24 @@ void create_rocks(WINDOW *w, struct rock rocks[MAX_ROCKS]){
       }
     }while(!rocks[i].sprite.alive);
   }
+}
+
+void find_fruits(chtype MAP[MAX_Y][MAX_X], struct position *fruits_pos){
+  int f = 0;
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      if (MAP[i][j] == CH_FRUIT) {
+        fruits_pos[f].x = j;
+        fruits_pos[f].y = i;
+        f++;
+      }
+    }
+  }
+}
+
+void print_fruits(WINDOW *w, struct fruit fruits[MAX_FRUITS]){
+  for(int i = 0; i < MAX_FRUITS; i++)
+    mvwaddch(w, fruits[i].sprite.position.y, fruits[i].sprite.position.x, fruits[i].sprite.representation);
 }
 
 void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do* md, int created_ghosts){
@@ -274,6 +305,11 @@ void check_state(WINDOW *w, WINDOW *g, struct ghost gh[MAX_GHOSTS], struct mr_do
 const sprite DEFAULT_GHOST = {
   .alive = 0,
   .direction = UP_DIRECTION
+};
+
+const sprite DEFAULT_FRUIT = {
+  .alive = 1,
+  .representation = CH_FRUIT
 };
 
 const sprite DEFAULT_ROCK = {
