@@ -45,6 +45,20 @@ void find_fruits(chtype MAP[MAX_Y][MAX_X], sprite *fruits){
   }
 }
 
+int wfind_fruits(WINDOW *w, sprite *fruits){
+  int f = 0;
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      if (mvwinch(w, i, j) == CH_FRUIT) {
+        fruits[f].position.y = i;
+        fruits[f].position.x = j;
+        f++;
+      }
+    }
+  }
+  return f;
+}
+
 void print_fruits(WINDOW *w, sprite *fruits){
   for(int i = 0; i < MAX_FRUITS; i++){
     mvwaddch(w, fruits[i].position.y, fruits[i].position.x, fruits[i].representation);

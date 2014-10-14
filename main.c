@@ -96,9 +96,8 @@ void play(void){
       check_collision(game_window, &ghosts[i], &md);
       check_shot_collision(game_window, &shot, &ghosts[i]);
     }
-    mvwprintw(info_window, 1, 0, "SCORE: %d", game_state.score);
     debug_print(game_window, &md, &nest);
-    check_state (info_window, game_window, ghosts, fruits, &md, created_ghosts);
+    check_state(info_window, MAP, game_window, ghosts, fruits, &md, created_ghosts);
     refresh_windows(info_window, game_window, border_window);
   }
   endwin();
@@ -212,14 +211,10 @@ struct position find_char(chtype MAP[MAX_Y][MAX_X], chtype ch){
   return position;
 }
 
-void check_state(WINDOW *w, WINDOW *g, sprite gh[MAX_GHOSTS], sprite fr[MAX_FRUITS], sprite  *md, int created_ghosts){
+void check_state(WINDOW *w, chtype MAP[MAX_Y][MAX_X], WINDOW *g, sprite gh[MAX_GHOSTS], sprite *fr, sprite  *md, int created_ghosts){
 
   int alive_ghosts = 0;
-  int alive_fruits = 0;
-
-  for (int i = 0; i < MAX_FRUITS; i++) {
-    alive_fruits += fr[i].alive;
-  }
+  int alive_fruits = wfind_fruits(g, fr);
 
   for (int i = 0; i < MAX_GHOSTS; i++) {
     alive_ghosts += gh[i].alive;
@@ -227,9 +222,12 @@ void check_state(WINDOW *w, WINDOW *g, sprite gh[MAX_GHOSTS], sprite fr[MAX_FRUI
 
   if ((alive_ghosts == 0 && created_ghosts == MAX_GHOSTS) || (!alive_fruits)) {
     mvwprintw(w, 2, 0, "YOU WIN! ");
+    game_state.level = 2;
+    play();
   }else if(!md->alive) {
     mvwprintw(w, 2, 0, "GAME OVER!");
   }else{
+    mvwprintw(w, 1, 0, "SCORE: %d", game_state.score);
     mvwprintw(w, 2, 0, "Fruits: %d ", alive_fruits);
     mvwprintw(w, 5, 0, "--GHOSTS--");
     mvwprintw(w, 6, 0, "Remaining  %d ", MAX_GHOSTS - created_ghosts);
