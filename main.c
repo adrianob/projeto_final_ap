@@ -81,8 +81,8 @@ void play(void){
 
     if (timer_ready) {
       ghost_timer++;
-      move_sprite(game_window, &md, mrdo_direction);
       rock_timer++;
+      move_sprite(game_window, &md, mrdo_direction);
       move_ghosts(game_window, ghosts);
 
       if(rock_timer == (ROCK_INTERVAL / INTERVAL)){
