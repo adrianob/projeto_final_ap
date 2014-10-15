@@ -8,6 +8,7 @@
 #define MAX_ROCKS 8
 #define INTERVAL 100000
 #define GHOST_INTERVAL 3000000
+#define ROCK_INTERVAL 100000
 #define UP_DIRECTION 1
 #define DOWN_DIRECTION 2
 #define RIGHT_DIRECTION 3
@@ -40,6 +41,7 @@ typedef struct {
   int alive;//vivo ou morto
   chtype representation;
   int direction;
+  int falling;
   /*
     1 - cima
     2 - baixo

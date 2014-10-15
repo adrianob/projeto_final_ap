@@ -67,13 +67,17 @@ void check_fruit_collision(WINDOW *w, sprite* sprite, int direction){
 }
 
 //verifica se existe uma parede no caminho ou eh fim do mapa
-int can_go_to_direction(WINDOW *w, struct position* p, int direction){
-  int next_ch = next_char(w, p, direction);
-  return !(next_ch == CH_WALL || next_ch == CH_ROCK || next_ch == -1);
+int can_go_to_direction(WINDOW *w, sprite *sp, int direction){
+  int next_ch = next_char(w, &sp->position, direction);
+  if (sp->representation == CH_MR_DO)
+    return !(next_ch == CH_ROCK || next_ch == -1);
+  else
+    return !(next_ch == CH_WALL || next_ch == CH_ROCK || next_ch == -1);
 }
 
+
 int can_fall(WINDOW *w, struct position* p, int direction){
-  int next_ch = next_char(w, p, direction);
+  int next_ch = next_char(w, p, DOWN_DIRECTION);
   return (next_ch == ' ');
 }
 
@@ -97,9 +101,9 @@ int next_char(WINDOW *w, struct position *p, int direction){
 }
 
 void move_ghost(WINDOW *w, sprite *gh){
-  if (!can_go_to_direction(w, &gh->position, gh->direction)){
+  if (!can_go_to_direction(w, gh, gh->direction)){
     int d = rand() % 4 + 1;
-    while(!can_go_to_direction(w, &gh->position, d)){
+    while(!can_go_to_direction(w, gh, d)){
       d = rand() % 4 + 1;
     }
 
@@ -112,12 +116,21 @@ void move_ghost(WINDOW *w, sprite *gh){
 
 void move_rock(WINDOW *w, sprite *rk){
   if (can_fall(w, &rk->position, rk->direction)){
-    move_sprite(w, rk, rk->direction);
+    if(rk->falling == 10){
+      move_sprite(w, rk, rk->direction);
+    }
+    else{
+      rk->falling++;
+    }
   }
   else{
-    rk->position.last_x = rk->position.x;
-    rk->position.last_y = rk->position.y;
-    print_char(w, rk);
+    if(rk->falling == 10){
+      rk->alive = 0;
+      print_char(w, rk);
+    }
+    else{
+      print_char(w, rk);
+    }
   }
 }
 
@@ -134,7 +147,7 @@ void move_shot(WINDOW *w, sprite* s){
 }
 
 void move_if_possible(WINDOW *w, sprite* s){
-  if (can_go_to_direction(w, &s->position, s->direction)) {
+  if (can_go_to_direction(w, s, s->direction)) {
     move_sprite(w, s, s->direction);
   }
   else{
