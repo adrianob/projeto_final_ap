@@ -18,6 +18,7 @@ void play(void){
   make_map(load_level(game_state.level), MAP);
   unsigned int created_ghosts = 0;
   unsigned int ghost_timer = 0;
+  unsigned int rock_timer = 0;
 
   //cria a janela do jogo dentro da borda
   WINDOW *border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
@@ -41,6 +42,7 @@ void play(void){
 
   sprite rocks[MAX_ROCKS];
   create_rocks(game_window, rocks);
+  print_rocks(game_window,rocks);
 
   sprite shot = DEFAULT_SHOT;
   sprite nest = DEFAULT_NEST;
@@ -55,15 +57,19 @@ void play(void){
     if(md.alive){
       switch(ch){
         case KEY_RIGHT:
+          if(can_go_to_direction(game_window,&md,RIGHT_DIRECTION))
           move_sprite(game_window, &md, RIGHT_DIRECTION);
           break;
         case KEY_LEFT:
+          if(can_go_to_direction(game_window,&md,LEFT_DIRECTION))
           move_sprite(game_window, &md, LEFT_DIRECTION);
           break;
         case KEY_UP:
+          if(can_go_to_direction(game_window,&md,UP_DIRECTION))
           move_sprite(game_window, &md, UP_DIRECTION);
           break;
         case KEY_DOWN:
+          if(can_go_to_direction(game_window,&md,DOWN_DIRECTION))
           move_sprite(game_window, &md, DOWN_DIRECTION);
           break;
         case ' ':
@@ -74,8 +80,13 @@ void play(void){
 
     if (timer_ready) {
       ghost_timer++;
+      rock_timer++;
       move_ghosts(game_window, ghosts);
-      move_rocks(game_window, rocks);
+
+      if(rock_timer == (ROCK_INTERVAL / INTERVAL)){
+        move_rocks(game_window, rocks);
+        rock_timer = 0;
+      }
 
       //tempo de criar um novo fantasma
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {
