@@ -65,6 +65,12 @@ void print_fruits(WINDOW *w, sprite *fruits){
   }
 }
 
+void print_rocks(WINDOW *w, sprite *rocks){
+  for(int i = 0; i < MAX_ROCKS; i++){
+    mvwaddch(w, rocks[i].position.y, rocks[i].position.x, rocks[i].representation);
+  }
+}
+
 const sprite DEFAULT_GHOST = {
   .alive = 0,
   .direction = UP_DIRECTION

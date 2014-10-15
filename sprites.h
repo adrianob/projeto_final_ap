@@ -9,6 +9,7 @@ void create_rocks(WINDOW *w, sprite rocks[MAX_ROCKS]);
 void find_fruits(chtype MAP[MAX_Y][MAX_X], sprite *fruits);
 int wfind_fruits(WINDOW *w, sprite *fruits);
 void print_fruits(WINDOW *w, sprite *fruits);
+void print_rocks(WINDOW *w, sprite *rocks);
 
 extern const sprite DEFAULT_GHOST;
 extern const sprite DEFAULT_FRUIT;
