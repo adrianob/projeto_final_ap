@@ -49,7 +49,9 @@ void move_sprite(WINDOW *w, sprite* sprite, int direction){
       }
   }
   check_fruit_collision(w, sprite, direction);
-  sprite->direction = direction;
+  if (direction) {
+    sprite->direction = direction;
+  }
   print_char(w, sprite);
 }
 
