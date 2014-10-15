@@ -51,20 +51,21 @@ void play(void){
   md.representation = CH_MR_DO;
 
   int ch;
+  int mrdo_direction;
   while((ch = getch()) != KEY_F(1)){
     if(md.alive){
       switch(ch){
         case KEY_RIGHT:
-          move_sprite(game_window, &md, RIGHT_DIRECTION);
+          mrdo_direction = RIGHT_DIRECTION;
           break;
         case KEY_LEFT:
-          move_sprite(game_window, &md, LEFT_DIRECTION);
+          mrdo_direction = LEFT_DIRECTION;
           break;
         case KEY_UP:
-          move_sprite(game_window, &md, UP_DIRECTION);
+          mrdo_direction = UP_DIRECTION;
           break;
         case KEY_DOWN:
-          move_sprite(game_window, &md, DOWN_DIRECTION);
+          mrdo_direction = DOWN_DIRECTION;
           break;
         case ' ':
           shoot(&shot, md.position, md.direction);
@@ -74,6 +75,7 @@ void play(void){
 
     if (timer_ready) {
       ghost_timer++;
+      move_sprite(game_window, &md, mrdo_direction);
       move_ghosts(game_window, ghosts);
       move_rocks(game_window, rocks);
 
@@ -90,6 +92,7 @@ void play(void){
         move_shot(game_window, &shot);
       }
       timer_ready = 0;
+      mrdo_direction = 0;
     }
 
     for (int i = 0; i < MAX_GHOSTS; i++) {
