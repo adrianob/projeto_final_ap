@@ -5,6 +5,6 @@
 #include "main.h"
 
 FILE* load_level(int level); //Recebe o level (1 - nível um, 2 - nível dois, qualquer outra coisa - nível 3) e retorna um FILE
-void make_map(FILE * level, chtype p[MAX_Y][MAX_X]);  //Recebe um FILE e o ponteiro da matriz e inicializa o mapa
-void write_map(chtype MAP[MAX_Y][MAX_X]);             //Salva o mapa atual em um .txt para continuar o jogo
+void make_map(FILE * level, chtype (*p)[MAX_X]);  //Recebe um FILE e o ponteiro da matriz e inicializa o mapa
+void write_map(chtype (*MAP)[MAX_X]);             //Salva o mapa atual em um .txt para continuar o jogo
 #endif

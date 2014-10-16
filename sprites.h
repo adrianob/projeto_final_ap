@@ -3,10 +3,10 @@
 
 #include "main.h"
 
-void create_ghosts(WINDOW *w, sprite ghosts[MAX_GHOSTS], struct position position);
-void create_fruits(WINDOW *w, sprite fruits[MAX_FRUITS]);
-void create_rocks(WINDOW *w, sprite rocks[MAX_ROCKS]);
-void find_fruits(chtype MAP[MAX_Y][MAX_X], sprite *fruits);
+void create_ghosts(WINDOW *w, sprite *ghosts, struct position position);
+void create_fruits(WINDOW *w, sprite *fruits);
+void create_rocks(WINDOW *w, sprite *rocks);
+void find_fruits(chtype (*MAP)[MAX_X], sprite *fruits);
 int wfind_fruits(WINDOW *w, sprite *fruits);
 void print_fruits(WINDOW *w, sprite *fruits);
 void print_rocks(WINDOW *w, sprite *rocks);
