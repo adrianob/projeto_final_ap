@@ -14,8 +14,8 @@ void move_sprite(WINDOW *w, sprite* sprite, int direction);
 void move_if_possible(WINDOW *w, sprite* s);
 void check_collision(WINDOW *w, sprite *sp1, sprite *sp2);
 void check_shot_collision(WINDOW *w, sprite *sp1, sprite *sp2);
-void move_ghosts(WINDOW *w, sprite ghosts[MAX_GHOSTS]);
-void move_rocks(WINDOW *w, sprite rocks[MAX_ROCKS]);
+void move_ghosts(WINDOW *w, sprite *ghosts);
+void move_rocks(WINDOW *w, sprite *rocks);
 int next_char(WINDOW *w, struct position *p, int direction);
 void check_fruit_collision(WINDOW *w, sprite* sprite, int direction);
 

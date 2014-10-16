@@ -182,7 +182,7 @@ void check_shot_collision(WINDOW *w, sprite *sp1, sprite *sp2){
   }
 }
 
-void move_ghosts(WINDOW *w, sprite ghosts[MAX_GHOSTS]){
+void move_ghosts(WINDOW *w, sprite *ghosts){
   for (int i = 0; i < MAX_GHOSTS; i++) {
     if(ghosts[i].alive){
       move_ghost(w, &ghosts[i]);
@@ -190,7 +190,7 @@ void move_ghosts(WINDOW *w, sprite ghosts[MAX_GHOSTS]){
   }
 }
 
-void move_rocks(WINDOW *w, sprite rocks[MAX_ROCKS]){
+void move_rocks(WINDOW *w, sprite *rocks){
   for (int i = 0; i < MAX_ROCKS; i++) {
     if(rocks[i].alive){
       move_rock(w, &rocks[i]);

@@ -1,6 +1,6 @@
 #include "sprites.h"
 
-void create_ghosts(WINDOW *w, sprite ghosts[MAX_GHOSTS], struct position position){
+void create_ghosts(WINDOW *w, sprite *ghosts, struct position position){
   for (int i = 0; i < MAX_GHOSTS; i++) {
     ghosts[i] = DEFAULT_GHOST;
     ghosts[i].representation = CH_GHOST;
@@ -14,7 +14,7 @@ void create_fruits(WINDOW *w, sprite *fruits){
   }
 }
 
-void create_rocks(WINDOW *w, sprite rocks[MAX_ROCKS]){
+void create_rocks(WINDOW *w, sprite *rocks){
   for (int i = 0; i < MAX_ROCKS; i++) {
 
     rocks[i] = DEFAULT_ROCK;
@@ -32,14 +32,13 @@ void create_rocks(WINDOW *w, sprite rocks[MAX_ROCKS]){
   }
 }
 
-void find_fruits(chtype MAP[MAX_Y][MAX_X], sprite *fruits){
-  int f = 0;
+void find_fruits(chtype (*MAP)[MAX_X], sprite *fruits){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
       if (MAP[i][j] == CH_FRUIT) {
-        fruits[f].position.y = i;
-        fruits[f].position.x = j;
-        f++;
+        (*fruits).position.y = i;
+        (*fruits).position.x = j;
+        fruits++;
       }
     }
   }

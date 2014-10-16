@@ -56,13 +56,13 @@ struct game_state {
 };
 
 void config(void);
-void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]);
+void draw_map(WINDOW *w, chtype (*MAP)[MAX_X]);
 void timer_handler(int i);
 void config_timer(void);
 void play(void);
 void show_menu(void);
-struct position find_char(chtype MAP[MAX_Y][MAX_X], chtype ch);
+struct position find_char(chtype (*MAP)[MAX_X], chtype ch);
 void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
-void check_state(WINDOW *w, chtype MAP[MAX_Y][MAX_X], WINDOW *g, sprite gh[MAX_GHOSTS], sprite *fr, sprite *md, int created_ghosts);
+void check_state(WINDOW *w, chtype (*MAP)[MAX_X], WINDOW *g, sprite *gh, sprite *fr, sprite *md, int created_ghosts);
 
 #endif

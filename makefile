@@ -1,4 +1,4 @@
 main: main.c
-	    gcc -o main *.c -lcurses -lmenu
+			gcc *.c -o main -lmenu -lncurses -Wall -Wredundant-decls -Wnested-externs -Wstrict-prototypes -Wmissing-prototypes -Wpointer-arith -Winline -Wcast-qual -Wundef -Wno-pointer-sign
 clean:
 	    rm main

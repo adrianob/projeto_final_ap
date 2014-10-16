@@ -18,7 +18,7 @@ FILE* load_level(int level){
 
 //Gera o mapa de acordo com o arquivo de texto
 //@TODO substituir os caracteres pelos corretos e tratamento de erros
-void make_map(FILE *level, chtype p[MAX_Y][MAX_X]){
+void make_map(FILE *level, chtype (*p)[MAX_X]){
 
   long l_size;
   char *buffer;
@@ -64,7 +64,7 @@ void make_map(FILE *level, chtype p[MAX_Y][MAX_X]){
 }
 
 //Salva o mapa atual em um .txt para continuar o jogo
-void write_map(chtype MAP[MAX_Y][MAX_X]){
+void write_map(chtype (*MAP)[MAX_X]){
 
   char buffer[MAX_Y][MAX_X];
 

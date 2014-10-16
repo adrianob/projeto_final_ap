@@ -58,20 +58,16 @@ void play(void){
     if(md.alive){
       switch(ch){
         case KEY_RIGHT:
-          if(can_go_to_direction(game_window,&md,RIGHT_DIRECTION))
-            mrdo_direction = RIGHT_DIRECTION;
+          mrdo_direction = RIGHT_DIRECTION;
           break;
         case KEY_LEFT:
-          if(can_go_to_direction(game_window,&md,LEFT_DIRECTION))
-            mrdo_direction = LEFT_DIRECTION;
+          mrdo_direction = LEFT_DIRECTION;
           break;
         case KEY_UP:
-          if(can_go_to_direction(game_window,&md,UP_DIRECTION))
-            mrdo_direction = UP_DIRECTION;
+          mrdo_direction = UP_DIRECTION;
           break;
         case KEY_DOWN:
-          if(can_go_to_direction(game_window,&md,DOWN_DIRECTION))
-            mrdo_direction = DOWN_DIRECTION;
+          mrdo_direction = DOWN_DIRECTION;
           break;
         case ' ':
           shoot(&shot, md.position, md.direction);
@@ -82,7 +78,10 @@ void play(void){
     if (timer_ready) {
       ghost_timer++;
       rock_timer++;
-      move_sprite(game_window, &md, mrdo_direction);
+
+      if(can_go_to_direction(game_window,&md, mrdo_direction)){
+        move_sprite(game_window, &md, mrdo_direction);
+      }
       move_ghosts(game_window, ghosts);
 
       if(rock_timer == (ROCK_INTERVAL / INTERVAL)){
@@ -201,7 +200,7 @@ void timer_handler(int i){
   timer_ready = 1;
 }
 
-void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]){
+void draw_map(WINDOW *w, chtype (*MAP)[MAX_X]){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
       if(MAP[i][j] == CH_WALL || MAP[i][j] == ' '){
@@ -211,7 +210,7 @@ void draw_map(WINDOW *w, chtype MAP[MAX_Y][MAX_X]){
   }
 }
 
-struct position find_char(chtype MAP[MAX_Y][MAX_X], chtype ch){
+struct position find_char(chtype (*MAP)[MAX_X], chtype ch){
   struct position position;
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
@@ -225,7 +224,7 @@ struct position find_char(chtype MAP[MAX_Y][MAX_X], chtype ch){
   return position;
 }
 
-void check_state(WINDOW *w, chtype MAP[MAX_Y][MAX_X], WINDOW *g, sprite gh[MAX_GHOSTS], sprite *fr, sprite  *md, int created_ghosts){
+void check_state(WINDOW *w, chtype (*MAP)[MAX_X], WINDOW *g, sprite *gh, sprite *fr, sprite  *md, int created_ghosts){
 
   int alive_ghosts = 0;
   int alive_fruits = wfind_fruits(g, fr);
