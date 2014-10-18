@@ -71,7 +71,8 @@ void print_rocks(WINDOW *w, sprite *rocks){
 }
 
 const sprite DEFAULT_GHOST = {
-  .alive = 0,
+  .representation = CH_GHOST,
+  .alive = 1,
   .direction = UP_DIRECTION
 };
 
@@ -97,5 +98,17 @@ const sprite DEFAULT_SHOT = {
 };
 
 const sprite DEFAULT_MR_DO = {
+  .representation = CH_MR_DO,
+  .alive = 1
+};
+
+const sprite DEFAULT_WALL = {
+  .representation = CH_WALL,
+  .alive = 1,
+  .next = NULL
+};
+
+const sprite DEFAULT_SPACE = {
+  .representation = ' ',
   .alive = 1
 };

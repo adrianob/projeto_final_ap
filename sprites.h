@@ -17,5 +17,7 @@ extern const sprite DEFAULT_ROCK;
 extern const sprite DEFAULT_SHOT;
 extern const sprite DEFAULT_MR_DO;
 extern const sprite DEFAULT_NEST;
+extern const sprite DEFAULT_WALL;
+extern const sprite DEFAULT_SPACE;
 
 #endif

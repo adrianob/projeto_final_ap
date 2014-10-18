@@ -6,9 +6,140 @@
 int timer_ready = 0;
 struct game_state game_state = {.score = 0, .level = 1};
 
+//insere um novo sprite no inicio da lista encadeada
+void push(sprite **head_ref, sprite s) {
+  sprite *node = (sprite *) malloc(sizeof(struct sprite));
+  *node = s;
+  node->next = *head_ref;
+  *head_ref = node;
+}
+
+//imprime uma lista de sprites na janela
+void print_list(WINDOW *w, sprite *head){
+  sprite *current = head;
+  while(current != NULL){
+    if (current->alive) {
+      mvwaddch(w, current->position.y, current->position.x, current->representation);
+    }
+    current = current->next;
+  }
+}
+
+//cria as lista de sprites a partir do mapa
+void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
+  //percorre a matriz do mapa
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      //sempre vai ter um espaco em branco abaixo de todo o mapa
+      sprite space = DEFAULT_SPACE;
+      space.position.x = j;
+      space.position.y = i;
+      push(&(sl->spaces), space);
+
+      sprite s;
+      switch (MAP[i][j]) {
+        case 'p':
+          s = DEFAULT_WALL;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->walls), s);
+          break;
+        case 'i':
+          s = DEFAULT_GHOST;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->ghosts), s);
+          break;
+        case 'f':
+          s = DEFAULT_FRUIT;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->fruits), s);
+          break;
+        case 'd':
+          s = DEFAULT_MR_DO;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->mr_do), s);
+          break;
+        case 'n':
+          s = DEFAULT_NEST;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->nest), s);
+          break;
+      }
+    }
+  }
+}
+
+void kill_sprite(WINDOW *w, sprite *sp, struct position position, chtype rep){
+  sprite *current = sp;
+  while(current != NULL){
+    if (current->position.x == position.x && current->position.y == position.y && current->representation == rep) {
+      current->alive = 0;
+    }
+    current = current->next;
+  }
+}
+
+
 int main(int argc, const char *argv[]){
   config();
-  show_menu();
+  //show_menu();
+
+  //cria a janela do jogo dentro da borda
+  WINDOW *border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
+  WINDOW *game_window = newwin(MAX_Y, MAX_X, 1, 1);
+  //WINDOW *info_window = newwin(10, 13, 0, MAX_X + 5);
+  box(border_window, 0, 0);
+
+  config_timer();
+
+  chtype MAP[MAX_Y][MAX_X];
+  make_map(load_level(game_state.level), MAP);
+  struct sprite_list sprite_list= {NULL, NULL, NULL, NULL, NULL, NULL};
+  make_lists(MAP, &sprite_list);
+  int ch, mrdo_direction;
+  while((ch = getch()) != KEY_F(1)){
+    if(sprite_list.mr_do->alive){
+      switch(ch){
+        case KEY_RIGHT:
+          mrdo_direction = RIGHT_DIRECTION;
+          break;
+        case KEY_LEFT:
+          mrdo_direction = LEFT_DIRECTION;
+          break;
+        case KEY_UP:
+          mrdo_direction = UP_DIRECTION;
+          break;
+        case KEY_DOWN:
+          mrdo_direction = DOWN_DIRECTION;
+          break;
+        case ' ':
+          //shoot(&shot, md.position, md.direction);
+          break;
+      }
+    }
+
+    if (timer_ready) {
+      //kill_sprite(game_window, sprite_list.walls, p, CH_WALL);
+      if(can_go_to_direction(game_window, *sprite_list.mr_do, mrdo_direction)){
+        move_sprite(game_window, sprite_list.mr_do, mrdo_direction);
+      }
+      mrdo_direction = 0;
+      timer_ready = 0;
+    }
+
+    //cuidado com a ordem! imprime por cima se tiver dois sprites no mesmo lugar
+    print_list(game_window, sprite_list.spaces);
+    print_list(game_window, sprite_list.walls);
+    print_list(game_window, sprite_list.fruits);
+    print_list(game_window, sprite_list.nest);
+    print_list(game_window, sprite_list.mr_do);
+
+    wrefresh(game_window);
+  }
 
   return 0;
 }
@@ -25,8 +156,6 @@ void play(void){
   WINDOW *game_window = newwin(MAX_Y, MAX_X, 1, 1);
   WINDOW *info_window = newwin(10, 13, 0, MAX_X + 5);
   box(border_window, 0, 0);
-
-  draw_map(game_window, MAP);
 
   //configuracao do timer
   config_timer();
@@ -79,7 +208,7 @@ void play(void){
       ghost_timer++;
       rock_timer++;
 
-      if(can_go_to_direction(game_window,&md, mrdo_direction)){
+      if(can_go_to_direction(game_window,md, mrdo_direction)){
         move_sprite(game_window, &md, mrdo_direction);
       }
       move_ghosts(game_window, ghosts);
@@ -104,6 +233,8 @@ void play(void){
       timer_ready = 0;
       mrdo_direction = 0;
     }
+
+    draw_map(game_window, MAP);
 
     for (int i = 0; i < MAX_GHOSTS; i++) {
       check_collision(game_window, &ghosts[i], &md);

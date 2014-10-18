@@ -36,7 +36,8 @@ struct position {
   int x, y, last_x, last_y;
 };
 
-typedef struct {
+typedef struct sprite {
+  struct sprite *next;
   struct position position;
   int alive;//vivo ou morto
   chtype representation;
@@ -55,6 +56,14 @@ struct game_state {
   int level;
 };
 
+struct sprite_list {
+  sprite *walls, *fruits , *ghosts, *spaces, *mr_do, *nest;
+};
+
+void push(sprite **hea_ref, sprite s);
+void print_list(WINDOW *w, sprite *head);
+void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl);
+void kill_sprite(WINDOW *w, sprite *sp, struct position position, chtype rep);
 void config(void);
 void draw_map(WINDOW *w, chtype (*MAP)[MAX_X]);
 void timer_handler(int i);

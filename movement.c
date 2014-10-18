@@ -29,30 +29,22 @@ void move_sprite(WINDOW *w, sprite* sprite, int direction){
   sprite->position.last_y = sprite->position.y;
   switch (direction) {
     case UP_DIRECTION:
-      if (sprite->position.y > 0) {
-        sprite->position.y--;
-      }
+      sprite->position.y--;
       break;
     case RIGHT_DIRECTION:
-      if (sprite->position.x < MAX_X - 1) {
-        sprite->position.x++;
-      }
+      sprite->position.x++;
       break;
     case DOWN_DIRECTION:
-      if (sprite->position.y < MAX_Y - 1) {
-        sprite->position.y++;
-      }
+      sprite->position.y++;
       break;
     case LEFT_DIRECTION:
-      if (sprite->position.x > 0) {
-        sprite->position.x--;
-      }
+      sprite->position.x--;
+      break;
   }
-  check_fruit_collision(w, sprite, direction);
+  //check_fruit_collision(w, sprite, direction);
   if (direction) {
     sprite->direction = direction;
   }
-  print_char(w, sprite);
 }
 
 void check_fruit_collision(WINDOW *w, sprite* sprite, int direction){
@@ -69,43 +61,65 @@ void check_fruit_collision(WINDOW *w, sprite* sprite, int direction){
 }
 
 //verifica se existe uma parede no caminho ou eh fim do mapa
-int can_go_to_direction(WINDOW *w, sprite *sp, int direction){
-  int next_ch = next_char(w, &sp->position, direction);
-  if (sp->representation == CH_MR_DO)
-    return !(next_ch == CH_ROCK || next_ch == -1);
+int can_go_to_direction(WINDOW *w, sprite sp, int direction){
+  int can_go = 0;
+  switch (direction) {
+    case UP_DIRECTION:
+      if (sp.position.y > 0) {
+        can_go = 1;
+      }
+      break;
+    case RIGHT_DIRECTION:
+      if (sp.position.x < MAX_X - 1) {
+        can_go = 1;
+      }
+      break;
+    case DOWN_DIRECTION:
+      if (sp.position.y < MAX_Y - 1) {
+        can_go = 1;
+      }
+      break;
+    case LEFT_DIRECTION:
+      if (sp.position.x > 0) {
+        can_go = 1;
+      }
+  }
+  int next_ch = next_char(w, sp.position, direction);
+  if (sp.representation == CH_MR_DO)
+    return (next_ch != CH_ROCK && next_ch != -1 && can_go);
   else
-    return !(next_ch == CH_WALL || next_ch == CH_ROCK || next_ch == -1);
+    return (next_ch != CH_WALL && next_ch != CH_ROCK && next_ch != -1 && can_go);
 }
 
 
 int can_fall(WINDOW *w, struct position* p, int direction){
-  int next_ch = next_char(w, p, DOWN_DIRECTION);
+  int next_ch = next_char(w, *p, DOWN_DIRECTION);
   return (next_ch == ' ');
 }
 
-int next_char(WINDOW *w, struct position *p, int direction){
+int next_char(WINDOW *w, struct position p, int direction){
   int next_ch;
   switch (direction) {
     case UP_DIRECTION:
-      next_ch = mvwinch(w, p->y - 1, p->x );
+      next_ch = mvwinch(w, p.y - 1, p.x );
       break;
     case DOWN_DIRECTION:
-      next_ch = mvwinch(w, p->y + 1, p->x );
+      next_ch = mvwinch(w, p.y + 1, p.x );
       break;
     case RIGHT_DIRECTION:
-      next_ch = mvwinch(w, p->y, p->x + 1);
+      next_ch = mvwinch(w, p.y, p.x + 1);
       break;
     case LEFT_DIRECTION:
-      next_ch = mvwinch(w, p->y, p->x - 1 );
+      next_ch = mvwinch(w, p.y, p.x - 1 );
       break;
   }
   return next_ch;
 }
 
 void move_ghost(WINDOW *w, sprite *gh){
-  if (!can_go_to_direction(w, gh, gh->direction)){
+  if (!can_go_to_direction(w, *gh, gh->direction)){
     int d = rand() % 4 + 1;
-    while(!can_go_to_direction(w, gh, d)){
+    while(!can_go_to_direction(w, *gh, d)){
       d = rand() % 4 + 1;
     }
 
@@ -149,7 +163,7 @@ void move_shot(WINDOW *w, sprite* s){
 }
 
 void move_if_possible(WINDOW *w, sprite* s){
-  if (can_go_to_direction(w, s, s->direction)) {
+  if (can_go_to_direction(w, *s, s->direction)) {
     move_sprite(w, s, s->direction);
   }
   else{

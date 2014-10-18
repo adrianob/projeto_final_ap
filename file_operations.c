@@ -19,7 +19,6 @@ FILE* load_level(int level){
 //Gera o mapa de acordo com o arquivo de texto
 //@TODO substituir os caracteres pelos corretos e tratamento de erros
 void make_map(FILE *level, chtype (*p)[MAX_X]){
-
   long l_size;
   char *buffer;
   int i, j, cont;
@@ -38,26 +37,7 @@ void make_map(FILE *level, chtype (*p)[MAX_X]){
       while(buffer[cont] == '\n'){
         cont ++;
       }
-
-      switch(buffer[cont]){
-
-        case 'p':
-                  p[i][j] = CH_WALL;
-                  break;
-        case 'v':
-                  p[i][j] = ' ';
-                  break;
-        case 'd':
-                  p[i][j] = CH_MR_DO;
-                  break;
-        case 'n':
-                  p[i][j] = CH_NEST;
-                  break;
-        case 'f':
-                  p[i][j] = CH_FRUIT;
-                  break;
-        default: break;
-      }
+      p[i][j] = buffer[cont];
       cont++;
     }
   }
