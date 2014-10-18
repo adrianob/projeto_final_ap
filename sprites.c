@@ -56,13 +56,12 @@ void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
 
 void check_sprite_collision(struct sprite_list *sl, sprite *sp){
   sprite *list[] = {sl->walls, sl->fruits, sl->ghosts, sl->mr_do, sl->shot};
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < (int)sizeof(list)/sizeof(sprite*); i++) {
     sprite *current = list[i];
     while(current != NULL){
       if ((current->alive && sp->alive) &&
           (current->representation != sp->representation) &&(
-          ((current->position.x == sp->position.x) && (current->position.y == sp->position.y))//mesma posicao
-          ||
+          ((current->position.x == sp->position.x) && (current->position.y == sp->position.y)) || //mesma posicao
           ((sp->position.last_x == current->position.x) && (sp->position.last_y == current->position.y))//inverteram de posicao
           )) {//colidiu @TODO passar o teste pra uma funcao separada
 
@@ -83,10 +82,15 @@ void check_sprite_collision(struct sprite_list *sl, sprite *sp){
         else if (current->representation == CH_GHOST && sp->representation == CH_MR_DO) {
           sp->alive = 0;
         }
+        //tiro colide com o fantasma
         else if (current->representation == CH_GHOST && sp->representation == CH_SHOT) {
           current->alive = 0;
           sp->alive = 0;
           game_state.score += 10;
+        }
+        else if (current->representation == CH_FRUIT && sp->representation == CH_SHOT) {
+          current->alive = 0;
+          sp->alive = 0;
         }
       }
       current = current->next;
@@ -99,6 +103,26 @@ void check_ghosts_collision(struct sprite_list *sl, sprite *sp){
   while(current != NULL){
     check_sprite_collision(sl, sp);
     current = current->next;
+  }
+}
+
+void create_shot(struct sprite_list *sl){
+  if (list_size(sl->shot) < 1) {//cria o tiro
+    sprite shot = DEFAULT_SHOT;
+    push(&sl->shot, shot);
+  }
+  if (!sl->shot->alive) {
+    sl->shot->alive = 1;
+    sl->shot->position = find_char(sl, CH_MR_DO);
+    sl->shot->direction = sl->mr_do->direction;
+  }
+}
+
+void create_ghost(struct sprite_list *sl){
+  if (list_size(sl->ghosts) < MAX_GHOSTS) {
+    sprite ghost = DEFAULT_GHOST;
+    ghost.position = find_char(sl, CH_NEST);
+    push(&sl->ghosts, ghost);
   }
 }
 

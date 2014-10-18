@@ -20,7 +20,7 @@ void print_list(WINDOW *w, sprite *head){
 }
 
 void print_lists(WINDOW *w, struct sprite_list sl){
-    //cuidado com a ordem! imprime por cima se tiver dois sprites no mesmo lugar
+  //cuidado com a ordem! imprime por cima se tiver dois sprites no mesmo lugar
   print_list(w, sl.spaces);
   print_list(w, sl.walls);
   print_list(w, sl.fruits);
@@ -34,7 +34,7 @@ void print_lists(WINDOW *w, struct sprite_list sl){
 struct position find_char(struct sprite_list *sl, chtype ch){
   struct position position;
   sprite *list[] = {sl->ghosts, sl->mr_do, sl->nest};
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < (int)sizeof(list)/sizeof(sprite*); i++) {
     sprite *current = list[i];
     while(current != NULL){
       if (current->representation == ch) {

@@ -46,16 +46,7 @@ void play(void){
           mrdo_direction = DOWN_DIRECTION;
           break;
         case ' ':
-          //@TODO colocar numa funcao separada
-          if (list_size(sprite_list.shot) < 1) {//cria o tiro
-            sprite shot = DEFAULT_SHOT;
-            push(&sprite_list.shot, shot);
-          }
-          if (!sprite_list.shot->alive) {
-            sprite_list.shot->alive = 1;
-            sprite_list.shot->position = find_char(&sprite_list, CH_MR_DO);
-            sprite_list.shot->direction = sprite_list.mr_do->direction;
-          }
+          create_shot(&sprite_list);
           break;
       }
     }
@@ -64,16 +55,13 @@ void play(void){
       ghost_timer++;
 
       if (ghost_timer == (GHOST_INTERVAL / INTERVAL)) {//hora de criar novos fantasmas
-        if (list_size(sprite_list.ghosts) < MAX_GHOSTS) {
-          sprite ghost = DEFAULT_GHOST;
-          ghost.position = find_char(&sprite_list, CH_NEST);
-          push(&sprite_list.ghosts, ghost);
-        }
+        create_ghost(&sprite_list);
         ghost_timer = 0;
       }
 
       move_ghosts(game_window, sprite_list.ghosts);
       move_sprite(game_window, sprite_list.mr_do, mrdo_direction);
+
       //checar colisoes so depois de mover todos sprites
       if(list_size(sprite_list.shot) > 0 && sprite_list.shot->alive){
         move_shot(game_window, sprite_list.shot);
@@ -81,6 +69,7 @@ void play(void){
       }
       check_sprite_collision(&sprite_list, sprite_list.mr_do);
       check_ghosts_collision(&sprite_list, sprite_list.ghosts);
+
       mrdo_direction = 0;
       timer_ready = 0;
     }
