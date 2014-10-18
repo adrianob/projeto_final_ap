@@ -66,7 +66,7 @@ void check_sprite_collision(struct sprite_list *sl, sprite *sp){
           )) {//colidiu @TODO passar o teste pra uma funcao separada
 
         //mrdo colide com parede
-        if (current->representation == CH_WALL) {
+        if (current->representation == CH_WALL && sp->representation == CH_MR_DO) {
           current->alive = 0;
         }
         //mrdo colide com fruta
@@ -88,9 +88,14 @@ void check_sprite_collision(struct sprite_list *sl, sprite *sp){
           sp->alive = 0;
           game_state.score += 10;
         }
+        //tiro colide com fruta
         else if (current->representation == CH_FRUIT && sp->representation == CH_SHOT) {
           current->alive = 0;
           sp->alive = 0;
+        }
+        //fantasma colide com fruta
+        else if (current->representation == CH_FRUIT && sp->representation == CH_GHOST) {
+          current->alive = 0;
         }
       }
       current = current->next;
@@ -147,7 +152,7 @@ void create_rocks(WINDOW *w, sprite *rocks){
 const sprite DEFAULT_GHOST = {
   .representation = CH_GHOST,
   .alive = 1,
-  .direction = UP_DIRECTION
+  .direction = LEFT_DIRECTION
 };
 
 const sprite DEFAULT_FRUIT = {
@@ -184,6 +189,6 @@ const sprite DEFAULT_WALL = {
 };
 
 const sprite DEFAULT_SPACE = {
-  .representation = ' ',
+  .representation = CH_SPACE,
   .alive = 1
 };

@@ -16,12 +16,13 @@
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 #define CH_MR_DO (123 | A_ALTCHARSET | COLOR_PAIR(1))
-#define CH_FRUIT (213 | A_ALTCHARSET | COLOR_PAIR(2))
+#define CH_FRUIT (240 | A_ALTCHARSET | COLOR_PAIR(2))
 #define CH_ROCK  (164 | A_ALTCHARSET | COLOR_PAIR(3))
 #define CH_WALL  (97  | A_ALTCHARSET | COLOR_PAIR(4))
 #define CH_NEST  (110 | A_ALTCHARSET)
 #define CH_GHOST (214 | A_ALTCHARSET)
 #define CH_SHOT  (183 | A_ALTCHARSET)
+#define CH_SPACE  (128 | A_ALTCHARSET)
 
 #include <stdio.h>
 #include <stdlib.h>
