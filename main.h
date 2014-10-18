@@ -57,21 +57,25 @@ struct game_state {
 };
 
 struct sprite_list {
-  sprite *walls, *fruits , *ghosts, *spaces, *mr_do, *nest;
+  sprite *walls, *fruits , *ghosts, *spaces, *mr_do, *nest, *shot;
 };
 
 void push(sprite **hea_ref, sprite s);
 void print_list(WINDOW *w, sprite *head);
 void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl);
+int list_size(sprite *sp);
 void kill_sprite(WINDOW *w, sprite *sp, struct position position, chtype rep);
+void check_sprite_collision(struct sprite_list *sl, sprite *sprite);
+void check_ghosts_collision(struct sprite_list *sl, sprite *sp);
 void config(void);
 void draw_map(WINDOW *w, chtype (*MAP)[MAX_X]);
 void timer_handler(int i);
 void config_timer(void);
 void play(void);
 void show_menu(void);
-struct position find_char(chtype (*MAP)[MAX_X], chtype ch);
+struct position find_char(struct sprite_list *sl, chtype ch);
 void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
-void check_state(WINDOW *w, chtype (*MAP)[MAX_X], WINDOW *g, sprite *gh, sprite *fr, sprite *md, int created_ghosts);
+void check_state(WINDOW *info, struct sprite_list sl);
+int count_alive(sprite *sp);
 
 #endif

@@ -94,6 +94,8 @@ const sprite DEFAULT_NEST = {
 
 const sprite DEFAULT_SHOT = {
   .representation = CH_SHOT,
+  .position = {0, 0, 0, 0},
+  .direction = RIGHT_DIRECTION,
   .alive = 0
 };
 
@@ -104,8 +106,7 @@ const sprite DEFAULT_MR_DO = {
 
 const sprite DEFAULT_WALL = {
   .representation = CH_WALL,
-  .alive = 1,
-  .next = NULL
+  .alive = 1
 };
 
 const sprite DEFAULT_SPACE = {

@@ -27,19 +27,21 @@ void debug_print(WINDOW *w, sprite* md, sprite* nest){
 void move_sprite(WINDOW *w, sprite* sprite, int direction){
   sprite->position.last_x = sprite->position.x;
   sprite->position.last_y = sprite->position.y;
-  switch (direction) {
-    case UP_DIRECTION:
-      sprite->position.y--;
-      break;
-    case RIGHT_DIRECTION:
-      sprite->position.x++;
-      break;
-    case DOWN_DIRECTION:
-      sprite->position.y++;
-      break;
-    case LEFT_DIRECTION:
-      sprite->position.x--;
-      break;
+  if (can_go_to_direction(w, *sprite, direction)) {
+    switch (direction) {
+      case UP_DIRECTION:
+        sprite->position.y--;
+        break;
+      case RIGHT_DIRECTION:
+        sprite->position.x++;
+        break;
+      case DOWN_DIRECTION:
+        sprite->position.y++;
+        break;
+      case LEFT_DIRECTION:
+        sprite->position.x--;
+        break;
+    }
   }
   //check_fruit_collision(w, sprite, direction);
   if (direction) {
@@ -85,10 +87,12 @@ int can_go_to_direction(WINDOW *w, sprite sp, int direction){
       }
   }
   int next_ch = next_char(w, sp.position, direction);
-  if (sp.representation == CH_MR_DO)
+  if (sp.representation == CH_MR_DO){
     return (next_ch != CH_ROCK && next_ch != -1 && can_go);
-  else
+  }
+  else{
     return (next_ch != CH_WALL && next_ch != CH_ROCK && next_ch != -1 && can_go);
+  }
 }
 
 
@@ -164,11 +168,11 @@ void move_shot(WINDOW *w, sprite* s){
 
 void move_if_possible(WINDOW *w, sprite* s){
   if (can_go_to_direction(w, *s, s->direction)) {
+  //printw("%d ", s->position.x);
     move_sprite(w, s, s->direction);
   }
   else{
     s->alive = 0;
-    print_char(w, s);
   }
 }
 
@@ -197,10 +201,10 @@ void check_shot_collision(WINDOW *w, sprite *sp1, sprite *sp2){
 }
 
 void move_ghosts(WINDOW *w, sprite *ghosts){
-  for (int i = 0; i < MAX_GHOSTS; i++) {
-    if(ghosts[i].alive){
-      move_ghost(w, &ghosts[i]);
-    }
+  sprite *current = ghosts;
+  while(current != NULL){
+    move_ghost(w, current);
+    current = current->next;
   }
 }
 
