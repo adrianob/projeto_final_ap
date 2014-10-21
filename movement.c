@@ -121,19 +121,15 @@ void move_shot(WINDOW *w, sprite* s){
 int get_keyboard_direction(chtype ch){
   switch(ch){
     case KEY_RIGHT:
-      mrdo_direction = RIGHT_DIRECTION;
-      break;
+      return RIGHT_DIRECTION;
     case KEY_LEFT:
-      mrdo_direction = LEFT_DIRECTION;
-      break;
+      return LEFT_DIRECTION;
     case KEY_UP:
-      mrdo_direction = UP_DIRECTION;
-      break;
+      return UP_DIRECTION;
     case KEY_DOWN:
-      mrdo_direction = DOWN_DIRECTION;
-      break;
+      return DOWN_DIRECTION;
   }
-  return mrdo_direction;
+  return 0;
 }
 
 /*

@@ -36,7 +36,10 @@ void play(void){
         create_shot(&sprite_list);
       }
       else {
-        mrdo_direction = get_keyboard_direction(ch);
+        int direction = get_keyboard_direction(ch);
+        if (direction) {
+          mrdo_direction = direction;
+        }
       }
     }
 
