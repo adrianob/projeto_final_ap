@@ -105,9 +105,9 @@ void check_state(WINDOW *w, struct sprite_list sl){
 
 void config(void){
   srand(time(NULL));
+  setlocale(LC_ALL, "");
   initscr();			/* Start curses mode 		*/
   cbreak();				/* Line buffering disabled	*/
-  setlocale(LC_ALL, "");
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
   start_color();
