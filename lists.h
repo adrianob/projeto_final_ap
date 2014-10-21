@@ -3,7 +3,7 @@
 
 #include "main.h"
 
-void push(sprite **hea_ref, sprite s);
+void push(sprite **head_ref, sprite s);
 void print_list(WINDOW *w, sprite *head);
 void print_lists(WINDOW *w, struct sprite_list sl);
 int list_size(sprite *sp);
