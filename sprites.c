@@ -1,16 +1,132 @@
 #include "sprites.h"
 
-void create_ghosts(WINDOW *w, sprite *ghosts, struct position position){
-  for (int i = 0; i < MAX_GHOSTS; i++) {
-    ghosts[i] = DEFAULT_GHOST;
-    ghosts[i].representation = CH_GHOST;
-    ghosts[i].position = position;
+//cria as lista de sprites a partir do mapa
+void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
+  //percorre a matriz do mapa
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      //sempre vai ter um espaco em branco abaixo de todo o mapa
+      sprite space = DEFAULT_SPACE;
+      space.position.x = j;
+      space.position.y = i;
+      push(&(sl->spaces), space);
+
+      sprite s;
+      switch (MAP[i][j]) {
+        case 'p':
+          s = DEFAULT_WALL;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->walls), s);
+          break;
+        case 't':
+          s = DEFAULT_SHOT;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->shot), s);
+          break;
+        case 'i':
+          s = DEFAULT_GHOST;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->ghosts), s);
+          break;
+        case 'f':
+          s = DEFAULT_FRUIT;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->fruits), s);
+          break;
+        case 'd':
+          s = DEFAULT_MR_DO;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->mr_do), s);
+          break;
+        case 'n':
+          s = DEFAULT_NEST;
+          s.position.x = j;
+          s.position.y = i;
+          push(&(sl->nest), s);
+          break;
+      }
+    }
   }
 }
 
-void create_fruits(WINDOW *w, sprite *fruits){
-  for (int i = 0; i < MAX_FRUITS; i++) {
-    fruits[i] = DEFAULT_FRUIT;
+int collided(sprite *current, sprite *sp){
+  return (current->alive && sp->alive) &&
+          (current->representation != sp->representation) &&
+            (((current->position.x == sp->position.x) && (current->position.y == sp->position.y)) || //mesma posicao
+            ((sp->position.last_x == current->position.x) && (sp->position.last_y == current->position.y))//inverteram de posicao
+          );
+}
+
+void check_sprite_collision(struct sprite_list *sl, sprite *sp){
+  sprite *list[] = {sl->walls, sl->fruits, sl->ghosts, sl->mr_do, sl->shot};
+  for (int i = 0; i < (int)sizeof(list)/sizeof(sprite*); i++) {
+    sprite *current = list[i];
+    while(current != NULL){
+      if (collided(current, sp)) {
+        //mrdo colide com parede
+        if (current->representation == CH_WALL && sp->representation == CH_MR_DO) {
+          current->alive = 0;
+        }
+        //mrdo colide com fruta
+        else if (current->representation == CH_FRUIT && sp->representation == CH_MR_DO) {
+          current->alive = 0;
+          game_state.score += 50;
+        }
+        //fantasma colide com mrdo
+        else if (current->representation == CH_GHOST && sp->representation == CH_MR_DO) {
+          sp->alive = 0;
+        }
+        //tiro colide com o fantasma
+        else if (current->representation == CH_GHOST && sp->representation == CH_SHOT) {
+          current->alive = 0;
+          sp->alive = 0;
+          game_state.score += 10;
+        }
+        //tiro colide com fruta
+        else if (current->representation == CH_FRUIT && sp->representation == CH_SHOT) {
+          current->alive = 0;
+          sp->alive = 0;
+        }
+        //fantasma colide com fruta
+        else if (current->representation == CH_FRUIT && sp->representation == CH_GHOST) {
+          current->alive = 0;
+        }
+      }
+      current = current->next;
+    }
+  }
+}
+
+void check_ghosts_collision(struct sprite_list *sl, sprite *sp){
+  sprite *current = sp;
+  while(current != NULL){
+    check_sprite_collision(sl, sp);
+    current = current->next;
+  }
+}
+
+void create_shot(struct sprite_list *sl){
+  if (list_size(sl->shot) < 1) {//cria o tiro
+    sprite shot = DEFAULT_SHOT;
+    push(&sl->shot, shot);
+  }
+  if (!sl->shot->alive) {
+    sl->shot->alive = 1;
+    sl->shot->position = find_char(sl, CH_MR_DO);
+    sl->shot->direction = sl->mr_do->direction;
+  }
+}
+
+void create_ghost(struct sprite_list *sl){
+  if (list_size(sl->ghosts) < MAX_GHOSTS) {
+    sprite ghost = DEFAULT_GHOST;
+    ghost.position = find_char(sl, CH_NEST);
+    push(&sl->ghosts, ghost);
   }
 }
 
@@ -32,47 +148,10 @@ void create_rocks(WINDOW *w, sprite *rocks){
   }
 }
 
-void find_fruits(chtype (*MAP)[MAX_X], sprite *fruits){
-  for (int i = 0; i < MAX_Y; i++) {
-    for (int j = 0; j < MAX_X; j++) {
-      if (MAP[i][j] == CH_FRUIT) {
-        (*fruits).position.y = i;
-        (*fruits).position.x = j;
-        fruits++;
-      }
-    }
-  }
-}
-
-int wfind_fruits(WINDOW *w, sprite *fruits){
-  int f = 0;
-  for (int i = 0; i < MAX_Y; i++) {
-    for (int j = 0; j < MAX_X; j++) {
-      if (mvwinch(w, i, j) == CH_FRUIT) {
-        fruits[f].position.y = i;
-        fruits[f].position.x = j;
-        f++;
-      }
-    }
-  }
-  return f;
-}
-
-void print_fruits(WINDOW *w, sprite *fruits){
-  for(int i = 0; i < MAX_FRUITS; i++){
-    mvwaddch(w, fruits[i].position.y, fruits[i].position.x, fruits[i].representation);
-  }
-}
-
-void print_rocks(WINDOW *w, sprite *rocks){
-  for(int i = 0; i < MAX_ROCKS; i++){
-    mvwaddch(w, rocks[i].position.y, rocks[i].position.x, rocks[i].representation);
-  }
-}
-
 const sprite DEFAULT_GHOST = {
-  .alive = 0,
-  .direction = UP_DIRECTION
+  .representation = CH_GHOST,
+  .alive = 1,
+  .direction = LEFT_DIRECTION
 };
 
 const sprite DEFAULT_FRUIT = {
@@ -93,9 +172,22 @@ const sprite DEFAULT_NEST = {
 
 const sprite DEFAULT_SHOT = {
   .representation = CH_SHOT,
+  .position = {0, 0, 0, 0},
+  .direction = RIGHT_DIRECTION,
   .alive = 0
 };
 
 const sprite DEFAULT_MR_DO = {
+  .representation = CH_MR_DO,
+  .alive = 1
+};
+
+const sprite DEFAULT_WALL = {
+  .representation = CH_WALL,
+  .alive = 1
+};
+
+const sprite DEFAULT_SPACE = {
+  .representation = CH_SPACE,
   .alive = 1
 };
