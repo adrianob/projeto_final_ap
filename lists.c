@@ -21,19 +21,16 @@ void print_list(WINDOW *w, sprite *head){
 
 void print_lists(WINDOW *w, struct sprite_list sl){
   //cuidado com a ordem! imprime por cima se tiver dois sprites no mesmo lugar
-  print_list(w, sl.spaces);
-  print_list(w, sl.walls);
-  print_list(w, sl.fruits);
-  print_list(w, sl.ghosts);
-  print_list(w, sl.shot);
-  print_list(w, sl.nest);
-  print_list(w, sl.mr_do);
+  sprite *list[] = {sl.spaces, sl.walls, sl.fruits, sl.ghosts, sl. shot, sl.nest, sl.mr_do};
+  for (int i = 0; i < sizeof(list)/sizeof(sprite*); i++) {
+    print_list(w, list[i]);
+  }
 }
 
 //retorna a posicao do caractere no mapa
 struct position find_char(struct sprite_list *sl, chtype ch){
   struct position position;
-  sprite *list[] = {sl->ghosts, sl->mr_do, sl->nest};
+  sprite *list[] = {sl->mr_do, sl->nest};
   for (int i = 0; i < (int)sizeof(list)/sizeof(sprite*); i++) {
     sprite *current = list[i];
     while(current != NULL){

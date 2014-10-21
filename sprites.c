@@ -54,17 +54,20 @@ void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
   }
 }
 
+int collided(sprite *current, sprite *sp){
+  return (current->alive && sp->alive) &&
+          (current->representation != sp->representation) &&
+            (((current->position.x == sp->position.x) && (current->position.y == sp->position.y)) || //mesma posicao
+            ((sp->position.last_x == current->position.x) && (sp->position.last_y == current->position.y))//inverteram de posicao
+          );
+}
+
 void check_sprite_collision(struct sprite_list *sl, sprite *sp){
   sprite *list[] = {sl->walls, sl->fruits, sl->ghosts, sl->mr_do, sl->shot};
   for (int i = 0; i < (int)sizeof(list)/sizeof(sprite*); i++) {
     sprite *current = list[i];
     while(current != NULL){
-      if ((current->alive && sp->alive) &&
-          (current->representation != sp->representation) &&(
-          ((current->position.x == sp->position.x) && (current->position.y == sp->position.y)) || //mesma posicao
-          ((sp->position.last_x == current->position.x) && (sp->position.last_y == current->position.y))//inverteram de posicao
-          )) {//colidiu @TODO passar o teste pra uma funcao separada
-
+      if (collided(current, sp)) {
         //mrdo colide com parede
         if (current->representation == CH_WALL && sp->representation == CH_MR_DO) {
           current->alive = 0;
@@ -75,10 +78,6 @@ void check_sprite_collision(struct sprite_list *sl, sprite *sp){
           game_state.score += 50;
         }
         //fantasma colide com mrdo
-        else if (current->representation == CH_MR_DO && sp->representation == CH_GHOST) {
-          current->alive = 0;
-        }
-        //mrdo colide com fantasma
         else if (current->representation == CH_GHOST && sp->representation == CH_MR_DO) {
           sp->alive = 0;
         }

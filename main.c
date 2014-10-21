@@ -26,28 +26,17 @@ void play(void){
   config_timer();
 
   chtype MAP[MAX_Y][MAX_X];
-  make_map(load_level(game_state.level), MAP);
+  make_map(load_level(game_state.level), MAP);//le o arquivo da fase e carrega na matriz
   struct sprite_list sprite_list= {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-  make_lists(MAP, &sprite_list);
+  make_lists(MAP, &sprite_list);//cria uma lista de sprites a partir da matriz da fase
   int ch, mrdo_direction;
   while((ch = getch()) != KEY_F(1)){
     if(sprite_list.mr_do->alive){
-      switch(ch){
-        case KEY_RIGHT:
-          mrdo_direction = RIGHT_DIRECTION;
-          break;
-        case KEY_LEFT:
-          mrdo_direction = LEFT_DIRECTION;
-          break;
-        case KEY_UP:
-          mrdo_direction = UP_DIRECTION;
-          break;
-        case KEY_DOWN:
-          mrdo_direction = DOWN_DIRECTION;
-          break;
-        case ' ':
-          create_shot(&sprite_list);
-          break;
+      if (ch == ' ') {
+        create_shot(&sprite_list);
+      }
+      else {
+        mrdo_direction = get_keyboard_direction(ch);
       }
     }
 

@@ -34,6 +34,7 @@ void make_map(FILE *level, chtype (*p)[MAX_X]){
   //Atualiza a matriz, ignorando caracteres fora do padrão
   for(i = 0; i < MAX_Y; i++){
     for(j = 0; j < MAX_X; j++){
+      //ignora novas linhas
       while(buffer[cont] == '\n'){
         cont ++;
       }

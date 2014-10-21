@@ -23,9 +23,9 @@ int next_char(WINDOW *w, struct position p, int direction){
   return next_ch;
 }
 
-//verifica se existe uma parede no caminho ou eh fim do mapa
 int can_go_to_direction(WINDOW *w, sprite sp, int direction){
   int can_go = 0;
+  //verifica se eh fim do mapa
   switch (direction) {
     case UP_DIRECTION:
       if (sp.position.y > 0) {
@@ -47,6 +47,7 @@ int can_go_to_direction(WINDOW *w, sprite sp, int direction){
         can_go = 1;
       }
   }
+  //verificacoes especificas pra cada tipo de sprite
   int next_ch = next_char(w, sp.position, direction);
   if (sp.representation == CH_MR_DO){
     return (next_ch != CH_ROCK && next_ch != -1 && can_go);
@@ -56,10 +57,12 @@ int can_go_to_direction(WINDOW *w, sprite sp, int direction){
   }
 }
 
-void move_sprite(WINDOW *w, sprite* sprite, int direction){
+//retorna um booleano indicando se foi possivel se mover
+int move_sprite(WINDOW *w, sprite* sprite, int direction){
   sprite->position.last_x = sprite->position.x;
   sprite->position.last_y = sprite->position.y;
-  if (can_go_to_direction(w, *sprite, direction)) {
+  int can_go = can_go_to_direction(w, *sprite, direction);
+  if (can_go) {
     switch (direction) {
       case UP_DIRECTION:
         sprite->position.y--;
@@ -78,6 +81,7 @@ void move_sprite(WINDOW *w, sprite* sprite, int direction){
   if (direction) {
     sprite->direction = direction;
   }
+  return can_go;
 }
 
 int can_fall(WINDOW *w, struct position* p, int direction){
@@ -107,18 +111,29 @@ void move_ghosts(WINDOW *w, sprite *ghosts){
   }
 }
 
+//tiro morre quando nao pode mais se mover
 void move_shot(WINDOW *w, sprite* s){
-  move_if_possible(w, s);
-}
-
-//@TODO mover isso para a funcao de colisao
-void move_if_possible(WINDOW *w, sprite* s){
-  if (can_go_to_direction(w, *s, s->direction)) {
-    move_sprite(w, s, s->direction);
-  }
-  else{
+  if (!move_sprite(w, s, s->direction)) {
     s->alive = 0;
   }
+}
+
+int get_keyboard_direction(chtype ch){
+  switch(ch){
+    case KEY_RIGHT:
+      mrdo_direction = RIGHT_DIRECTION;
+      break;
+    case KEY_LEFT:
+      mrdo_direction = LEFT_DIRECTION;
+      break;
+    case KEY_UP:
+      mrdo_direction = UP_DIRECTION;
+      break;
+    case KEY_DOWN:
+      mrdo_direction = DOWN_DIRECTION;
+      break;
+  }
+  return mrdo_direction;
 }
 
 /*

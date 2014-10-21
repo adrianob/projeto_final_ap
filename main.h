@@ -41,8 +41,8 @@ typedef struct sprite {
   struct position position;
   int alive;//vivo ou morto
   chtype representation;
-  int direction;
   int falling;
+  int direction;
   /*
     1 - cima
     2 - baixo
@@ -57,7 +57,13 @@ struct game_state {
 };
 
 struct sprite_list {
-  sprite *walls, *fruits , *ghosts, *spaces, *mr_do, *nest, *shot;
+  sprite *walls,
+         *fruits,
+         *ghosts,
+         *spaces,
+         *mr_do,
+         *nest,
+         *shot;
 };
 
 void config(void);
