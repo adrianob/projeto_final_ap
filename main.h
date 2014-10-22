@@ -22,7 +22,7 @@
 #define CH_NEST  (110 | A_ALTCHARSET)
 #define CH_GHOST (214 | A_ALTCHARSET)
 #define CH_SHOT  (183 | A_ALTCHARSET)
-#define CH_SPACE  (' ' | A_ALTCHARSET)
+#define CH_SPACE  ' '
 
 #include <stdio.h>
 #include <stdlib.h>
