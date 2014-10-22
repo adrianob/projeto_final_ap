@@ -90,15 +90,39 @@ int can_fall(WINDOW *w, struct position* p, int direction){
 }
 
 void move_ghost(WINDOW *w, sprite *gh){
-  if (!can_go_to_direction(w, *gh, gh->direction)){
-    int d = rand() % 4 + 1;
-    while(!can_go_to_direction(w, *gh, d)){
-      d = rand() % 4 + 1;
+  int gh_direction = gh->direction;
+  int d;
+  int can_go = 0;
+  if (!can_go_to_direction(w, *gh, gh->direction)){//nao pode continuar na mesma direcao
+    d = rand() % 2;//0 ou 1
+    switch (gh->direction) {//tenta ir numa nova direcao
+      case RIGHT_DIRECTION:
+      case LEFT_DIRECTION:
+        can_go = move_sprite(w, gh, d ? UP_DIRECTION : DOWN_DIRECTION) || move_sprite(w, gh, d ? DOWN_DIRECTION : UP_DIRECTION);
+        break;
+      case UP_DIRECTION:
+      case DOWN_DIRECTION:
+        can_go = move_sprite(w, gh, d ? RIGHT_DIRECTION : LEFT_DIRECTION) || move_sprite(w, gh, d ? LEFT_DIRECTION : RIGHT_DIRECTION);
+        break;
     }
-
-    move_sprite(w, gh, d);
+    if(!can_go){//nao conseguiu ir para uma nova direcao, volta pela direcao que venho
+      switch (gh_direction) {
+        case UP_DIRECTION:
+          move_sprite(w, gh, DOWN_DIRECTION);
+          break;
+        case DOWN_DIRECTION:
+          move_sprite(w, gh, UP_DIRECTION);
+          break;
+        case RIGHT_DIRECTION:
+          move_sprite(w, gh, LEFT_DIRECTION);
+          break;
+        case LEFT_DIRECTION:
+          move_sprite(w, gh, RIGHT_DIRECTION);
+          break;
+      }
+    }
   }
-  else{
+  else{//continua na direcao que esta
     move_sprite(w, gh, gh->direction);
   }
 }
