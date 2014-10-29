@@ -49,7 +49,7 @@ typedef struct sprite_node {
     3 - direita
     4 - esquerda
    * */
-} sprite;
+} SPRITE;
 
 struct game_state {
   int score;
@@ -57,7 +57,7 @@ struct game_state {
 };
 
 struct sprite_list {
-  sprite *walls,
+  SPRITE *walls,
          *fruits,
          *ghosts,
          *spaces,

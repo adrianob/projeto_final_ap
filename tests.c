@@ -1,15 +1,15 @@
 #include "main.h"
-#include "sprites.h"
+#include "SPRITEs.h"
 #include "lists.h"
 #include <stdint.h>
 #include <check.h>
 
 START_TEST(test_push){
-  sprite s = DEFAULT_GHOST;
-  sprite *head = NULL;
+  SPRITE s = DEFAULT_GHOST;
+  SPRITE *head = NULL;
   push(&head, s);
   ck_assert(head->representation == CH_GHOST);
-  sprite s2 = DEFAULT_FRUIT;
+  SPRITE s2 = DEFAULT_FRUIT;
   push(&head, s2);
   //tem que inserir no comeco da lista
   ck_assert(head->next->representation == CH_GHOST);
@@ -18,8 +18,8 @@ START_TEST(test_push){
 END_TEST
 
 START_TEST(test_list_size){
-  sprite s = DEFAULT_GHOST;
-  sprite *head = NULL;
+  SPRITE s = DEFAULT_GHOST;
+  SPRITE *head = NULL;
   ck_assert(list_size(head) == 0);
   push(&head, s);
   ck_assert(list_size(head) == 1);
@@ -27,8 +27,8 @@ START_TEST(test_list_size){
 END_TEST
 
 START_TEST(test_count_alive){
-  sprite s = DEFAULT_GHOST;
-  sprite *head = NULL;
+  SPRITE s = DEFAULT_GHOST;
+  SPRITE *head = NULL;
   push(&head, s);
   ck_assert(count_alive(head) == 1);
   head->alive = 0;
@@ -38,23 +38,23 @@ END_TEST
 
 
 START_TEST(test_collided){
-  sprite s1 = {.alive = 1, .representation = 'a', .position = {0, 0, 0, 0}};
-  sprite s2 = {.alive = 1, .representation = 'b', .position = {0, 0, 0, 0}};
+  SPRITE s1 = {.alive = 1, .representation = 'a', .position = {0, 0, 0, 0}};
+  SPRITE s2 = {.alive = 1, .representation = 'b', .position = {0, 0, 0, 0}};
   ck_assert_int_eq(collided(&s1, &s2), 1);
-  sprite s3 = {.alive = 1, .representation = 'a', .position = {0, 0, 1, 0}};
-  sprite s4 = {.alive = 1, .representation = 'b', .position = {0, 0, 0, 0}};
+  SPRITE s3 = {.alive = 1, .representation = 'a', .position = {0, 0, 1, 0}};
+  SPRITE s4 = {.alive = 1, .representation = 'b', .position = {0, 0, 0, 0}};
   ck_assert_int_eq(collided(&s3, &s4), 1);
-  sprite s5 = {.alive = 1, .representation = 'a', .position = {0, 1, 0, 0}};
-  sprite s6 = {.alive = 1, .representation = 'b', .position = {0, 0, 0, 1}};
+  SPRITE s5 = {.alive = 1, .representation = 'a', .position = {0, 1, 0, 0}};
+  SPRITE s6 = {.alive = 1, .representation = 'b', .position = {0, 0, 0, 1}};
   ck_assert_int_eq(collided(&s5, &s6), 1);
-  sprite s7 = {.alive = 1, .representation = 'a', .position = {0, 0, 0, 1}};
-  sprite s8 = {.alive = 1, .representation = 'b', .position = {0, 1, 0, 0}};
+  SPRITE s7 = {.alive = 1, .representation = 'a', .position = {0, 0, 0, 1}};
+  SPRITE s8 = {.alive = 1, .representation = 'b', .position = {0, 1, 0, 0}};
   ck_assert_int_eq(collided(&s7, &s8), 1);
-  sprite s9 = {.alive = 1, .representation = 'a', .position = {1, 0, 0, 0}};
-  sprite s10 = {.alive = 1, .representation = 'b', .position = {0, 0, 1, 0}};
+  SPRITE s9 = {.alive = 1, .representation = 'a', .position = {1, 0, 0, 0}};
+  SPRITE s10 = {.alive = 1, .representation = 'b', .position = {0, 0, 1, 0}};
   ck_assert_int_eq(collided(&s9, &s10), 1);
-  sprite s11 = {.alive = 1, .representation = 'a', .position = {0, 2, 0, 1}};
-  sprite s12 = {.alive = 1, .representation = 'b', .position = {0, 1, 0, 0}};
+  SPRITE s11 = {.alive = 1, .representation = 'a', .position = {0, 2, 0, 1}};
+  SPRITE s12 = {.alive = 1, .representation = 'b', .position = {0, 1, 0, 0}};
   ck_assert_int_eq(collided(&s11, &s12), 0);
 
 }

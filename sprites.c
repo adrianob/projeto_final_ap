@@ -6,12 +6,12 @@ void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
   for (int i = 0; i < MAX_Y; i++) {
     for (int j = 0; j < MAX_X; j++) {
       //sempre vai ter um espaco em branco abaixo de todo o mapa
-      sprite space = DEFAULT_SPACE;
+      SPRITE space = DEFAULT_SPACE;
       space.position.x = j;
       space.position.y = i;
       push(&(sl->spaces), space);
 
-      sprite s;
+      SPRITE s;
       switch (MAP[i][j]) {
         case 'p':
           s = DEFAULT_WALL;
@@ -54,7 +54,7 @@ void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
   }
 }
 
-int collided(sprite *current, sprite *sp){
+int collided(SPRITE *current, SPRITE *sp){
   return (current->alive && sp->alive) &&
           (current->representation != sp->representation) &&
             (((current->position.x == sp->position.x) && (current->position.y == sp->position.y)) || //mesma posicao
@@ -62,10 +62,10 @@ int collided(sprite *current, sprite *sp){
           );
 }
 
-void check_sprite_collision(struct sprite_list *sl, sprite *sp){
-  sprite *list[] = {sl->walls, sl->fruits, sl->ghosts, sl->mr_do, sl->shot};
-  for (int i = 0; i < (int)sizeof(list)/sizeof(sprite*); i++) {
-    sprite *current = list[i];
+void check_sprite_collision(struct sprite_list *sl, SPRITE *sp){
+  SPRITE *list[] = {sl->walls, sl->fruits, sl->ghosts, sl->mr_do, sl->shot};
+  for (int i = 0; i < (int)sizeof(list)/sizeof(SPRITE*); i++) {
+    SPRITE *current = list[i];
     while(current != NULL){
       if (collided(current, sp)) {
         //mrdo colide com parede
@@ -102,8 +102,8 @@ void check_sprite_collision(struct sprite_list *sl, sprite *sp){
   }
 }
 
-void check_ghosts_collision(struct sprite_list *sl, sprite *sp){
-  sprite *current = sp;
+void check_ghosts_collision(struct sprite_list *sl, SPRITE *sp){
+  SPRITE *current = sp;
   while(current != NULL){
     check_sprite_collision(sl, sp);
     current = current->next;
@@ -112,7 +112,7 @@ void check_ghosts_collision(struct sprite_list *sl, sprite *sp){
 
 void create_shot(struct sprite_list *sl){
   if (list_size(sl->shot) < 1) {//cria o tiro
-    sprite shot = DEFAULT_SHOT;
+    SPRITE shot = DEFAULT_SHOT;
     push(&sl->shot, shot);
   }
   if (!sl->shot->alive) {
@@ -124,13 +124,13 @@ void create_shot(struct sprite_list *sl){
 
 void create_ghost(struct sprite_list *sl){
   if (list_size(sl->ghosts) < MAX_GHOSTS) {
-    sprite ghost = DEFAULT_GHOST;
+    SPRITE ghost = DEFAULT_GHOST;
     ghost.position = find_char(sl, CH_NEST);
     push(&sl->ghosts, ghost);
   }
 }
 
-void create_rocks(WINDOW *w, sprite *rocks){
+void create_rocks(WINDOW *w, SPRITE *rocks){
   for (int i = 0; i < MAX_ROCKS; i++) {
 
     rocks[i] = DEFAULT_ROCK;
@@ -148,46 +148,46 @@ void create_rocks(WINDOW *w, sprite *rocks){
   }
 }
 
-const sprite DEFAULT_GHOST = {
+const SPRITE DEFAULT_GHOST = {
   .representation = CH_GHOST,
   .alive = 1,
   .direction = LEFT_DIRECTION
 };
 
-const sprite DEFAULT_FRUIT = {
+const SPRITE DEFAULT_FRUIT = {
   .alive = 1,
   .representation = CH_FRUIT
 };
 
-const sprite DEFAULT_ROCK = {
+const SPRITE DEFAULT_ROCK = {
   .alive = 0,
   .direction = DOWN_DIRECTION,
   .representation = CH_ROCK
 };
 
-const sprite DEFAULT_NEST = {
+const SPRITE DEFAULT_NEST = {
   .representation = CH_NEST,
   .alive = 1
 };
 
-const sprite DEFAULT_SHOT = {
+const SPRITE DEFAULT_SHOT = {
   .representation = CH_SHOT,
   .position = {0, 0, 0, 0},
   .direction = RIGHT_DIRECTION,
   .alive = 0
 };
 
-const sprite DEFAULT_MR_DO = {
+const SPRITE DEFAULT_MR_DO = {
   .representation = CH_MR_DO,
   .alive = 1
 };
 
-const sprite DEFAULT_WALL = {
+const SPRITE DEFAULT_WALL = {
   .representation = CH_WALL,
   .alive = 1
 };
 
-const sprite DEFAULT_SPACE = {
+const SPRITE DEFAULT_SPACE = {
   .representation = CH_SPACE,
   .alive = 1
 };

@@ -5,20 +5,20 @@
 #include "lists.h"
 struct game_state game_state;
 
-extern const sprite DEFAULT_GHOST;
-extern const sprite DEFAULT_FRUIT;
-extern const sprite DEFAULT_ROCK;
-extern const sprite DEFAULT_SHOT;
-extern const sprite DEFAULT_MR_DO;
-extern const sprite DEFAULT_NEST;
-extern const sprite DEFAULT_WALL;
-extern const sprite DEFAULT_SPACE;
+extern const SPRITE DEFAULT_GHOST;
+extern const SPRITE DEFAULT_FRUIT;
+extern const SPRITE DEFAULT_ROCK;
+extern const SPRITE DEFAULT_SHOT;
+extern const SPRITE DEFAULT_MR_DO;
+extern const SPRITE DEFAULT_NEST;
+extern const SPRITE DEFAULT_WALL;
+extern const SPRITE DEFAULT_SPACE;
 
 void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl);
-void check_sprite_collision(struct sprite_list *sl, sprite *sprite);
-void check_ghosts_collision(struct sprite_list *sl, sprite *sp);
-void create_rocks(WINDOW *w, sprite *rocks);
+void check_sprite_collision(struct sprite_list *sl, SPRITE *sprite);
+void check_ghosts_collision(struct sprite_list *sl, SPRITE *sp);
+void create_rocks(WINDOW *w, SPRITE *rocks);
 void create_ghost(struct sprite_list *sl);
 void create_shot(struct sprite_list *sl);
-int collided(sprite *current, sprite *sp);
+int collided(SPRITE *current, SPRITE *sp);
 #endif
