@@ -62,52 +62,65 @@ int collided(SPRITE *current, SPRITE *sp){
           );
 }
 
-void check_sprite_collision(struct sprite_list *sl, SPRITE *sp){
-  SPRITE *list[] = {sl->walls, sl->fruits, sl->ghosts, sl->mr_do, sl->shot};
-  for (int i = 0; i < (int)sizeof(list)/sizeof(SPRITE*); i++) {
-    SPRITE *current = list[i];
-    while(current != NULL){
-      if (collided(current, sp)) {
-        //mrdo colide com parede
-        if (current->representation == CH_WALL && sp->representation == CH_MR_DO) {
-          current->alive = 0;
-        }
-        //mrdo colide com fruta
-        else if (current->representation == CH_FRUIT && sp->representation == CH_MR_DO) {
-          current->alive = 0;
-          game_state.score += 50;
-        }
-        //fantasma colide com mrdo
-        else if (current->representation == CH_GHOST && sp->representation == CH_MR_DO) {
-          sp->alive = 0;
-        }
-        //tiro colide com o fantasma
-        else if (current->representation == CH_GHOST && sp->representation == CH_SHOT) {
-          current->alive = 0;
-          sp->alive = 0;
-          game_state.score += 10;
-        }
-        //tiro colide com fruta
-        else if (current->representation == CH_FRUIT && sp->representation == CH_SHOT) {
-          current->alive = 0;
-          sp->alive = 0;
-        }
-        //fantasma colide com fruta
-        else if (current->representation == CH_FRUIT && sp->representation == CH_GHOST) {
-          current->alive = 0;
-        }
-      }
-      current = current->next;
-    }
-  }
-}
-
-void check_ghosts_collision(struct sprite_list *sl, SPRITE *sp){
-  SPRITE *current = sp;
+void check_sprite_collision(struct sprite_list *sl){
+  SPRITE *list;
+  SPRITE *current = sl->walls;
   while(current != NULL){
-    check_sprite_collision(sl, sp);
+    //mrdo colide com parede
+    if (collided(current, sl->mr_do)) {
+      current->alive = 0;
+    }
+
     current = current->next;
   }
+
+  current = sl->fruits;
+  while(current != NULL){
+    //mrdo colide com fruta
+    if (collided(current, sl->mr_do)) {
+      current->alive = 0;
+      game_state.score += 50;
+    }
+
+    //tiro colide com fruta
+    if (list_size(sl->shot) > 0){
+      if (collided(current, sl->shot)) {
+        current->alive = 0;
+        sl->shot->alive = 0;
+      }
+    }
+
+    //fantasma colide com fruta
+    list = sl->ghosts;
+    while(list != NULL){
+      if (collided(current, list)) {
+        current->alive = FALSE;
+      }
+      list = list->next;
+    }
+
+    current = current->next;
+  }
+
+  current = sl->ghosts;
+  while(current != NULL){
+    //fantasma colide com mrdo
+    if (collided(current, sl->mr_do)) {
+      sl->mr_do->alive = 0;
+    }
+
+    //fantasma colide com tiro
+    if (list_size(sl->shot) > 0){
+      if (collided(current, sl->shot)) {
+        current->alive = 0;
+        sl->shot->alive = 0;
+        game_state.score += 10;
+      }
+    }
+
+    current = current->next;
+  }
+
 }
 
 void create_shot(struct sprite_list *sl){

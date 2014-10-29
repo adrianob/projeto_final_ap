@@ -44,13 +44,11 @@ void play(void){
       move_ghosts(game_window, sprite_list.ghosts);
       move_sprite(game_window, sprite_list.mr_do, mrdo_direction);
 
-      //checar colisoes so depois de mover todos sprites
       if(list_size(sprite_list.shot) > 0 && sprite_list.shot->alive){
         move_shot(game_window, sprite_list.shot);
-        check_sprite_collision(&sprite_list, sprite_list.shot);
       }
-      check_sprite_collision(&sprite_list, sprite_list.mr_do);
-      check_ghosts_collision(&sprite_list, sprite_list.ghosts);
+      //checar colisoes so depois de mover todos sprites
+      check_sprite_collision(&sprite_list);
 
       mrdo_direction = 0;
       timer_ready = 0;

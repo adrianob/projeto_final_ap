@@ -15,8 +15,7 @@ extern const SPRITE DEFAULT_WALL;
 extern const SPRITE DEFAULT_SPACE;
 
 void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl);
-void check_sprite_collision(struct sprite_list *sl, SPRITE *sprite);
-void check_ghosts_collision(struct sprite_list *sl, SPRITE *sp);
+void check_sprite_collision(struct sprite_list *sl);
 void create_rocks(WINDOW *w, SPRITE *rocks);
 void create_ghost(struct sprite_list *sl);
 void create_shot(struct sprite_list *sl);
