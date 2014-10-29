@@ -36,8 +36,8 @@ struct position {
   int x, y, last_x, last_y;
 };
 
-typedef struct sprite {
-  struct sprite *next;
+typedef struct sprite_node {
+  struct sprite_node *next;
   struct position position;
   int alive;//vivo ou morto
   chtype representation;

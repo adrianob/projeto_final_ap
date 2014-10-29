@@ -2,7 +2,7 @@
 
 //insere um novo sprite no inicio da lista encadeada
 void push(sprite **head_ref, sprite s) {
-  sprite *node = (sprite *) malloc(sizeof(struct sprite));
+  sprite *node = (sprite *) malloc(sizeof(sprite));
   *node = s;
   node->next = *head_ref;
   *head_ref = node;
