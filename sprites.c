@@ -15,38 +15,32 @@ void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
       switch (MAP[i][j]) {
         case 'p':
           s = DEFAULT_WALL;
-          s.position.x = j;
-          s.position.y = i;
+          s.position = (struct position){.x = j, .y = i};
           push(&(sl->walls), s);
           break;
         case 't':
           s = DEFAULT_SHOT;
-          s.position.x = j;
-          s.position.y = i;
+          s.position = (struct position){.x = j, .y = i};
           push(&(sl->shot), s);
           break;
         case 'i':
           s = DEFAULT_GHOST;
-          s.position.x = j;
-          s.position.y = i;
+          s.position = (struct position){.x = j, .y = i};
           push(&(sl->ghosts), s);
           break;
         case 'f':
           s = DEFAULT_FRUIT;
-          s.position.x = j;
-          s.position.y = i;
+          s.position = (struct position){.x = j, .y = i};
           push(&(sl->fruits), s);
           break;
         case 'd':
           s = DEFAULT_MR_DO;
-          s.position.x = j;
-          s.position.y = i;
+          s.position = (struct position){.x = j, .y = i};
           push(&(sl->mr_do), s);
           break;
         case 'n':
           s = DEFAULT_NEST;
-          s.position.x = j;
-          s.position.y = i;
+          s.position = (struct position){.x = j, .y = i};
           push(&(sl->nest), s);
           break;
       }
@@ -185,7 +179,6 @@ const SPRITE DEFAULT_NEST = {
 
 const SPRITE DEFAULT_SHOT = {
   .representation = CH_SHOT,
-  .position = {0, 0, 0, 0},
   .direction = RIGHT_DIRECTION,
   .alive = 0
 };
