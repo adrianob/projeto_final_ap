@@ -17,9 +17,14 @@ void play(void){
   config_timer();
 
   chtype MAP[MAX_Y][MAX_X];
-  make_map(load_level(game_state.level), MAP);//le o arquivo da fase e carrega na matriz
   struct sprite_list sprite_list= {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-  make_lists(MAP, &sprite_list);//cria uma lista de sprites a partir da matriz da fase
+  if (game_state.level == 3) {//continua
+    load_state(&sprite_list);
+  }
+  else{
+    make_map(load_level(game_state.level), MAP);//le o arquivo da fase e carrega na matriz
+    make_lists(MAP, &sprite_list);//cria uma lista de sprites a partir da matriz da fase
+  }
 
   int ch, mrdo_direction;
 
@@ -47,7 +52,7 @@ void play(void){
       move_ghosts(game_window, sprite_list.ghosts);
       move_sprite(game_window, sprite_list.mr_do, mrdo_direction);
 
-      if(list_size(sprite_list.shot) > 0 && sprite_list.shot->alive){
+      if(sprite_list.shot->alive){
         move_shot(game_window, sprite_list.shot);
       }
       //checar colisoes so depois de mover todos sprites
@@ -62,7 +67,7 @@ void play(void){
     refresh_windows(info_window, game_window, border_window);
   }//fim loop principal
 
-  save_map(game_window);
+  save_map(game_window, sprite_list);
   endwin();
   clear();
   show_menu();
@@ -70,6 +75,11 @@ void play(void){
 
 void continue_play(void){
   game_state.level = 3;
+  play();
+}
+
+void new_game(void){
+  game_state.level = 1;
   play();
 }
 

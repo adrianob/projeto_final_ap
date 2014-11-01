@@ -10,6 +10,7 @@ void timer_handler(int i);
 void config_timer(void);
 void play(void);
 void continue_play(void);
+void new_game(void);
 void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
 void check_state(WINDOW *info, struct sprite_list sl);
 

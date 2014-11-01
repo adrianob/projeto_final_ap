@@ -16,6 +16,11 @@ void create_default_sprites(struct sprite_list *sprite_list){
     nest.position = (struct position) {.x = MAX_X / 2, .y = MAX_Y / 2 };
     push(&(sprite_list->nest), nest);
   }
+
+  if(list_size(sprite_list->shot) == 0 ){
+    SPRITE shot = DEFAULT_SHOT;
+    push(&(sprite_list->shot), shot);
+  }
 }
 
 //cria as lista de sprites a partir do mapa
@@ -97,11 +102,9 @@ void check_sprite_collision(struct sprite_list *sl){
     }
 
     //tiro colide com fruta
-    if (list_size(sl->shot) > 0){
-      if (collided(current, sl->shot)) {
-        current->alive = FALSE;
-        sl->shot->alive = FALSE;
-      }
+    if (collided(current, sl->shot)) {
+      current->alive = FALSE;
+      sl->shot->alive = FALSE;
     }
 
     //fantasma colide com fruta
@@ -124,12 +127,10 @@ void check_sprite_collision(struct sprite_list *sl){
     }
 
     //fantasma colide com tiro
-    if (list_size(sl->shot) > 0){
-      if (collided(current, sl->shot)) {
-        current->alive = FALSE;
-        sl->shot->alive = FALSE;
-        game_state.score += 10;
-      }
+    if (collided(current, sl->shot)) {
+      current->alive = FALSE;
+      sl->shot->alive = FALSE;
+      game_state.score += 10;
     }
 
     current = current->next;
@@ -138,11 +139,6 @@ void check_sprite_collision(struct sprite_list *sl){
 }
 
 void create_shot(struct sprite_list *sl){
-  if (list_size(sl->shot) < 1) {//cria o tiro
-    SPRITE shot = DEFAULT_SHOT;
-    shot.alive = FALSE;
-    push(&sl->shot, shot);
-  }
   if (!sl->shot->alive) {
     sl->shot->alive = TRUE;
     sl->shot->position = find_char(sl, CH_MR_DO);
@@ -201,7 +197,7 @@ const SPRITE DEFAULT_NEST = {
 const SPRITE DEFAULT_SHOT = {
   .representation = CH_SHOT,
   .direction = RIGHT_DIRECTION,
-  .alive = TRUE
+  .alive = FALSE
 };
 
 const SPRITE DEFAULT_MR_DO = {
