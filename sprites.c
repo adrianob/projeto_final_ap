@@ -1,5 +1,23 @@
 #include "sprites.h"
 
+void create_default_sprites(struct sprite_list *sprite_list){
+  //se o mrdo nao esta no arquivo da fase
+  if(list_size(sprite_list->mr_do) == 0 ){
+    SPRITE mr_do = DEFAULT_MR_DO;
+    //bota mrdo na base do mapa
+    mr_do.position = (struct position) {.x = MAX_X / 2, .y = MAX_Y - 1 };
+    push(&(sprite_list->mr_do), mr_do);
+  }
+
+  //se o ninho nao tiver no arquivo de fase
+  if(list_size(sprite_list->nest) == 0 ){
+    SPRITE nest = DEFAULT_NEST;
+    //bota ninho no centro do mapa
+    nest.position = (struct position) {.x = MAX_X / 2, .y = MAX_Y / 2 };
+    push(&(sprite_list->nest), nest);
+  }
+}
+
 //cria as lista de sprites a partir do mapa
 void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
   //percorre a matriz do mapa
@@ -46,6 +64,8 @@ void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
       }
     }
   }
+  create_default_sprites(sl);
+
 }
 
 int collided(SPRITE *current, SPRITE *sp){
@@ -62,7 +82,7 @@ void check_sprite_collision(struct sprite_list *sl){
   while(current != NULL){
     //mrdo colide com parede
     if (collided(current, sl->mr_do)) {
-      current->alive = 0;
+      current->alive = FALSE;
     }
 
     current = current->next;
@@ -72,15 +92,15 @@ void check_sprite_collision(struct sprite_list *sl){
   while(current != NULL){
     //mrdo colide com fruta
     if (collided(current, sl->mr_do)) {
-      current->alive = 0;
+      current->alive = FALSE;
       game_state.score += 50;
     }
 
     //tiro colide com fruta
     if (list_size(sl->shot) > 0){
       if (collided(current, sl->shot)) {
-        current->alive = 0;
-        sl->shot->alive = 0;
+        current->alive = FALSE;
+        sl->shot->alive = FALSE;
       }
     }
 
@@ -100,14 +120,14 @@ void check_sprite_collision(struct sprite_list *sl){
   while(current != NULL){
     //fantasma colide com mrdo
     if (collided(current, sl->mr_do)) {
-      sl->mr_do->alive = 0;
+      sl->mr_do->alive = FALSE;
     }
 
     //fantasma colide com tiro
     if (list_size(sl->shot) > 0){
       if (collided(current, sl->shot)) {
-        current->alive = 0;
-        sl->shot->alive = 0;
+        current->alive = FALSE;
+        sl->shot->alive = FALSE;
         game_state.score += 10;
       }
     }
@@ -120,10 +140,11 @@ void check_sprite_collision(struct sprite_list *sl){
 void create_shot(struct sprite_list *sl){
   if (list_size(sl->shot) < 1) {//cria o tiro
     SPRITE shot = DEFAULT_SHOT;
+    shot.alive = FALSE;
     push(&sl->shot, shot);
   }
   if (!sl->shot->alive) {
-    sl->shot->alive = 1;
+    sl->shot->alive = TRUE;
     sl->shot->position = find_char(sl, CH_MR_DO);
     sl->shot->direction = sl->mr_do->direction;
   }
@@ -157,12 +178,12 @@ void create_rocks(WINDOW *w, SPRITE *rocks){
 
 const SPRITE DEFAULT_GHOST = {
   .representation = CH_GHOST,
-  .alive = 1,
+  .alive = TRUE,
   .direction = LEFT_DIRECTION
 };
 
 const SPRITE DEFAULT_FRUIT = {
-  .alive = 1,
+  .alive = TRUE,
   .representation = CH_FRUIT
 };
 
@@ -174,26 +195,26 @@ const SPRITE DEFAULT_ROCK = {
 
 const SPRITE DEFAULT_NEST = {
   .representation = CH_NEST,
-  .alive = 1
+  .alive = TRUE
 };
 
 const SPRITE DEFAULT_SHOT = {
   .representation = CH_SHOT,
   .direction = RIGHT_DIRECTION,
-  .alive = 0
+  .alive = TRUE
 };
 
 const SPRITE DEFAULT_MR_DO = {
   .representation = CH_MR_DO,
-  .alive = 1
+  .alive = TRUE
 };
 
 const SPRITE DEFAULT_WALL = {
   .representation = CH_WALL,
-  .alive = 1
+  .alive = TRUE
 };
 
 const SPRITE DEFAULT_SPACE = {
   .representation = CH_SPACE,
-  .alive = 1
+  .alive = TRUE
 };

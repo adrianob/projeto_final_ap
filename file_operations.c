@@ -42,31 +42,45 @@ void make_map(FILE *level, chtype (*p)[MAX_X]){
       cont++;
     }
   }
+  fclose(level);
 }
 
 //Salva o mapa atual em um .txt para continuar o jogo
-void write_map(chtype (*MAP)[MAX_X]){
+void save_map(WINDOW *game_window){
 
-  char buffer[MAX_Y][MAX_X];
+  chtype buffer[MAX_Y][MAX_X];
 
   for(int i = 0; i < MAX_Y; i++){
     for(int j = 0; j < MAX_X; j++){
-      switch(MAP[i][j]){
-
+      buffer[i][j] = mvwinch(game_window, i, j);
+      switch(buffer[i][j]){
         case CH_WALL:
-                  buffer[i][j] = 'p';
-                  break;
-        case ' ':
-                  buffer[i][j] = 'v';
-                  break;
-        default:  break;
+          buffer[i][j] = 'p';
+          break;
+        case CH_SHOT:
+          buffer[i][j] = 't';
+          break;
+        case CH_GHOST:
+          buffer[i][j] = 'i';
+          break;
+        case CH_FRUIT:
+          buffer[i][j] = 'f';
+          break;
+        case CH_MR_DO:
+          buffer[i][j] = 'd';
+          break;
+        case CH_NEST:
+          buffer[i][j] = 'n';
+          break;
+        case CH_SPACE:
+          buffer[i][j] = 'v';
+          break;
       }
     }
   }
 
-
   FILE *cont_map;
-  cont_map = fopen("continue_level.txt", "wb");
+  cont_map = fopen("continuar.txt", "wb");
 
   for (int i=0; i < MAX_Y; i++){
     for(int j = 0; j < MAX_X; j++){
@@ -74,4 +88,5 @@ void write_map(chtype (*MAP)[MAX_X]){
       }
     fprintf(cont_map, "%s", "\n");
   }
+  fclose(cont_map);
 }

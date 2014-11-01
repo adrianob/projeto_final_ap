@@ -19,7 +19,7 @@ void print_list(WINDOW *w, SPRITE *head){
   }
 }
 
-void print_lists(WINDOW *w, struct sprite_list sl){
+void print_map(WINDOW *w, struct sprite_list sl){
   //cuidado com a ordem! imprime por cima se tiver dois sprites no mesmo lugar
   SPRITE *list[] = {sl.spaces, sl.walls, sl.fruits, sl.ghosts, sl. shot, sl.nest, sl.mr_do};
   for (int i = 0; i < sizeof(list)/sizeof(SPRITE*); i++) {

@@ -1,6 +1,7 @@
 #include "main.h"
 #include "game.h"
 #include "file_operations.h"
+#include "mr_do_menus.h"
 #include "lists.h"
 #include "sprites.h"
 #include "movement.h"
@@ -19,8 +20,10 @@ void play(void){
   make_map(load_level(game_state.level), MAP);//le o arquivo da fase e carrega na matriz
   struct sprite_list sprite_list= {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
   make_lists(MAP, &sprite_list);//cria uma lista de sprites a partir da matriz da fase
+
   int ch, mrdo_direction;
-  while((ch = getch()) != KEY_F(1)){
+
+  while((ch = getch()) != 27){//loop principal, espera tecla esc
     if(sprite_list.mr_do->alive){
       if (ch == ' ') {
         create_shot(&sprite_list);
@@ -51,15 +54,23 @@ void play(void){
       check_sprite_collision(&sprite_list);
 
       mrdo_direction = 0;
-      timer_ready = 0;
+      timer_ready = FALSE;
     }
 
-    print_lists(game_window, sprite_list);
+    print_map(game_window, sprite_list);
     check_state(info_window, sprite_list);
     refresh_windows(info_window, game_window, border_window);
-  }
+  }//fim loop principal
 
+  save_map(game_window);
   endwin();
+  clear();
+  show_menu();
+}
+
+void continue_play(void){
+  game_state.level = 3;
+  play();
 }
 
 void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window){
@@ -74,7 +85,7 @@ void check_state(WINDOW *w, struct sprite_list sl){
   int alive_fruits = count_alive(sl.fruits);
   int created_ghosts = list_size(sl.ghosts);
 
-  if ((alive_ghosts == 0 && created_ghosts == MAX_GHOSTS) || (!alive_fruits)) {
+  if ((alive_ghosts == 0 && created_ghosts == MAX_GHOSTS) || (alive_fruits == 0)) {
     mvwprintw(w, 2, 0, "YOU WIN! ");
     game_state.level = 2;
     play();
@@ -94,17 +105,17 @@ void check_state(WINDOW *w, struct sprite_list sl){
 void config(void){
   srand(time(NULL));
   setlocale(LC_ALL, "");
-  initscr();			/* Start curses mode 		*/
-  cbreak();				/* Line buffering disabled	*/
+  initscr();			//inicia modo ncurses
+  cbreak();
   nodelay(stdscr, TRUE);
-  keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
+  keypad(stdscr, TRUE);		//pega teclas especiais
   start_color();
   init_pair(1, COLOR_CYAN, COLOR_BLACK);
   init_pair(2, COLOR_RED, COLOR_BLACK);
   init_pair(3, COLOR_YELLOW, COLOR_BLACK);
   init_pair(4, COLOR_GREEN, COLOR_BLACK);
-  noecho();			/* Don't echo() while we do getch */
-  curs_set(0);
+  noecho();			//nao imprime na tela teclas no usuario
+  curs_set(0); //nao imprime cursor
 }
 
 void config_timer(void){
