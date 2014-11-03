@@ -17,7 +17,8 @@ void show_menu(void){
     menu_items[i] = new_item(choices[i], "");
   }
 
-  set_item_userptr(menu_items[0], play);//nivel 1
+  set_item_userptr(menu_items[0], new_game);//novo jogo
+  set_item_userptr(menu_items[1], continue_play);//continua
   set_item_userptr(menu_items[3], exit);//sair
 
   game_menu = new_menu((ITEM **)menu_items);

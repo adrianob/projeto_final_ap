@@ -23,7 +23,7 @@ int next_char(WINDOW *w, struct position p, int direction){
   return next_ch;
 }
 
-int can_go_to_direction(WINDOW *w, sprite sp, int direction){
+int can_go_to_direction(WINDOW *w, SPRITE sp, int direction){
   int can_go = 0;
   //verifica se eh fim do mapa
   switch (direction) {
@@ -58,7 +58,7 @@ int can_go_to_direction(WINDOW *w, sprite sp, int direction){
 }
 
 //retorna um booleano indicando se foi possivel se mover
-int move_sprite(WINDOW *w, sprite* sprite, int direction){
+int move_sprite(WINDOW *w, SPRITE *sprite, int direction){
   sprite->position.last_x = sprite->position.x;
   sprite->position.last_y = sprite->position.y;
   int can_go = can_go_to_direction(w, *sprite, direction);
@@ -89,7 +89,7 @@ int can_fall(WINDOW *w, struct position* p, int direction){
   return (next_ch == ' ');
 }
 
-void move_ghost(WINDOW *w, sprite *gh){
+void move_ghost(WINDOW *w, SPRITE *gh){
   int gh_direction = gh->direction;
   int d;
   int can_go = 0;
@@ -127,8 +127,8 @@ void move_ghost(WINDOW *w, sprite *gh){
   }
 }
 
-void move_ghosts(WINDOW *w, sprite *ghosts){
-  sprite *current = ghosts;
+void move_ghosts(WINDOW *w, SPRITE *ghosts){
+  SPRITE *current = ghosts;
   while(current != NULL){
     move_ghost(w, current);
     current = current->next;
@@ -136,7 +136,7 @@ void move_ghosts(WINDOW *w, sprite *ghosts){
 }
 
 //tiro morre quando nao pode mais se mover
-void move_shot(WINDOW *w, sprite* s){
+void move_shot(WINDOW *w, SPRITE *s){
   if (!move_sprite(w, s, s->direction)) {
     s->alive = 0;
   }

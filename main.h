@@ -36,8 +36,8 @@ struct position {
   int x, y, last_x, last_y;
 };
 
-typedef struct sprite {
-  struct sprite *next;
+typedef struct sprite_node {
+  struct sprite_node *next;
   struct position position;
   int alive;//vivo ou morto
   chtype representation;
@@ -49,7 +49,7 @@ typedef struct sprite {
     3 - direita
     4 - esquerda
    * */
-} sprite;
+} SPRITE;
 
 struct game_state {
   int score;
@@ -57,7 +57,7 @@ struct game_state {
 };
 
 struct sprite_list {
-  sprite *walls,
+  SPRITE *walls,
          *fruits,
          *ghosts,
          *spaces,
@@ -66,11 +66,6 @@ struct sprite_list {
          *shot;
 };
 
-void config(void);
-void timer_handler(int i);
-void config_timer(void);
-void play(void);
-void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window);
-void check_state(WINDOW *info, struct sprite_list sl);
+extern int timer_ready;
 
 #endif
