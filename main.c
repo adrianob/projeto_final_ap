@@ -12,6 +12,7 @@ struct game_state game_state = {.score = 0, .level = 1};
 int main(int argc, const char *argv[]){
   config();
   show_menu();
+  game_state.saved_game = 0;
 
   return 0;
 }
