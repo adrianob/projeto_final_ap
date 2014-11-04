@@ -97,6 +97,11 @@ void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_wi
   wrefresh(game_window);
 }
 
+void exit_game(void){
+  endwin();
+  exit(EXIT_SUCCESS);
+}
+
 void check_state(WINDOW *w, struct sprite_list sl){
 
   int alive_ghosts = count_alive(sl.ghosts);
