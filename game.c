@@ -1,3 +1,4 @@
+/*funções utilizadas diretamente no jogo*/
 #include "main.h"
 #include "game.h"
 #include "file_operations.h"
@@ -6,6 +7,7 @@
 #include "sprites.h"
 #include "movement.h"
 
+//função pricipal que cria a tela do jogo, recebe comandos do usuário e controla toda a lógica do jogo
 void play(void){
   unsigned int ghost_timer = 0;
   //cria a janela do jogo dentro da borda

@@ -15,6 +15,7 @@
 #define LEFT_DIRECTION 4
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
+//define o caractere e a cor de cada sprite
 #define CH_MR_DO (123 | A_ALTCHARSET | COLOR_PAIR(1))
 #define CH_FRUIT (240 | A_ALTCHARSET | COLOR_PAIR(2))
 #define CH_ROCK  (164 | A_ALTCHARSET | COLOR_PAIR(3))
@@ -32,10 +33,13 @@
 #include <ncurses.h>
 #include <locale.h>
 
+//guarda a posição atual e anterior na tela 
 struct position {
   int x, y, last_x, last_y;
 };
 
+//abstração usada para todos elementos mostrados na tela
+//um struct sprite_node é uma lista encadeada de SPRITE, que guarda informações sobre cada elemento do jogo
 typedef struct sprite_node {
   struct sprite_node *next;
   struct position position;
@@ -51,12 +55,14 @@ typedef struct sprite_node {
    * */
 } SPRITE;
 
+//usado para guardar informações sobre o estado do jogo em si
 struct game_state {
   int score;
   int level;
   int saved_game;
 };
 
+//guarda ponteiros para cada tipo de sprite usado no jogo, que por sua vez é uma lista encadeado com 1 ou mais elementos
 struct sprite_list {
   SPRITE *walls,
          *fruits,
