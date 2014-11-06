@@ -49,12 +49,14 @@ void make_map(FILE *level, chtype (*p)[MAX_X]){
 
 //le o arquivo binario com a lista de sprites
 void load_state(struct sprite_list *sprite_list){
-  FILE *game_state;
-  game_state = fopen("estado.bin", "rb");
+  FILE *game_state_file;
+  game_state_file = fopen("estado.bin", "rb");
   SPRITE current;
+  fread(&(game_state.score), sizeof(int), 1, game_state_file);
+  fread(&(game_state.level), sizeof(int), 1, game_state_file);
   for (int i = 0; i < sizeof(*sprite_list)/sizeof(SPRITE*); i++) {
     do{
-      fread(&current, sizeof(SPRITE), 1, game_state);
+      fread(&current, sizeof(SPRITE), 1, game_state_file);
       switch(current.representation){
         case CH_SPACE:
           push(&(sprite_list->spaces), current);
@@ -80,23 +82,25 @@ void load_state(struct sprite_list *sprite_list){
       }
     } while(current.next != NULL);
   }
-  fclose(game_state);
+  fclose(game_state_file);
 }
 
 //Salva o mapa atual em um .txt para continuar o jogo
 void save_map(WINDOW *game_window, struct sprite_list sl){
   //salva lista de sprites
-  FILE *game_state;
-  game_state = fopen("estado.bin", "wb");
+  FILE *game_state_file;
+  game_state_file = fopen("estado.bin", "wb");
+  fwrite(&(game_state.score), sizeof(int), 1, game_state_file);
+  fwrite(&(game_state.level), sizeof(int), 1, game_state_file);
   SPRITE *list[] = {sl.spaces, sl.walls, sl.fruits, sl.ghosts, sl.nest, sl.mr_do, sl.shot};
   for (int i = 0; i < sizeof(list)/sizeof(SPRITE*); i++) {
     SPRITE *current = list[i];
     while(current != NULL){
-      fwrite(current, sizeof(SPRITE), 1, game_state);
+      fwrite(current, sizeof(SPRITE), 1, game_state_file);
       current = current->next;
     }
   }
-  fclose(game_state);
+  fclose(game_state_file);
 
   chtype buffer[MAX_Y][MAX_X];
 

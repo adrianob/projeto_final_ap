@@ -54,6 +54,7 @@ typedef struct sprite_node {
 struct game_state {
   int score;
   int level;
+  int saved_game;
 };
 
 struct sprite_list {

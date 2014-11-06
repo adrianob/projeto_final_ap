@@ -18,7 +18,7 @@ void play(void){
 
   chtype MAP[MAX_Y][MAX_X];
   struct sprite_list sprite_list= {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-  if (game_state.level == 3) {//continua
+  if (game_state.saved_game) {//continua
     load_state(&sprite_list);
   }
   else{
@@ -74,11 +74,19 @@ void play(void){
 }
 
 void continue_play(void){
-  game_state.level = 3;
+  game_state.saved_game = 1;
+  play();
+}
+
+void play_level_2(void){
+  game_state.level = 2;
+  game_state.saved_game = 0;
   play();
 }
 
 void new_game(void){
+  game_state.saved_game = 0;
+  game_state.score = 0;
   game_state.level = 1;
   play();
 }
@@ -89,6 +97,11 @@ void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_wi
   wrefresh(game_window);
 }
 
+void exit_game(void){
+  endwin();
+  exit(EXIT_SUCCESS);
+}
+
 void check_state(WINDOW *w, struct sprite_list sl){
 
   int alive_ghosts = count_alive(sl.ghosts);
@@ -97,8 +110,14 @@ void check_state(WINDOW *w, struct sprite_list sl){
 
   if ((alive_ghosts == 0 && created_ghosts == MAX_GHOSTS) || (alive_fruits == 0)) {
     mvwprintw(w, 2, 0, "YOU WIN! ");
-    game_state.level = 2;
-    play();
+    if (game_state.level == 1) {
+      play_level_2();
+    }
+    else{
+      endwin();
+      clear();
+      show_menu();
+    }
   }
   else if(!sl.mr_do->alive) {
     mvwprintw(w, 2, 0, "GAME OVER!");
@@ -109,6 +128,7 @@ void check_state(WINDOW *w, struct sprite_list sl){
     mvwprintw(w, 6, 0, "Remaining  %d ", MAX_GHOSTS - created_ghosts);
     mvwprintw(w, 7, 0, "Alive      %d ", alive_ghosts);
     mvwprintw(w, 8, 0, "Killed     %d ", (created_ghosts - alive_ghosts));
+    mvwprintw(w, 9, 0, "LEVEL      %d ", game_state.level);
   }
 }
 
