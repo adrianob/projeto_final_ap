@@ -1,5 +1,5 @@
 #include "main.h"
-#include "SPRITEs.h"
+#include "sprites.h"
 #include "lists.h"
 #include <stdint.h>
 #include <check.h>
