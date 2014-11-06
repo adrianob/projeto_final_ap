@@ -1,3 +1,4 @@
+/*Programa principal, contém apenas a função main para facilitar os testes unitários*/
 #include "main.h"
 #include "game.h"
 #include "lists.h"
