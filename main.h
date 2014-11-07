@@ -74,5 +74,6 @@ struct sprite_list {
 };
 
 extern int timer_ready;
+struct game_state game_state;
 
 #endif

@@ -1,6 +1,5 @@
 #ifndef MR_DO_MOVEMENT
 #define MR_DO_MOVEMENT
-struct game_state game_state;
 
 void move_ghost(WINDOW *w, SPRITE *gh);
 //void move_rock(WINDOW *w, sprite *rk);

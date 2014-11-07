@@ -140,7 +140,7 @@ void save_map(WINDOW *game_window, struct sprite_list sl){
 
   for (int i=0; i < MAX_Y; i++){
     for(int j = 0; j < MAX_X; j++){
-        fprintf(cont_map, "%c", buffer[i][j]);
+        fprintf(cont_map, "%c", (char)buffer[i][j]);
       }
     fprintf(cont_map, "%s", "\n");
   }
