@@ -19,6 +19,7 @@ void show_menu(void){
 
   set_item_userptr(menu_items[0], new_game);//novo jogo
   set_item_userptr(menu_items[1], continue_play);//continua
+  set_item_userptr(menu_items[2], high_scores);//continua
   set_item_userptr(menu_items[3], exit_game);//sair
 
   game_menu = new_menu((ITEM **)menu_items);

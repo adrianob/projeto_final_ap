@@ -6,6 +6,8 @@
 #define MAX_GHOSTS 10
 #define MAX_FRUITS 32
 #define MAX_ROCKS 8
+#define MAX_NAME 9
+#define TOP_SCORES 5
 #define INTERVAL 100000
 #define GHOST_INTERVAL 3000000
 #define ROCK_INTERVAL 100000
@@ -33,7 +35,7 @@
 #include <ncurses.h>
 #include <locale.h>
 
-//guarda a posição atual e anterior na tela 
+//guarda a posição atual e anterior na tela
 struct position {
   int x, y, last_x, last_y;
 };
@@ -71,6 +73,13 @@ struct sprite_list {
          *mr_do,
          *nest,
          *shot;
+};
+
+typedef int (*compfn)(const void*, const void*);
+
+struct score {
+  char name[MAX_NAME];
+  int score;
 };
 
 extern int timer_ready;
