@@ -1,5 +1,7 @@
+/*funções para o menu do jogo*/
 #include "mr_do_menus.h"
 
+//mostra menu principal
 void show_menu(void){
   char *choices[] = {
                     "Novo Jogo",

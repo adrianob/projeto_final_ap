@@ -1,3 +1,4 @@
+/*funçõs que trabalham com listas encadeadas*/
 #include "lists.h"
 
 //insere um novo sprite no inicio da lista encadeada
@@ -19,6 +20,7 @@ void print_list(WINDOW *w, SPRITE *head){
   }
 }
 
+//imprime todos os sprites contidos na lista na tela
 void print_map(WINDOW *w, struct sprite_list sl){
   //cuidado com a ordem! imprime por cima se tiver dois sprites no mesmo lugar
   SPRITE *list[] = {sl.spaces, sl.walls, sl.fruits, sl.ghosts, sl.shot, sl.nest, sl.mr_do};
@@ -53,6 +55,7 @@ int list_size(SPRITE *sp){
   return count;
 }
 
+//retorna quantidade de sprites vivos numa lista
 int count_alive(SPRITE *sp){
   int count = 0;
   SPRITE *current = sp;

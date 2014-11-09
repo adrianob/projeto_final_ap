@@ -1,5 +1,8 @@
+/*funções específicas para trabalhar com tipo SPRITE
+ * */
 #include "sprites.h"
 
+//cria sprites obrigatórios caso não estejam no arquivo da fase
 void create_default_sprites(struct sprite_list *sprite_list){
   //se o mrdo nao esta no arquivo da fase
   if(list_size(sprite_list->mr_do) == 0 ){
@@ -73,6 +76,7 @@ void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl){
 
 }
 
+//retorna se dois sprites colidiram ou não
 int collided(SPRITE *current, SPRITE *sp){
   return (current->alive && sp->alive) &&
           (current->representation != sp->representation) &&
@@ -81,6 +85,7 @@ int collided(SPRITE *current, SPRITE *sp){
           );
 }
 
+//verifica a colisão de toda a lista de sprites
 void check_sprite_collision(struct sprite_list *sl){
   SPRITE *list;
   SPRITE *current = sl->walls;
@@ -172,6 +177,7 @@ void create_rocks(WINDOW *w, SPRITE *rocks){
   }
 }
 
+//tipos padrões de sprite para simplificar o código
 const SPRITE DEFAULT_GHOST = {
   .representation = CH_GHOST,
   .alive = TRUE,

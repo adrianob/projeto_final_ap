@@ -65,6 +65,7 @@ void play(void){
     }
 
     print_map(game_window, sprite_list);
+    show_info(info_window, sprite_list);
     check_state(info_window, sprite_list);
     refresh_windows(info_window, game_window, border_window);
   }//fim loop principal
@@ -75,6 +76,7 @@ void play(void){
   show_menu();
 }
 
+//continua o jogo a partir de um jogo salvo
 void continue_play(void){
   game_state.saved_game = 1;
   play();
@@ -104,24 +106,13 @@ void exit_game(void){
   exit(EXIT_SUCCESS);
 }
 
-void check_state(WINDOW *w, struct sprite_list sl){
-
+//mostra informações sobre o jogo na tela
+void show_info(WINDOW *w, struct sprite_list sl){
   int alive_ghosts = count_alive(sl.ghosts);
   int alive_fruits = count_alive(sl.fruits);
   int created_ghosts = list_size(sl.ghosts);
 
-  if ((alive_ghosts == 0 && created_ghosts == MAX_GHOSTS) || (alive_fruits == 0)) {
-    mvwprintw(w, 2, 0, "YOU WIN! ");
-    if (game_state.level == 1) {
-      play_level_2();
-    }
-    else{
-      endwin();
-      clear();
-      show_menu();
-    }
-  }
-  else if(!sl.mr_do->alive) {
+  if(!sl.mr_do->alive) {
     mvwprintw(w, 2, 0, "GAME OVER!");
   }else{
     mvwprintw(w, 1, 0, "SCORE: %d", game_state.score);
@@ -134,6 +125,27 @@ void check_state(WINDOW *w, struct sprite_list sl){
   }
 }
 
+//verifica se passou de fase
+void check_state(WINDOW *w, struct sprite_list sl){
+
+  int alive_ghosts = count_alive(sl.ghosts);
+  int alive_fruits = count_alive(sl.fruits);
+  int created_ghosts = list_size(sl.ghosts);
+
+  if ((alive_ghosts == 0 && created_ghosts == MAX_GHOSTS) || (alive_fruits == 0)) {//ganhou a fase
+    mvwprintw(w, 2, 0, "YOU WIN! ");
+    if (game_state.level == 1) {
+      play_level_2();
+    }
+    else{
+      endwin();
+      clear();
+      show_menu();
+    }
+  }
+}
+
+//configurações iniciais
 void config(void){
   srand(time(NULL));
   setlocale(LC_ALL, "");
@@ -150,6 +162,7 @@ void config(void){
   curs_set(0); //nao imprime cursor
 }
 
+//inicialização do timer
 void config_timer(void){
   struct itimerval timer;
   timer.it_interval.tv_sec = 0;
@@ -160,6 +173,7 @@ void config_timer(void){
   signal(SIGALRM, timer_handler);
 }
 
+//função de retorno do timer
 void timer_handler(int i){
   timer_ready = 1;
 }

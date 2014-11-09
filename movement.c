@@ -1,9 +1,11 @@
+/*controla movimentação dos sprites na tela*/
 #include "main.h"
 #include "movement.h"
 #include <ncurses.h>
 #include <unistd.h>
 #include <stdlib.h>
 
+//retorna o caractere adjacente a posição dada na direção dada
 int next_char(WINDOW *w, struct position p, int direction){
   int next_ch;
   switch (direction) {
@@ -23,6 +25,7 @@ int next_char(WINDOW *w, struct position p, int direction){
   return next_ch;
 }
 
+//verifica se o sprite pode se mover na direção dada
 int can_go_to_direction(WINDOW *w, SPRITE sp, int direction){
   int can_go = 0;
   //verifica se eh fim do mapa
@@ -57,7 +60,7 @@ int can_go_to_direction(WINDOW *w, SPRITE sp, int direction){
   }
 }
 
-//retorna um booleano indicando se foi possivel se mover
+//tenta mover o sprite e retorna um booleano indicando se foi possivel se mover
 int move_sprite(WINDOW *w, SPRITE *sprite, int direction){
   sprite->position.last_x = sprite->position.x;
   sprite->position.last_y = sprite->position.y;
@@ -89,6 +92,7 @@ int can_fall(WINDOW *w, struct position* p, int direction){
   return (next_ch == ' ');
 }
 
+//algoritmo de movimentação dos fantasmas
 void move_ghost(WINDOW *w, SPRITE *gh){
   int gh_direction = gh->direction;
   int d;
