@@ -6,7 +6,7 @@
 #define MAX_GHOSTS 10
 #define MAX_FRUITS 32
 #define MAX_ROCKS 8
-#define MAX_NAME 9
+#define MAX_NAME 14
 #define TOP_SCORES 5
 #define INTERVAL 100000
 #define GHOST_INTERVAL 3000000

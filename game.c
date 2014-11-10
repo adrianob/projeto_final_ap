@@ -103,7 +103,10 @@ void high_scores(){
   wrefresh(border_window);
   wrefresh(score_window);
 
-  getchar();
+  char opt = getchar();
+  while ( opt != 'S' && opt != 's'){
+    opt = getchar();
+  }
 
   endwin();
   clear();
@@ -202,16 +205,16 @@ void check_score(int score){
     if(score > highscores[i].score){
       scored = 1;
     }
-
-    if(scored){
-      highscores[3].score = score;
-      fgets(highscores[3].name,8,stdin);
-    }
   }
-   /*qsort((void *) &highscores,              // Beginning address of array
+  if(scored){
+    highscores[TOP_SCORES].score = score;
+    fgets(highscores[TOP_SCORES].name,MAX_NAME-1,stdin);
+    __fpurge(stdin);
+  }
+   qsort((void *) &highscores,              // Beginning address of array
    6,                                 // Number of elements in array
    sizeof(struct score),              // Size of each element
-   (compfn)compare );        */          // Pointer to compare function
+   (compfn)compare );                  // Pointer to compare function
   save_score(highscores);
 }
 
@@ -221,5 +224,5 @@ void print_score(WINDOW *w, struct score *sc){
     mvwprintw(w, i+1, 30, "SCORE: %d", sc[i].score);
   }
 
-  mvwprintw(w, 7, 0, "Pressione qualquer tecla para voltar ao menu principal");
+  mvwprintw(w, 7, 0, "Pressione s para voltar ao menu principal...");
 }

@@ -151,7 +151,7 @@ void save_score(struct score *hi_score){
   FILE *hi_score_file;
   hi_score_file = fopen("highscore.bin","wb");
   if (hi_score_file){
-    for(int i = 0; i < TOP_SCORES; i++){
+    for(int i = TOP_SCORES; i >= 0 ; i--){
       fwrite(&hi_score[i],sizeof(struct score),1,hi_score_file);
     }
   }
