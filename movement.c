@@ -6,19 +6,19 @@
 #include <stdlib.h>
 
 //retorna o caractere adjacente a posição dada na direção dada
-int next_char(WINDOW *w, struct position p, int direction){
+int next_char(WINDOW *w, struct position p, enum direction direction){
   int next_ch;
   switch (direction) {
-    case UP_DIRECTION:
+    case up:
       next_ch = mvwinch(w, p.y - 1, p.x );
       break;
-    case DOWN_DIRECTION:
+    case down:
       next_ch = mvwinch(w, p.y + 1, p.x );
       break;
-    case RIGHT_DIRECTION:
+    case right:
       next_ch = mvwinch(w, p.y, p.x + 1);
       break;
-    case LEFT_DIRECTION:
+    case left:
       next_ch = mvwinch(w, p.y, p.x - 1 );
       break;
   }
@@ -26,26 +26,26 @@ int next_char(WINDOW *w, struct position p, int direction){
 }
 
 //verifica se o sprite pode se mover na direção dada
-int can_go_to_direction(WINDOW *w, SPRITE sp, int direction){
+int can_go_to_direction(WINDOW *w, SPRITE sp, enum direction direction){
   int can_go = 0;
   //verifica se eh fim do mapa
   switch (direction) {
-    case UP_DIRECTION:
+    case up:
       if (sp.position.y > 0) {
         can_go = 1;
       }
       break;
-    case RIGHT_DIRECTION:
+    case right:
       if (sp.position.x < MAX_X - 1) {
         can_go = 1;
       }
       break;
-    case DOWN_DIRECTION:
+    case down:
       if (sp.position.y < MAX_Y - 1) {
         can_go = 1;
       }
       break;
-    case LEFT_DIRECTION:
+    case left:
       if (sp.position.x > 0) {
         can_go = 1;
       }
@@ -61,22 +61,22 @@ int can_go_to_direction(WINDOW *w, SPRITE sp, int direction){
 }
 
 //tenta mover o sprite e retorna um booleano indicando se foi possivel se mover
-int move_sprite(WINDOW *w, SPRITE *sprite, int direction){
+int move_sprite(WINDOW *w, SPRITE *sprite, enum direction direction){
   sprite->position.last_x = sprite->position.x;
   sprite->position.last_y = sprite->position.y;
   int can_go = can_go_to_direction(w, *sprite, direction);
   if (can_go) {
     switch (direction) {
-      case UP_DIRECTION:
+      case up:
         sprite->position.y--;
         break;
-      case RIGHT_DIRECTION:
+      case right:
         sprite->position.x++;
         break;
-      case DOWN_DIRECTION:
+      case down:
         sprite->position.y++;
         break;
-      case LEFT_DIRECTION:
+      case left:
         sprite->position.x--;
         break;
     }
@@ -85,41 +85,41 @@ int move_sprite(WINDOW *w, SPRITE *sprite, int direction){
   return can_go;
 }
 
-int can_fall(WINDOW *w, struct position* p, int direction){
-  int next_ch = next_char(w, *p, DOWN_DIRECTION);
+int can_fall(WINDOW *w, struct position* p, enum direction direction){
+  int next_ch = next_char(w, *p, down);
   return (next_ch == ' ');
 }
 
 //algoritmo de movimentação dos fantasmas
 void move_ghost(WINDOW *w, SPRITE *gh){
-  int gh_direction = gh->direction;
+  enum direction gh_direction = gh->direction;
   int d;
   int can_go = 0;
   if (!can_go_to_direction(w, *gh, gh->direction)){//nao pode continuar na mesma direcao
     d = rand() % 2;//0 ou 1
     switch (gh_direction) {//tenta ir numa nova direcao
-      case RIGHT_DIRECTION:
-      case LEFT_DIRECTION:
-        can_go = move_sprite(w, gh, d ? UP_DIRECTION : DOWN_DIRECTION) || move_sprite(w, gh, d ? DOWN_DIRECTION : UP_DIRECTION);
+      case right:
+      case left:
+        can_go = move_sprite(w, gh, d ? up : down) || move_sprite(w, gh, d ? down : up);
         break;
-      case UP_DIRECTION:
-      case DOWN_DIRECTION:
-        can_go = move_sprite(w, gh, d ? RIGHT_DIRECTION : LEFT_DIRECTION) || move_sprite(w, gh, d ? LEFT_DIRECTION : RIGHT_DIRECTION);
+      case up:
+      case down:
+        can_go = move_sprite(w, gh, d ? right : left) || move_sprite(w, gh, d ? left : right);
         break;
     }
     if(!can_go){//nao conseguiu ir para uma nova direcao, volta pela direcao que venho
       switch (gh_direction) {
-        case UP_DIRECTION:
-          move_sprite(w, gh, DOWN_DIRECTION);
+        case up:
+          move_sprite(w, gh, down);
           break;
-        case DOWN_DIRECTION:
-          move_sprite(w, gh, UP_DIRECTION);
+        case down:
+          move_sprite(w, gh, up);
           break;
-        case RIGHT_DIRECTION:
-          move_sprite(w, gh, LEFT_DIRECTION);
+        case right:
+          move_sprite(w, gh, left);
           break;
-        case LEFT_DIRECTION:
-          move_sprite(w, gh, RIGHT_DIRECTION);
+        case left:
+          move_sprite(w, gh, right);
           break;
       }
     }

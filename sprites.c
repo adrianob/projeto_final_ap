@@ -191,7 +191,7 @@ const SPRITE DEFAULT_FRUIT = {
 
 const SPRITE DEFAULT_ROCK = {
   .alive = 0,
-  .direction = DOWN_DIRECTION,
+  .direction = down,
   .representation = CH_ROCK
 };
 

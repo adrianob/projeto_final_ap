@@ -9,10 +9,6 @@
 #define INTERVAL 100000
 #define GHOST_INTERVAL 3000000
 #define ROCK_INTERVAL 100000
-#define UP_DIRECTION 1
-#define DOWN_DIRECTION 2
-#define RIGHT_DIRECTION 3
-#define LEFT_DIRECTION 4
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 //define o caractere e a cor de cada sprite
@@ -39,10 +35,10 @@ struct position {
 };
 
 enum direction{
-  up = 1,
-  down=2,
-  right=3,
-  left=4
+  up,
+  down,
+  right,
+  left
 };
 
 //abstração usada para todos elementos mostrados na tela
