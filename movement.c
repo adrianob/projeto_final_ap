@@ -81,9 +81,7 @@ int move_sprite(WINDOW *w, SPRITE *sprite, int direction){
         break;
     }
   }
-  if (direction) {
-    sprite->direction = direction;
-  }
+  sprite->direction = direction;
   return can_go;
 }
 
@@ -99,13 +97,13 @@ void move_ghost(WINDOW *w, SPRITE *gh){
   int can_go = 0;
   if (!can_go_to_direction(w, *gh, gh->direction)){//nao pode continuar na mesma direcao
     d = rand() % 2;//0 ou 1
-    switch (gh->direction) {//tenta ir numa nova direcao
-      case right:
-      case left:
+    switch (gh_direction) {//tenta ir numa nova direcao
+      case RIGHT_DIRECTION:
+      case LEFT_DIRECTION:
         can_go = move_sprite(w, gh, d ? UP_DIRECTION : DOWN_DIRECTION) || move_sprite(w, gh, d ? DOWN_DIRECTION : UP_DIRECTION);
         break;
-      case up:
-      case down:
+      case UP_DIRECTION:
+      case DOWN_DIRECTION:
         can_go = move_sprite(w, gh, d ? RIGHT_DIRECTION : LEFT_DIRECTION) || move_sprite(w, gh, d ? LEFT_DIRECTION : RIGHT_DIRECTION);
         break;
     }
@@ -146,20 +144,31 @@ void move_shot(WINDOW *w, SPRITE *s){
   }
 }
 
-int get_keyboard_direction(chtype ch){
+enum direction get_keyboard_direction(chtype ch){
   switch(ch){
     case KEY_RIGHT:
-      return RIGHT_DIRECTION;
+      return right;
     case KEY_LEFT:
-      return LEFT_DIRECTION;
+      return left;
     case KEY_UP:
-      return UP_DIRECTION;
+      return up;
     case KEY_DOWN:
-      return DOWN_DIRECTION;
+      return down;
   }
-  return 0;
+  return right;
 }
 
+int valid_key(chtype ch){
+  int valid = 0;
+  switch(ch){
+    case KEY_RIGHT:
+    case KEY_LEFT:
+    case KEY_UP:
+    case KEY_DOWN:
+      valid = 1;
+  }
+  return valid;
+}
 /*
 void move_rocks(WINDOW *w, sprite *rocks){
   for (int i = 0; i < MAX_ROCKS; i++) {

@@ -39,10 +39,10 @@ struct position {
 };
 
 enum direction{
-  up,
-  down,
-  right,
-  left
+  up = 1,
+  down=2,
+  right=3,
+  left=4
 };
 
 //abstração usada para todos elementos mostrados na tela
