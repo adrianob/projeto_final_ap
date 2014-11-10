@@ -70,7 +70,7 @@ void play(void){
     refresh_windows(info_window, game_window, border_window);
   }//fim loop principal
 
-  save_map(game_window, sprite_list);
+  save_state(sprite_list);
   endwin();
   clear();
   show_menu();
