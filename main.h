@@ -9,10 +9,6 @@
 #define INTERVAL 100000
 #define GHOST_INTERVAL 3000000
 #define ROCK_INTERVAL 100000
-#define UP_DIRECTION 1
-#define DOWN_DIRECTION 2
-#define RIGHT_DIRECTION 3
-#define LEFT_DIRECTION 4
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 //define o caractere e a cor de cada sprite
@@ -38,6 +34,13 @@ struct position {
   int x, y, last_x, last_y;
 };
 
+enum direction{
+  up,
+  down,
+  right,
+  left
+};
+
 //abstração usada para todos elementos mostrados na tela
 //um struct sprite_node é uma lista encadeada de SPRITE, que guarda informações sobre cada elemento do jogo
 typedef struct sprite_node {
@@ -46,13 +49,7 @@ typedef struct sprite_node {
   int alive;//vivo ou morto
   chtype representation;
   int falling;
-  int direction;
-  /*
-    1 - cima
-    2 - baixo
-    3 - direita
-    4 - esquerda
-   * */
+  enum direction direction;
 } SPRITE;
 
 //usado para guardar informações sobre o estado do jogo em si

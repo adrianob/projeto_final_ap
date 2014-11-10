@@ -181,7 +181,7 @@ void create_rocks(WINDOW *w, SPRITE *rocks){
 const SPRITE DEFAULT_GHOST = {
   .representation = CH_GHOST,
   .alive = TRUE,
-  .direction = LEFT_DIRECTION
+  .direction = left
 };
 
 const SPRITE DEFAULT_FRUIT = {
@@ -191,7 +191,7 @@ const SPRITE DEFAULT_FRUIT = {
 
 const SPRITE DEFAULT_ROCK = {
   .alive = 0,
-  .direction = DOWN_DIRECTION,
+  .direction = down,
   .representation = CH_ROCK
 };
 
@@ -202,7 +202,7 @@ const SPRITE DEFAULT_NEST = {
 
 const SPRITE DEFAULT_SHOT = {
   .representation = CH_SHOT,
-  .direction = RIGHT_DIRECTION,
+  .direction = right,
   .alive = FALSE
 };
 

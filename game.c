@@ -28,7 +28,8 @@ void play(void){
     make_lists(MAP, &sprite_list);//cria uma lista de sprites a partir da matriz da fase
   }
 
-  int ch, mrdo_direction;
+  int ch, should_move = 0;
+  enum direction mrdo_direction;
 
   while((ch = getch()) != 27){//loop principal, espera tecla esc
     if(sprite_list.mr_do->alive){
@@ -36,9 +37,9 @@ void play(void){
         create_shot(&sprite_list);
       }
       else {
-        int direction = get_keyboard_direction(ch);
-        if (direction) {
-          mrdo_direction = direction;
+        if (valid_key(ch)) {
+          mrdo_direction = get_keyboard_direction(ch);
+          should_move = 1;
         }
       }
     }
@@ -52,7 +53,10 @@ void play(void){
       }
 
       move_ghosts(game_window, sprite_list.ghosts);
-      move_sprite(game_window, sprite_list.mr_do, mrdo_direction);
+      if (should_move) {
+        move_sprite(game_window, sprite_list.mr_do, mrdo_direction);
+        should_move = 0;
+      }
 
       if(sprite_list.shot->alive){
         move_shot(game_window, sprite_list.shot);
@@ -60,7 +64,6 @@ void play(void){
       //checar colisoes so depois de mover todos sprites
       check_sprite_collision(&sprite_list);
 
-      mrdo_direction = 0;
       timer_ready = FALSE;
     }
 
