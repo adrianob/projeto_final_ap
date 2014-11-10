@@ -100,12 +100,12 @@ void move_ghost(WINDOW *w, SPRITE *gh){
   if (!can_go_to_direction(w, *gh, gh->direction)){//nao pode continuar na mesma direcao
     d = rand() % 2;//0 ou 1
     switch (gh->direction) {//tenta ir numa nova direcao
-      case RIGHT_DIRECTION:
-      case LEFT_DIRECTION:
+      case right:
+      case left:
         can_go = move_sprite(w, gh, d ? UP_DIRECTION : DOWN_DIRECTION) || move_sprite(w, gh, d ? DOWN_DIRECTION : UP_DIRECTION);
         break;
-      case UP_DIRECTION:
-      case DOWN_DIRECTION:
+      case up:
+      case down:
         can_go = move_sprite(w, gh, d ? RIGHT_DIRECTION : LEFT_DIRECTION) || move_sprite(w, gh, d ? LEFT_DIRECTION : RIGHT_DIRECTION);
         break;
     }
