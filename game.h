@@ -16,5 +16,9 @@ void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_wi
 void check_state(WINDOW *info, struct sprite_list sl);
 void show_info(WINDOW *w, struct sprite_list sl);
 void exit_game(void);
+int  compare(struct score *, struct score *);
+void check_score(int score);
+void high_scores(void);
+void print_score(WINDOW *w, struct score *sc);
 
 #endif

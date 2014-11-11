@@ -29,7 +29,9 @@
 #include <ncurses.h>
 #include <locale.h>
 
-//guarda a posição atual e anterior na tela 
+#define MAX_NAME 14
+#define TOP_SCORES 5
+//guarda a posição atual e anterior na tela
 struct position {
   int x, y, last_x, last_y;
 };
@@ -68,6 +70,13 @@ struct sprite_list {
          *mr_do,
          *nest,
          *shot;
+};
+
+typedef int (*compfn)(const void*, const void*);
+
+struct score {
+  char name[MAX_NAME];
+  int score;
 };
 
 extern int timer_ready;
