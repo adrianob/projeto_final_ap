@@ -28,7 +28,8 @@ void play(void){
     make_lists(MAP, &sprite_list);//cria uma lista de sprites a partir da matriz da fase
   }
 
-  int ch, mrdo_direction;
+  int ch, should_move = 0;
+  enum direction mrdo_direction;
 
   while((ch = getch()) != 27){//loop principal, espera tecla esc
     if(sprite_list.mr_do->alive){
@@ -36,9 +37,9 @@ void play(void){
         create_shot(&sprite_list);
       }
       else {
-        int direction = get_keyboard_direction(ch);
-        if (direction) {
-          mrdo_direction = direction;
+        if (valid_key(ch)) {
+          mrdo_direction = get_keyboard_direction(ch);
+          should_move = 1;
         }
       }
     }
@@ -52,7 +53,10 @@ void play(void){
       }
 
       move_ghosts(game_window, sprite_list.ghosts);
-      move_sprite(game_window, sprite_list.mr_do, mrdo_direction);
+      if (should_move) {
+        move_sprite(game_window, sprite_list.mr_do, mrdo_direction);
+        should_move = 0;
+      }
 
       if(sprite_list.shot->alive){
         move_shot(game_window, sprite_list.shot);
@@ -60,21 +64,22 @@ void play(void){
       //checar colisoes so depois de mover todos sprites
       check_sprite_collision(&sprite_list);
 
-      mrdo_direction = 0;
       timer_ready = FALSE;
     }
 
     print_map(game_window, sprite_list);
+    show_info(info_window, sprite_list);
     check_state(info_window, sprite_list);
     refresh_windows(info_window, game_window, border_window);
   }//fim loop principal
 
-  save_map(game_window, sprite_list);
+  save_state(sprite_list);
   endwin();
   clear();
   show_menu();
 }
 
+//continua o jogo a partir de um jogo salvo
 void continue_play(void){
   game_state.saved_game = 1;
   play();
@@ -124,25 +129,13 @@ void exit_game(void){
   exit(EXIT_SUCCESS);
 }
 
-void check_state(WINDOW *w, struct sprite_list sl){
-
+//mostra informações sobre o jogo na tela
+void show_info(WINDOW *w, struct sprite_list sl){
   int alive_ghosts = count_alive(sl.ghosts);
   int alive_fruits = count_alive(sl.fruits);
   int created_ghosts = list_size(sl.ghosts);
 
-  if ((alive_ghosts == 0 && created_ghosts == MAX_GHOSTS) || (alive_fruits == 0)) {
-    mvwprintw(w, 2, 0, "YOU WIN! ");
-    if (game_state.level == 1) {
-      play_level_2();
-    }
-    else{
-      endwin();
-      check_score(game_state.score);
-      clear();
-      show_menu();
-    }
-  }
-  else if(!sl.mr_do->alive) {
+  if(!sl.mr_do->alive) {
     mvwprintw(w, 2, 0, "GAME OVER!");
   }else{
     mvwprintw(w, 1, 0, "SCORE: %d", game_state.score);
@@ -155,6 +148,28 @@ void check_state(WINDOW *w, struct sprite_list sl){
   }
 }
 
+//verifica se passou de fase
+void check_state(WINDOW *w, struct sprite_list sl){
+
+  int alive_ghosts = count_alive(sl.ghosts);
+  int alive_fruits = count_alive(sl.fruits);
+  int created_ghosts = list_size(sl.ghosts);
+
+  if ((alive_ghosts == 0 && created_ghosts == MAX_GHOSTS) || (alive_fruits == 0)) {//ganhou a fase
+    mvwprintw(w, 2, 0, "YOU WIN! ");
+    if (game_state.level == 1) {
+      play_level_2();
+    }
+    else{
+      endwin();
+      check_score(game_state.score);
+      clear();
+      show_menu();
+    }
+  }
+}
+
+//configurações iniciais
 void config(void){
   srand(time(NULL));
   setlocale(LC_ALL, "");
@@ -171,6 +186,7 @@ void config(void){
   curs_set(0); //nao imprime cursor
 }
 
+//inicialização do timer
 void config_timer(void){
   struct itimerval timer;
   timer.it_interval.tv_sec = 0;
@@ -181,6 +197,7 @@ void config_timer(void){
   signal(SIGALRM, timer_handler);
 }
 
+//função de retorno do timer
 void timer_handler(int i){
   timer_ready = 1;
 }

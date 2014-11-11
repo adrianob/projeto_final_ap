@@ -1,5 +1,7 @@
+/*funções para o menu do jogo*/
 #include "mr_do_menus.h"
 
+//mostra menu principal
 void show_menu(void){
   char *choices[] = {
                     "Novo Jogo",
@@ -38,11 +40,11 @@ void show_menu(void){
       case 10: //enter
         {
         ITEM *cur;
-				void (*p)(char *);
+	void (*p)(const char *);
 
         cur = current_item(game_menu);
         p = item_userptr(cur);
-        p((char *)item_name(cur));
+        p((const char *)item_name(cur));
         pos_menu_cursor(game_menu);
         }
         break;

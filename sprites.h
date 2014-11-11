@@ -1,9 +1,7 @@
 #ifndef MR_DO_SPRITES
 #define MR_DO_SPRITES
-
 #include "main.h"
 #include "lists.h"
-struct game_state game_state;
 
 extern const SPRITE DEFAULT_GHOST;
 extern const SPRITE DEFAULT_FRUIT;

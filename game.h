@@ -18,6 +18,7 @@ void check_state(WINDOW *info, struct sprite_list sl);
 void check_score(int score);
 void high_scores(void);
 void print_score(WINDOW *w, struct score *sc);
+void show_info(WINDOW *w, struct sprite_list sl);
 void exit_game(void);
 
 #endif

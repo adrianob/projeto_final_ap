@@ -84,8 +84,13 @@ void load_state(struct sprite_list *sprite_list){
   fclose(game_state_file);
 }
 
+<<<<<<< HEAD
 //Salva o estado atual do jogo em um arquivo binário
 void save_map(struct sprite_list sl){
+=======
+//Salva o estado atual do jogo em um arquivo binário 
+void save_state(struct sprite_list sl){
+>>>>>>> master
   //salva lista de sprites
   FILE *game_state_file;
   game_state_file = fopen("estado.bin", "wb");
@@ -103,7 +108,10 @@ void save_map(struct sprite_list sl){
   }
   fclose(game_state_file);
 
-  //salva o mapa atual em um arquivo texto, sem utilidade por enquanto
+}
+
+//salva o mapa atual em um arquivo texto
+void save_map(WINDOW *game_window){
   chtype buffer[MAX_Y][MAX_X];
 
   for(int i = 0; i < MAX_Y; i++){
@@ -140,7 +148,7 @@ void save_map(struct sprite_list sl){
 
   for (int i=0; i < MAX_Y; i++){
     for(int j = 0; j < MAX_X; j++){
-        fprintf(cont_map, "%c", buffer[i][j]);
+        fprintf(cont_map, "%c", (char)buffer[i][j]);
       }
     fprintf(cont_map, "%s", "\n");
   }
