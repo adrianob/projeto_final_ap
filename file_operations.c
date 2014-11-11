@@ -1,4 +1,4 @@
-/*funções de leitura e escrita em arquivos*/
+﻿/*funções de leitura e escrita em arquivos*/
 #include "file_operations.h"
 #include "lists.h"
 #include <string.h>
@@ -85,7 +85,7 @@ void load_state(struct sprite_list *sprite_list){
 }
 
 //Salva o estado atual do jogo em um arquivo binário
-void save_map(WINDOW *game_window, struct sprite_list sl){
+void save_map(struct sprite_list sl){
   //salva lista de sprites
   FILE *game_state_file;
   game_state_file = fopen("estado.bin", "wb");
