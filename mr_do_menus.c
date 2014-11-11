@@ -3,6 +3,7 @@
 
 //mostra menu principal
 void show_menu(void){
+  clear();
   char *choices[] = {
                     "Novo Jogo",
                     "Continuar",

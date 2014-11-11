@@ -165,7 +165,6 @@ void load_score(struct score *hi_score){
   FILE *hi_score_file;
   hi_score_file = fopen("highscore.bin","rb");
   if (!hi_score_file){
-    hi_score_file = fopen("highscore.bin","wb");
     for(int i = 0; i < TOP_SCORES; i++){
       hi_score[i].name[0] = '\0';
       hi_score[i].score = 0;
