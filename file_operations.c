@@ -1,4 +1,4 @@
-/*funções de leitura e escrita em arquivos*/
+﻿/*funções de leitura e escrita em arquivos*/
 #include "file_operations.h"
 #include "lists.h"
 #include <string.h>
@@ -84,8 +84,13 @@ void load_state(struct sprite_list *sprite_list){
   fclose(game_state_file);
 }
 
+<<<<<<< HEAD
+//Salva o estado atual do jogo em um arquivo binário
+void save_map(struct sprite_list sl){
+=======
 //Salva o estado atual do jogo em um arquivo binário 
 void save_state(struct sprite_list sl){
+>>>>>>> master
   //salva lista de sprites
   FILE *game_state_file;
   game_state_file = fopen("estado.bin", "wb");
@@ -148,4 +153,35 @@ void save_map(WINDOW *game_window){
     fprintf(cont_map, "%s", "\n");
   }
   fclose(cont_map);
+}
+
+void save_score(struct score *hi_score){
+  FILE *hi_score_file;
+  hi_score_file = fopen("highscore.bin","wb");
+  if (hi_score_file){
+    for(int i = TOP_SCORES; i >= 0 ; i--){
+      fwrite(&hi_score[i],sizeof(struct score),1,hi_score_file);
+    }
+  }
+  fclose(hi_score_file);
+}
+
+void load_score(struct score *hi_score){
+  FILE *hi_score_file;
+  hi_score_file = fopen("highscore.bin","rb");
+  if (!hi_score_file){
+    hi_score_file = fopen("highscore.bin","wb");
+    for(int i = 0; i < TOP_SCORES; i++){
+      hi_score[i].name[0] = '\0';
+      hi_score[i].score = 0;
+    }
+  }else{
+    for(int i = 0; i < TOP_SCORES; i++){
+      if(!fread(&hi_score[i],sizeof(struct score),1,hi_score_file)){
+        hi_score[i].name[0] = '\0';
+        hi_score[i].score = 0;
+      }
+    }
+  }
+  fclose(hi_score_file);
 }

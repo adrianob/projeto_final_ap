@@ -98,6 +98,26 @@ void new_game(void){
   play();
 }
 
+void high_scores(){
+  struct score highscores[TOP_SCORES];
+  load_score(highscores);
+  WINDOW *border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
+  WINDOW *score_window = newwin(MAX_Y, MAX_X, 1, 1);
+  print_score(score_window, highscores);
+
+  wrefresh(border_window);
+  wrefresh(score_window);
+
+  char opt = getchar();
+  while ( opt != 'S' && opt != 's'){
+    opt = getchar();
+  }
+
+  endwin();
+  clear();
+  show_menu();
+}
+
 void refresh_windows(WINDOW *info_window, WINDOW *game_window, WINDOW *border_window){
   wrefresh(info_window);
   wrefresh(border_window);
@@ -142,6 +162,7 @@ void check_state(WINDOW *w, struct sprite_list sl){
     }
     else{
       endwin();
+      check_score(game_state.score);
       clear();
       show_menu();
     }
@@ -179,4 +200,46 @@ void config_timer(void){
 //função de retorno do timer
 void timer_handler(int i){
   timer_ready = 1;
+}
+
+int compare(struct score *elem1, struct score *elem2)
+{
+   if ( elem1->score < elem2->score)
+      return -1;
+
+   else if (elem1->score > elem2->score)
+      return 1;
+
+   else
+      return 0;
+}
+
+void check_score(int score){
+  struct score highscores[TOP_SCORES+1];
+  load_score(highscores);
+  int scored = 0;
+  for(int i = 0; i<TOP_SCORES; i++){
+    if(score > highscores[i].score){
+      scored = 1;
+    }
+  }
+  if(scored){
+    highscores[TOP_SCORES].score = score;
+    fgets(highscores[TOP_SCORES].name,MAX_NAME-1,stdin);
+    __fpurge(stdin);
+  }
+   qsort((void *) &highscores,              // Beginning address of array
+   6,                                 // Number of elements in array
+   sizeof(struct score),              // Size of each element
+   (compfn)compare );                  // Pointer to compare function
+  save_score(highscores);
+}
+
+void print_score(WINDOW *w, struct score *sc){
+  for(int i = 0; i<TOP_SCORES; i++){
+    mvwprintw(w, i+1, 0, "Nome: %s", sc[i].name);
+    mvwprintw(w, i+1, 30, "SCORE: %d", sc[i].score);
+  }
+
+  mvwprintw(w, 7, 0, "Pressione s para voltar ao menu principal...");
 }
