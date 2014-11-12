@@ -141,10 +141,7 @@ void check_state(WINDOW *w, struct sprite_list sl){
       play_level_2();
     }
     else{
-      endwin();
       check_score(game_state.score);
-      clear();
-      show_menu();
     }
   }
 }
@@ -154,7 +151,7 @@ void config(void){
   srand(time(NULL));
   setlocale(LC_ALL, "");
   initscr();			//inicia modo ncurses
-  cbreak();
+  cbreak(); //não espera nova linha para capturar
   nodelay(stdscr, TRUE);
   keypad(stdscr, TRUE);		//pega teclas especiais
   start_color();
@@ -215,24 +212,27 @@ void high_scores(){
 }
 
 void check_score(int score){
-  struct score highscores[TOP_SCORES+1];
+  clear();
+  struct score highscores[TOP_SCORES];
   load_score(highscores);
   int scored = 0;
-  for(int i = 0; i<TOP_SCORES; i++){
+  for(int i = 0; i < TOP_SCORES; i++){
     if(score > highscores[i].score){
       scored = 1;
     }
   }
   if(scored){
     highscores[TOP_SCORES].score = score;
+    printw( "Informe seu nome:\n");
+    refresh();
     fgets(highscores[TOP_SCORES].name,MAX_NAME,stdin);
-    while(getchar() != '\n');
   }
-   qsort((void *) &highscores,              // Endereço do primeiro elemento do array
+  qsort((void *) &highscores,              // Endereço do primeiro elemento do array
    6,                                       // Número de elementos do array
    sizeof(struct score),                    // Tamanho de cada elemento do array
    (compfn)compare );                       // Ponteiro para função de comparação
   save_score(highscores);
+  show_menu();
 }
 
 void print_score(WINDOW *w, struct score *sc){
