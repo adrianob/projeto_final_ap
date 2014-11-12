@@ -8,7 +8,6 @@
 #include "mr_do_menus.h"
 
 int timer_ready = 0;
-struct game_state game_state;
 
 int main(int argc, const char *argv[]){
   config();

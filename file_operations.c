@@ -155,7 +155,7 @@ void save_score(struct score *hi_score){
   hi_score_file = fopen("highscore.bin","wb");
   if (hi_score_file){
     for(int i = TOP_SCORES; i >= 0 ; i--){
-      fwrite(&hi_score[i],sizeof(struct score),1,hi_score_file);
+      fwrite(&hi_score[i], sizeof(struct score), 1, hi_score_file);
     }
   }
   fclose(hi_score_file);
@@ -171,11 +171,11 @@ void load_score(struct score *hi_score){
     }
   }else{
     for(int i = 0; i < TOP_SCORES; i++){
-      if(!fread(&hi_score[i],sizeof(struct score),1,hi_score_file)){
+      if(!fread(&hi_score[i], sizeof(struct score), 1, hi_score_file)){
         hi_score[i].name[0] = '\0';
         hi_score[i].score = 0;
       }
     }
+    fclose(hi_score_file);
   }
-  fclose(hi_score_file);
 }
