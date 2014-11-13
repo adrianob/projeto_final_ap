@@ -225,7 +225,12 @@ void check_score(int score){
     highscores[TOP_SCORES].score = score;
     printw( "Informe seu nome:\n");
     refresh();
-    fgets(highscores[TOP_SCORES].name,MAX_NAME,stdin);
+    nocbreak();
+    scanf("%12[^\n]",highscores[TOP_SCORES].name);
+    //fgets(highscores[TOP_SCORES].name,MAX_NAME,stdin);
+    scanf("%*[^\n]"); scanf("%*c");
+
+    cbreak();
   }
   qsort((void *) &highscores,              // Endereço do primeiro elemento do array
    6,                                       // Número de elementos do array
