@@ -93,10 +93,9 @@ int can_fall(WINDOW *w, struct position* p, enum direction direction){
 //algoritmo de movimentação dos fantasmas
 void move_ghost(WINDOW *w, SPRITE *gh){
   enum direction gh_direction = gh->direction;
-  int d;
-  int can_go = 0;
   if (!can_go_to_direction(w, *gh, gh->direction)){//nao pode continuar na mesma direcao
-    d = rand() % 2;//0 ou 1
+    int can_go = 0;
+    int d = rand() % 2;//0 ou 1
     switch (gh_direction) {//tenta ir numa nova direcao
       case right:
       case left:

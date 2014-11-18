@@ -225,19 +225,18 @@ void check_score(int score){
     highscores[TOP_SCORES].score = score;
     printw( "Informe seu nome:\n");
     refresh();
-    nocbreak();
-    scanf("%12[^\n]",highscores[TOP_SCORES].name);
-    //fgets(highscores[TOP_SCORES].name,MAX_NAME,stdin);
-    scanf("%*[^\n]"); scanf("%*c");
-
-    cbreak();
+    nodelay(stdscr, FALSE);
+    echo();
+    getnstr(highscores[TOP_SCORES].name, MAX_NAME);
+    noecho();
+    nodelay(stdscr, TRUE);
   }
   qsort((void *) &highscores,              // Endereço do primeiro elemento do array
    6,                                       // Número de elementos do array
    sizeof(struct score),                    // Tamanho de cada elemento do array
    (compfn)compare );                       // Ponteiro para função de comparação
   save_score(highscores);
-  show_menu();
+  high_scores();
 }
 
 void print_score(WINDOW *w, struct score *sc){
