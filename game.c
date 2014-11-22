@@ -31,7 +31,7 @@ void play(void){
   int ch, should_move = 0;
   enum direction mrdo_direction;
 
-  while((ch = getch()) != 27){//loop principal, espera tecla esc
+  while((ch = getch()) != 27){//loop principal, espera tecla esc para sair
     if(sprite_list.mr_do->alive){
       if (ch == ' ') {
         create_shot(&sprite_list);
@@ -74,8 +74,6 @@ void play(void){
   }//fim loop principal
 
   save_state(sprite_list);
-  endwin();
-  clear();
   show_menu();
 }
 
