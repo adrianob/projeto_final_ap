@@ -154,6 +154,8 @@ void create_shot(struct sprite_list *sl){
 void create_ghost(struct sprite_list *sl){
   if (list_size(sl->ghosts) < MAX_GHOSTS) {
     SPRITE ghost = DEFAULT_GHOST;
+    int random_number = rand() % 4;
+    ghost.direction = random_number;
     ghost.position = find_char(sl, CH_NEST);
     push(&sl->ghosts, ghost);
   }
