@@ -1,5 +1,6 @@
 /*funções para o menu do jogo*/
 #include "mr_do_menus.h"
+#include "scores.h"
 
 //mostra menu principal
 void show_menu(void){
