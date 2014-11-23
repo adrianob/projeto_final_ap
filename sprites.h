@@ -5,7 +5,6 @@
 
 extern const SPRITE DEFAULT_GHOST;
 extern const SPRITE DEFAULT_FRUIT;
-extern const SPRITE DEFAULT_ROCK;
 extern const SPRITE DEFAULT_SHOT;
 extern const SPRITE DEFAULT_MR_DO;
 extern const SPRITE DEFAULT_NEST;
@@ -15,7 +14,6 @@ extern const SPRITE DEFAULT_SPACE;
 void make_lists(chtype (*MAP)[MAX_X], struct sprite_list *sl);
 void create_default_sprites(struct sprite_list *sprite_list);
 void check_sprite_collision(struct sprite_list *sl);
-void create_rocks(WINDOW *w, SPRITE *rocks);
 void create_ghost(struct sprite_list *sl);
 void create_shot(struct sprite_list *sl);
 int collided(SPRITE *current, SPRITE *sp);

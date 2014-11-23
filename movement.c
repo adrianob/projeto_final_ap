@@ -53,10 +53,10 @@ int can_go_to_direction(WINDOW *w, SPRITE sp, enum direction direction){
   //verificacoes especificas pra cada tipo de sprite
   int next_ch = next_char(w, sp.position, direction);
   if (sp.representation == CH_MR_DO){
-    return (next_ch != CH_ROCK && next_ch != -1 && can_go);
+    return (next_ch != -1 && can_go);
   }
   else{
-    return (next_ch != CH_WALL && next_ch != CH_ROCK && next_ch != -1 && can_go);
+    return (next_ch != CH_WALL && next_ch != -1 && can_go);
   }
 }
 
@@ -83,11 +83,6 @@ int move_sprite(WINDOW *w, SPRITE *sprite, enum direction direction){
   }
   sprite->direction = direction;
   return can_go;
-}
-
-int can_fall(WINDOW *w, struct position* p, enum direction direction){
-  int next_ch = next_char(w, *p, down);
-  return (next_ch == ' ');
 }
 
 //algoritmo de movimentação dos fantasmas
@@ -168,31 +163,3 @@ int valid_key(chtype ch){
   }
   return valid;
 }
-/*
-void move_rocks(WINDOW *w, sprite *rocks){
-  for (int i = 0; i < MAX_ROCKS; i++) {
-    if(rocks[i].alive){
-      move_rock(w, &rocks[i]);
-    }
-  }
-}
-void move_rock(WINDOW *w, sprite *rk){
-  if (can_fall(w, &rk->position, rk->direction)){
-    if(rk->falling == 10){
-      move_sprite(w, rk, rk->direction);
-    }
-    else{
-      rk->falling++;
-    }
-  }
-  else{
-    if(rk->falling == 10){
-      rk->alive = 0;
-      print_char(w, rk);
-    }
-    else{
-      print_char(w, rk);
-    }
-  }
-}
-*/

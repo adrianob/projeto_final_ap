@@ -5,16 +5,13 @@
 #define MAX_Y 23 //tamanho de linhas do mapa principal
 #define MAX_GHOSTS 10
 #define MAX_FRUITS 32
-#define MAX_ROCKS 8
 #define INTERVAL 100000
 #define GHOST_INTERVAL 3000000
-#define ROCK_INTERVAL 100000
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
 //define o caractere e a cor de cada sprite
 #define CH_MR_DO (123 | A_ALTCHARSET | COLOR_PAIR(1))
 #define CH_FRUIT (240 | A_ALTCHARSET | COLOR_PAIR(2))
-#define CH_ROCK  (164 | A_ALTCHARSET | COLOR_PAIR(3))
 #define CH_WALL  (97  | A_ALTCHARSET | COLOR_PAIR(4))
 #define CH_NEST  (110 | A_ALTCHARSET)
 #define CH_GHOST (214 | A_ALTCHARSET)
@@ -50,7 +47,6 @@ typedef struct sprite_node {
   struct position position;
   int alive;//vivo ou morto
   chtype representation;
-  int falling;
   enum direction direction;
 } SPRITE;
 

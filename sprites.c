@@ -161,24 +161,6 @@ void create_ghost(struct sprite_list *sl){
   }
 }
 
-void create_rocks(WINDOW *w, SPRITE *rocks){
-  for (int i = 0; i < MAX_ROCKS; i++) {
-
-    rocks[i] = DEFAULT_ROCK;
-
-    do{
-      int x = rand() % MAX_X;
-      int y = rand() % MAX_Y;
-
-      if (mvwinch(w,y,x) == CH_WALL) {
-        rocks[i].position.x = x;
-        rocks[i].position.y = y;
-        rocks[i].alive = 1;
-      }
-    }while(!rocks[i].alive);
-  }
-}
-
 //tipos padrões de sprite para simplificar o código
 const SPRITE DEFAULT_GHOST = {
   .representation = CH_GHOST,
@@ -189,12 +171,6 @@ const SPRITE DEFAULT_GHOST = {
 const SPRITE DEFAULT_FRUIT = {
   .alive = TRUE,
   .representation = CH_FRUIT
-};
-
-const SPRITE DEFAULT_ROCK = {
-  .alive = 0,
-  .direction = down,
-  .representation = CH_ROCK
 };
 
 const SPRITE DEFAULT_NEST = {
