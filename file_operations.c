@@ -160,7 +160,7 @@ void save_map(WINDOW *game_window){
 
 void save_score(struct score *hi_score){
   FILE *hi_score_file;
-  hi_score_file = fopen("highscore.bin","wb+");
+  hi_score_file = fopen("highscores.bin","wb+");
   if (hi_score_file){
     for(int i = TOP_SCORES; i >= 0 ; i--){
       fwrite(&hi_score[i], sizeof(struct score), 1, hi_score_file);
@@ -174,7 +174,7 @@ void save_score(struct score *hi_score){
 
 void load_score(struct score *hi_score){
   FILE *hi_score_file;
-  hi_score_file = fopen("highscore.bin","rb");
+  hi_score_file = fopen("highscores.bin","rb");
   if (!hi_score_file){
     for(int i = 0; i < TOP_SCORES; i++){
       hi_score[i].name[0] = '\0';

@@ -29,7 +29,7 @@
 #include <ncurses.h>
 #include <locale.h>
 
-#define MAX_NAME 14
+#define MAX_NAME 40
 #define TOP_SCORES 5
 //guarda a posição atual e anterior na tela
 struct position {
