@@ -18,19 +18,13 @@ int compare(struct score *elem1, struct score *elem2)
 void high_scores(){
   struct score highscores[TOP_SCORES];
   load_score(highscores);
-  WINDOW *border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
-  WINDOW *score_window = newwin(MAX_Y, MAX_X, 1, 1);
-  print_score(score_window, highscores);
-
-  wrefresh(border_window);
-  wrefresh(score_window);
+  print_score(highscores);
 
   char opt = getchar();
   while ( opt != 'S' && opt != 's'){
     opt = getchar();
   }
 
-  endwin();
   clear();
   show_menu();
 }
@@ -56,18 +50,22 @@ void check_score(int score){
     nodelay(stdscr, TRUE);
   }
   qsort((void *) &highscores,              // Endereço do primeiro elemento do array
-   6,                                       // Número de elementos do array
+   TOP_SCORES,                                       // Número de elementos do array
    sizeof(struct score),                    // Tamanho de cada elemento do array
    (compfn)compare );                       // Ponteiro para função de comparação
   save_score(highscores);
   high_scores();
 }
 
-void print_score(WINDOW *w, struct score *sc){
+void print_score(struct score *sc){
+  WINDOW *border_window = newwin(MAX_Y + 2, MAX_X + 2, 0, 0);
+  WINDOW *score_window = newwin(MAX_Y, MAX_X, 1, 1);
   for(int i = 0; i<TOP_SCORES; i++){
-    mvwprintw(w, i+1, 0, "Nome: %s", sc[i].name);
-    mvwprintw(w, i+1, 30, "SCORE: %d", sc[i].score);
+    mvwprintw(score_window, i+1, 0, "Nome: %s", sc[i].name);
+    mvwprintw(score_window, i+1, 30, "SCORE: %d", sc[i].score);
   }
 
-  mvwprintw(w, 7, 0, "Pressione s para voltar ao menu principal...");
+  mvwprintw(score_window, 7, 0, "Pressione s para voltar ao menu principal...");
+  wrefresh(border_window);
+  wrefresh(score_window);
 }

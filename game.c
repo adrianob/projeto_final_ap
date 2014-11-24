@@ -19,12 +19,12 @@ void play(void){
 
   config_timer();
 
-  chtype MAP[MAX_Y][MAX_X];
   struct sprite_list sprite_list= {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
   if (game_state.saved_game) {//continua
     load_state(&sprite_list);
   }
   else{
+    chtype MAP[MAX_Y][MAX_X];
     make_map(load_level(game_state.level), MAP);//le o arquivo da fase e carrega na matriz
     make_lists(MAP, &sprite_list);//cria uma lista de sprites a partir da matriz da fase
   }
