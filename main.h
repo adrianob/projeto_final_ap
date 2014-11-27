@@ -19,6 +19,8 @@
 #define CH_SPACE  ' '
 
 #include <stdlib.h>
+#include <signal.h>
+#include <time.h>
 #include <sys/time.h>
 #include <ncurses.h>
 #include <locale.h>
