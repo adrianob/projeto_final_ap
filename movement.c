@@ -1,9 +1,6 @@
 /*controla movimentação dos sprites na tela*/
 #include "main.h"
 #include "movement.h"
-#include <ncurses.h>
-#include <unistd.h>
-#include <stdlib.h>
 
 //retorna o caractere adjacente a posição dada na direção dada
 int next_char(WINDOW *w, struct position p, enum direction direction){

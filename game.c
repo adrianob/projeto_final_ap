@@ -1,10 +1,8 @@
 /*funções utilizadas diretamente no jogo*/
-#include "main.h"
 #include "game.h"
 #include "scores.h"
 #include "file_operations.h"
 #include "mr_do_menus.h"
-#include "lists.h"
 #include "sprites.h"
 #include "movement.h"
 

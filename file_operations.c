@@ -21,7 +21,7 @@ FILE* load_level(int level){
 void make_map(FILE *level, chtype (*p)[MAX_X]){
   char buffer;
 
-  fseek(level, 0, SEEK_SET);
+  rewind(level);
 
   //Atualiza a matriz, ignorando caracteres fora do padrão
   for(int i = 0; i < MAX_Y; i++){
