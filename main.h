@@ -18,11 +18,8 @@
 #define CH_SHOT  (183 | A_ALTCHARSET)
 #define CH_SPACE  ' '
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
 #include <sys/time.h>
-#include <time.h>
 #include <ncurses.h>
 #include <locale.h>
 

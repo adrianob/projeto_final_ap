@@ -5,14 +5,10 @@
 //Carrega o arquivo texto do cenário inicial
 FILE* load_level(int level){
   FILE *level_file = NULL;
-
-  if(level == 1){
-    if((level_file = fopen("fase1.txt", "rb")) == NULL)
-      printf("erro ao abrir arquivo de fase\n");
-  }else if(level == 2){
-    if((level_file = fopen("fase2.txt", "rb")) == NULL)
-      printf("erro ao abrir arquivo de fase\n");
-  }
+  char buffer[10];
+  sprintf(buffer, "fase%d.txt", level);
+  if((level_file = fopen(buffer, "rb")) == NULL)
+    printf("erro ao abrir arquivo de fase\n");
 
   return level_file;
 }

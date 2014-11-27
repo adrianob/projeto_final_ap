@@ -1,6 +1,5 @@
 #ifndef MR_DO_SPRITES
 #define MR_DO_SPRITES
-#include "main.h"
 #include "lists.h"
 
 extern const SPRITE DEFAULT_GHOST;

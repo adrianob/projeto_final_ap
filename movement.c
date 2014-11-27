@@ -28,24 +28,20 @@ int can_go_to_direction(WINDOW *w, SPRITE sp, enum direction direction){
   //verifica se eh fim do mapa
   switch (direction) {
     case up:
-      if (sp.position.y > 0) {
+      if (sp.position.y > 0)
         can_go = 1;
-      }
       break;
     case right:
-      if (sp.position.x < MAX_X - 1) {
+      if (sp.position.x < MAX_X - 1)
         can_go = 1;
-      }
       break;
     case down:
-      if (sp.position.y < MAX_Y - 1) {
+      if (sp.position.y < MAX_Y - 1)
         can_go = 1;
-      }
       break;
     case left:
-      if (sp.position.x > 0) {
+      if (sp.position.x > 0)
         can_go = 1;
-      }
   }
   //verificacoes especificas pra cada tipo de sprite
   int next_ch = next_char(w, sp.position, direction);
