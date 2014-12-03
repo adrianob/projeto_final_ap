@@ -80,35 +80,8 @@ int move_sprite(WINDOW *w, SPRITE *sprite, enum direction direction){
 }
 
 //algoritmo de movimentação dos fantasmas
-void move_ghost(WINDOW *w, SPRITE *gh){
-  char map_char[MAX_Y][MAX_X];
-  chtype ch;
-  struct position destiny;
-  int mr_do_alive = 0;
-
-  for (int i = 0; i < MAX_Y; i++) {
-    for (int j = 0; j < MAX_X; j++) {
-      ch = mvwinch(w, i, j);
-      if (ch == CH_WALL) {
-        map_char[i][j] = '1';
-      }
-      else if(ch == CH_MR_DO){
-        mr_do_alive = 1;
-        destiny.y = i;
-        destiny.x = j;
-        map_char[i][j] = '2';
-      }
-      else{
-        map_char[i][j] = '2';
-      }
-    }
-  }
-  if (!mr_do_alive) {
-    return;
-  }
-
-  NODE map_node[MAX_Y][MAX_X];
-  createMap(map_node, map_char, destiny);
+void move_ghost(WINDOW *w, SPRITE *gh, NODE map_node[MAX_Y][MAX_X], struct position destiny){
+  
     //Nó inicial
     NODE *start;
     start = &map_node[gh->position.y][gh->position.x];
@@ -144,9 +117,37 @@ void move_ghost(WINDOW *w, SPRITE *gh){
 
 void move_ghosts(WINDOW *w, SPRITE *ghosts){
   SPRITE *current = ghosts;
+  char map_char[MAX_Y][MAX_X];
+  chtype ch;
+  struct position destiny;
+  int mr_do_alive = 0;
+
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      ch = mvwinch(w, i, j);
+      if (ch == CH_WALL) {
+        map_char[i][j] = '1';
+      }
+      else if(ch == CH_MR_DO){
+        mr_do_alive = 1;
+        destiny.y = i;
+        destiny.x = j;
+        map_char[i][j] = '2';
+      }
+      else{
+        map_char[i][j] = '2';
+      }
+    }
+  }
+  if (!mr_do_alive) {
+    return;
+  }
+
+  NODE map_node[MAX_Y][MAX_X];
+  createMap(map_node, map_char, destiny);
 
   while(current != NULL){
-    move_ghost(w, current);
+    move_ghost(w, current, map_node, destiny);
     current = current->next;
   }
 }
