@@ -1,6 +1,7 @@
 #ifndef MR_DO_MOVEMENT
 #define MR_DO_MOVEMENT
 
+#include "path.h"
 void move_ghost(WINDOW *w, SPRITE *gh);
 void move_shot(WINDOW *w, SPRITE *s);
 int can_go_to_direction(WINDOW *w, SPRITE sp, enum direction direction);
