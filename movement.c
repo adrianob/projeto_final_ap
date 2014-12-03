@@ -146,7 +146,9 @@ void move_ghosts(WINDOW *w, SPRITE *ghosts){
   createMap(map_node, map_char, destiny);
 
   while(current != NULL){
-    move_ghost(w, current, map_node, destiny);
+    if (current->alive) {
+      move_ghost(w, current, map_node, destiny);
+    }
     current = current->next;
   }
 }
