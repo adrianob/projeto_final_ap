@@ -27,6 +27,7 @@ void play(void){
     make_lists(MAP, &sprite_list);//cria uma lista de sprites a partir da matriz da fase
   }
 
+  print_map(game_window, sprite_list);
   int ch, should_move = 0;
   enum direction mrdo_direction;
 
@@ -51,11 +52,11 @@ void play(void){
         ghost_timer = 0;
       }
 
-      move_ghosts(game_window, sprite_list.ghosts);
       if (should_move) {
         move_sprite(game_window, sprite_list.mr_do, mrdo_direction);
         should_move = 0;
       }
+      move_ghosts(game_window, sprite_list.ghosts);
 
       if(sprite_list.shot->alive){
         move_shot(game_window, sprite_list.shot);

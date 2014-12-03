@@ -1,5 +1,6 @@
 /*controla movimentação dos sprites na tela*/
 #include "main.h"
+#include "path.h"
 #include "movement.h"
 
 //retorna o caractere adjacente a posição dada na direção dada
@@ -79,47 +80,75 @@ int move_sprite(WINDOW *w, SPRITE *sprite, enum direction direction){
 }
 
 //algoritmo de movimentação dos fantasmas
-void move_ghost(WINDOW *w, SPRITE *gh){
-  enum direction gh_direction = gh->direction;
-  if (!can_go_to_direction(w, *gh, gh->direction)){//nao pode continuar na mesma direcao
-    int can_go = 0;
-    int d = rand() % 2;//0 ou 1
-    switch (gh_direction) {//tenta ir numa nova direcao
-      case right:
-      case left:
-        can_go = move_sprite(w, gh, d ? up : down) || move_sprite(w, gh, d ? down : up);
-        break;
-      case up:
-      case down:
-        can_go = move_sprite(w, gh, d ? right : left) || move_sprite(w, gh, d ? left : right);
-        break;
-    }
-    if(!can_go){//nao conseguiu ir para uma nova direcao, volta pela direcao que venho
-      switch (gh_direction) {
-        case up:
-          move_sprite(w, gh, down);
-          break;
-        case down:
-          move_sprite(w, gh, up);
-          break;
-        case right:
-          move_sprite(w, gh, left);
-          break;
-        case left:
-          move_sprite(w, gh, right);
-          break;
+void move_ghost(WINDOW *w, SPRITE *gh, NODE map_node[MAX_Y][MAX_X], struct position destiny){
+    //Nó inicial
+    NODE *start;
+    start = &map_node[gh->position.y][gh->position.x];
+    start->g = 0;
+    start->f = start->h;
+    start->parent = NULL;
+    start->status = 1;
+
+    //INICIALIZAÇÃO//
+
+    int res = findPath(map_node, destiny);      //Função que encontra o caminho.
+
+    struct position next;                       //struct position contendo o próximo passo
+    next = (nextStep(map_node, destiny))->pos;
+    if(res){
+      if (next.x < gh->position.x) {
+        move_sprite(w, gh, left);
+      }
+      if (next.y > gh->position.y) {
+        move_sprite(w, gh, down);
+      }
+      if (next.y < gh->position.y) {
+        move_sprite(w, gh, up);
+      }
+      if (next.x > gh->position.x) {
+        move_sprite(w, gh, right);
       }
     }
-  }
-  else{//continua na direcao que esta
-    move_sprite(w, gh, gh->direction);
-  }
+    else{
+      move_sprite(w, gh, right);
+    }
 }
 
 void move_ghosts(WINDOW *w, SPRITE *ghosts){
   SPRITE *current = ghosts;
+  char map_char[MAX_Y][MAX_X];
+  chtype ch;
+  struct position destiny;
+  int mr_do_alive = 0;
+
+  for (int i = 0; i < MAX_Y; i++) {
+    for (int j = 0; j < MAX_X; j++) {
+      ch = mvwinch(w, i, j);
+      if (ch == CH_WALL) {
+        map_char[i][j] = '1';
+      }
+      else if(ch == CH_MR_DO){
+        mr_do_alive = 1;
+        destiny.y = i;
+        destiny.x = j;
+        map_char[i][j] = '2';
+      }
+      else{
+        map_char[i][j] = '2';
+      }
+    }
+  }
+  if (!mr_do_alive) {
+    return;
+  }
+
+  NODE map_node[MAX_Y][MAX_X];
+  createMap(map_node, map_char, destiny);
+
   while(current != NULL){
-    move_ghost(w, current);
+    if (current->alive) {
+      move_ghost(w, current, map_node, destiny);
+    }
     current = current->next;
   }
 }

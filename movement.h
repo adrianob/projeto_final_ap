@@ -1,7 +1,8 @@
 #ifndef MR_DO_MOVEMENT
 #define MR_DO_MOVEMENT
 
-void move_ghost(WINDOW *w, SPRITE *gh);
+#include "path.h"
+void move_ghost(WINDOW *w, SPRITE *gh, NODE map_node[MAX_Y][MAX_X], struct position destiny);
 void move_shot(WINDOW *w, SPRITE *s);
 int can_go_to_direction(WINDOW *w, SPRITE sp, enum direction direction);
 int move_sprite(WINDOW *w, SPRITE *sprite, enum direction direction);
