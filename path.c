@@ -4,7 +4,7 @@
 #include "main.h"
 #include "path.h"
 
-//Partindo do destino faz o caminho contr·rio e descobre o prÛximo passo a ser dado
+//Partindo do destino faz o caminho contr√°rio e descobre o pr√≥ximo passo a ser dado
 NODE *nextStep(NODE (*map_node)[60], struct position destiny){
     NODE *dest = &map_node[destiny.y][destiny.x];
     while(dest->parent->parent != NULL){
@@ -13,16 +13,16 @@ NODE *nextStep(NODE (*map_node)[60], struct position destiny){
     return dest;
 }
 
-//CriaÁ„o do mapa e c·lculo do custo H
+//Cria√ß√£o do mapa e c√°lculo do custo H
 void createMap(NODE (*map_node)[60], char (*map_char)[60], struct position destiny){
     for(int i=0; i<MAX_Y; i++){
         for(int j=0; j<MAX_X; j++){
             map_node[i][j].pos.y = i;
             map_node[i][j].pos.x = j;
-            map_node[i][j].h = fabs(destiny.x - map_node[i][j].pos.x) + fabs(destiny.y - map_node[i][j].pos.y); //H È uma estimativa (superestimada) do quanto falta para chegar ao destino
+            map_node[i][j].h = fabs(destiny.x - map_node[i][j].pos.x) + fabs(destiny.y - map_node[i][j].pos.y); //H √© uma estimativa (superestimada) do quanto falta para chegar ao destino
             map_node[i][j].parent = NULL;
             map_node[i][j].status = 0;
-            if(map_char[i][j] == '1'){      //substituir '1' pelo char correspondente ‡ parede
+            if(map_char[i][j] == '1'){      //substituir '1' pelo char correspondente √† parede
                 map_node[i][j].pass = 0;
             }else{
                 map_node[i][j].pass = 1;
@@ -31,7 +31,7 @@ void createMap(NODE (*map_node)[60], char (*map_char)[60], struct position desti
     }
 }
 
-//Retorna os quadrados adjacentes. No caso de adjacente fora da ·rea v·lida retorna um ponteiro NULL
+//Retorna os quadrados adjacentes. No caso de adjacente fora da √°rea v√°lida retorna um ponteiro NULL
 void findAdjacents(struct position pos, NODE **adjacents, NODE (*map_node)[60]){
     if(pos.y > 0){
         adjacents[0] = &map_node[pos.y -1][pos.x];
@@ -69,33 +69,33 @@ NODE *findLowerF(NODE (*map_node)[60]){
     return lower;
 }
 
-//C·lculo dos pesos G (passos dados desde o inÌcio) e F (soma de G e H)
+//C√°lculo dos pesos G (passos dados desde o in√≠cio) e F (soma de G e H)
 void writeWeight(NODE currentNode, NODE **adjacent){
     (*adjacent)->g = currentNode.g + 10;
     (*adjacent)->f = (*adjacent)->g + (*adjacent)->h;
 }
 
-//Encontra qual possÌvel parent È o melhor caminho atravÈs do custo G dos quadrados adjacentes
+//Encontra qual poss√≠vel parent √© o melhor caminho atrav√©s do custo G dos quadrados adjacentes
 int isBetterWay(NODE *currentNode, NODE *adjacentParent){
     return (currentNode->g < adjacentParent->g);
 }
 
-//FunÁ„o principal
+//Fun√ß√£o principal
 int findPath(NODE (*map_node)[60], struct position destiny){
 
-    NODE *currentNode = findLowerF(map_node);                           //Encontra menor F (nÛ corrente)
+    NODE *currentNode = findLowerF(map_node);                           //Encontra menor F (n√≥ corrente)
     currentNode->status = -1;                                           //Move para a lista fechada
     NODE *adjacents[4];                                                 //Array de ponteiros para os adjacentes
     findAdjacents(currentNode->pos, adjacents, map_node);               //Encontra Adjacentes
 
     for (int i=0; i < 4; i++){                                          //Para cada adjacente...
-        if(adjacents[i] != NULL){                                       //ignora se for nulo, n„o pass·vel ou se estiver na lista fechada
+        if(adjacents[i] != NULL){                                       //ignora se for nulo, n√£o pass√°vel ou se estiver na lista fechada
             if(adjacents[i]->pass && adjacents[i]->status != -1){
-                if(adjacents[i]->status != 1){                          //Se n„o estiver na lista aberta move o nÛ para a lista aberta, faz o quadrado corrente o pai dele e calcula os pesos F e G
+                if(adjacents[i]->status != 1){                          //Se n√£o estiver na lista aberta move o n√≥ para a lista aberta, faz o quadrado corrente o pai dele e calcula os pesos F e G
                     adjacents[i]->status = 1;
                     adjacents[i]->parent = currentNode;
                     writeWeight(*currentNode, adjacents+i);
-                }else if(adjacents[i]->status == 1){                        //Se j· estiver na lista aberta verifica se o caminho atual n„o È melhor
+                }else if(adjacents[i]->status == 1){                        //Se j√° estiver na lista aberta verifica se o caminho atual n√£o √© melhor
                     if(isBetterWay(currentNode, adjacents[i]->parent)){   //se for, atualiza o parent e os custos F e G
                         adjacents[i]->parent = currentNode;
                         writeWeight(*currentNode, adjacents+i);
@@ -108,9 +108,9 @@ int findPath(NODE (*map_node)[60], struct position destiny){
     if (isDestinyInClosedList(map_node, destiny)){                      //Procura destino na lista fechada, se estiver, o caminho foi encontrado
         return 1;
     }else if (isOpenListEmpty(map_node)){
-        return 0;                                                       //Se n„o, verifica se existe algum elemento na lista aberta, se n„o tiver, n„o existe um caminho
+        return 0;                                                       //Se n√£o, verifica se existe algum elemento na lista aberta, se n√£o tiver, n√£o existe um caminho
     }else{
-        return findPath(map_node, destiny);                             //Se a lista aberta contÈm elementos, È possÌvel que exista um caminho. Chamada recursiva para a funÁ„o
+        return findPath(map_node, destiny);                             //Se a lista aberta cont√©m elementos, √© poss√≠vel que exista um caminho. Chamada recursiva para a fun√ß√£o
     }
 
 }

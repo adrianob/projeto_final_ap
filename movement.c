@@ -81,7 +81,6 @@ int move_sprite(WINDOW *w, SPRITE *sprite, enum direction direction){
 
 //algoritmo de movimentação dos fantasmas
 void move_ghost(WINDOW *w, SPRITE *gh, NODE map_node[MAX_Y][MAX_X], struct position destiny){
-  
     //Nó inicial
     NODE *start;
     start = &map_node[gh->position.y][gh->position.x];
