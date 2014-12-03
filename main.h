@@ -5,7 +5,7 @@
 #define MAX_Y 23 //tamanho de linhas do mapa principal
 #define MAX_GHOSTS 10
 #define MAX_FRUITS 32
-#define INTERVAL 100000
+#define INTERVAL 150000
 #define GHOST_INTERVAL 3000000
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
 
