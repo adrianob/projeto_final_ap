@@ -13,7 +13,7 @@ void push(SPRITE **head_ref, SPRITE s) {
 void print_list(WINDOW *w, SPRITE *head){
   SPRITE *current = head;
   while(current != NULL){
-    if (current->alive) {
+    if (current->alive && (current->position.x != current->position.last_x || current->position.y != current->position.last_y)) {
       mvwaddch(w, current->position.y, current->position.x, current->representation);
     }
     current = current->next;
